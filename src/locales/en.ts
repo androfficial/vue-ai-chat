@@ -19,6 +19,14 @@ export default {
     emptyState: {
       subtitle: 'Start a conversation by typing a message below',
       title: 'How can I help you today?',
+      titles: [
+        'How can I help you today?',
+        'What would you like to know?',
+        'Ask me anything...',
+        "What's on your mind?",
+        'Ready to assist you',
+        "Let's explore ideas together",
+      ],
     },
     error: {
       failed: 'Failed to generate response',

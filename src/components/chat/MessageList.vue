@@ -1,26 +1,27 @@
 <script setup lang="ts">
 import type { Message } from '@/types/message'
 
-import { nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 import { useAutoScroll } from '@/composables'
 
 import MessageBubble from './MessageBubble.vue'
 
-// Props
 interface Props {
   messages: Message[]
 }
 
 const props = defineProps<Props>()
 
-// Emits
 const emit = defineEmits<{
   copy: [content: string]
   delete: [messageId: string]
   edit: [messageId: string, content: string]
   regenerate: [messageId: string]
 }>()
+
+const { t, tm } = useI18n()
 
 const { containerRef, handleScroll, isAtBottom, scrollToBottom } = useAutoScroll({
   smooth: false,
@@ -29,6 +30,38 @@ const { containerRef, handleScroll, isAtBottom, scrollToBottom } = useAutoScroll
 
 const isInitialLoad = ref(true)
 const isSmoothScrolling = ref(false)
+
+// Rotating titles animation
+const currentTitleIndex = ref(0)
+const isAnimating = ref(false)
+let titleInterval: ReturnType<typeof setInterval> | null = null
+
+const titles = computed(() => {
+  const rawTitles = tm('chat.emptyState.titles')
+  return Array.isArray(rawTitles) ? rawTitles : [t('chat.emptyState.title')]
+})
+
+const currentTitle = computed(() => titles.value[currentTitleIndex.value] || titles.value[0])
+
+function startTitleRotation() {
+  if (titleInterval) return
+  titleInterval = setInterval(() => {
+    isAnimating.value = true
+    setTimeout(() => {
+      currentTitleIndex.value = (currentTitleIndex.value + 1) % titles.value.length
+      setTimeout(() => {
+        isAnimating.value = false
+      }, 50)
+    }, 300)
+  }, 4000)
+}
+
+function stopTitleRotation() {
+  if (titleInterval) {
+    clearInterval(titleInterval)
+    titleInterval = null
+  }
+}
 
 function onScroll() {
   if (isSmoothScrolling.value) return
@@ -40,16 +73,29 @@ onMounted(async () => {
   if (containerRef.value && props.messages.length > 0) {
     containerRef.value.scrollTop = containerRef.value.scrollHeight
     isAtBottom.value = true
+  } else {
+    startTitleRotation()
   }
   setTimeout(() => {
     isInitialLoad.value = false
   }, 100)
 })
 
+onUnmounted(() => {
+  stopTitleRotation()
+})
+
 watch(
   () => props.messages.length,
   async (newLen, oldLen) => {
     if (isInitialLoad.value) return
+
+    if (newLen === 0) {
+      currentTitleIndex.value = 0
+      startTitleRotation()
+    } else {
+      stopTitleRotation()
+    }
 
     if (newLen > (oldLen ?? 0)) {
       await nextTick()
@@ -136,7 +182,12 @@ defineExpose({
         color="primary"
         class="mb-4"
       />
-      <h2 class="text-h5 mb-2">{{ $t('chat.emptyState.title') }}</h2>
+      <h2
+        class="text-h5 mb-2 message-list__title"
+        :class="{ 'message-list__title--animating': isAnimating }"
+      >
+        {{ currentTitle }}
+      </h2>
       <p class="text-body-1 text-medium-emphasis text-center">
         {{ $t('chat.emptyState.subtitle') }}
       </p>
@@ -181,6 +232,18 @@ defineExpose({
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.message-list__title {
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+  will-change: opacity, transform;
+}
+
+.message-list__title--animating {
+  opacity: 0;
+  transform: translateY(-8px);
 }
 
 @media (max-width: 600px) {
