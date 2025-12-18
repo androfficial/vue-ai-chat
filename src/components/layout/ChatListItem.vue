@@ -143,7 +143,7 @@ function cancelDelete() {
 .chat-list-item {
   padding: 10px 12px !important;
   min-height: 52px !important;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
 }
 
 .chat-list-item :deep(.v-list-item__content) {
@@ -176,7 +176,7 @@ function cancelDelete() {
 }
 
 .chat-list-item__menu-btn:hover {
-  background-color: rgba(var(--v-theme-on-surface), 0.08) !important;
+  background-color: var(--border-subtle) !important;
 }
 </style>
 
@@ -231,13 +231,13 @@ function cancelDelete() {
 
 .delete-dialog__text {
   font-size: 0.9rem !important;
-  color: rgba(var(--v-theme-on-surface), 0.7) !important;
+  color: rgb(var(--v-theme-text-secondary)) !important;
   padding: 8px 20px 16px !important;
 }
 
 .delete-dialog__text strong {
   font-weight: 600;
-  color: rgba(var(--v-theme-on-surface), 0.9);
+  color: rgb(var(--v-theme-on-surface));
 }
 
 .delete-dialog__actions {
@@ -253,7 +253,7 @@ function cancelDelete() {
 }
 
 .delete-dialog__btn--cancel {
-  color: rgba(var(--v-theme-on-surface), 0.8) !important;
+  color: rgb(var(--v-theme-text-secondary)) !important;
 }
 
 .delete-dialog__btn--delete {

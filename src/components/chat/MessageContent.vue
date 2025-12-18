@@ -121,7 +121,7 @@ const renderedContent = computed(() => {
 }
 
 .message-content__markdown :deep(code) {
-  background-color: rgba(var(--v-theme-on-surface), 0.08);
+  background-color: rgb(var(--v-theme-surface-variant));
   padding: 0.2em 0.4em;
   border-radius: 4px;
   font-family: 'Fira Code', 'Consolas', monospace;
@@ -129,9 +129,9 @@ const renderedContent = computed(() => {
 }
 
 .message-content__markdown :deep(pre) {
-  background-color: rgba(var(--v-theme-on-surface), 0.08);
+  background-color: rgb(var(--v-theme-surface-variant));
   padding: 1em;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   overflow-x: auto;
   margin: 0 0 1em 0;
 }
@@ -143,10 +143,10 @@ const renderedContent = computed(() => {
 }
 
 .message-content__markdown :deep(blockquote) {
-  border-left: 3px solid rgba(var(--v-theme-primary), 0.5);
+  border-left: 3px solid rgb(var(--v-theme-primary));
   margin: 0 0 1em 0;
   padding-left: 1em;
-  color: rgba(var(--v-theme-on-surface), 0.7);
+  color: rgb(var(--v-theme-text-secondary));
 }
 
 .message-content__markdown :deep(strong) {
@@ -181,8 +181,8 @@ const renderedContent = computed(() => {
   display: flex;
   align-items: flex-start;
   padding: 12px 16px;
-  background-color: rgba(var(--v-theme-error), 0.08);
-  border-radius: 8px;
+  background-color: rgba(var(--v-theme-error), 0.1);
+  border-radius: var(--radius-md);
   line-height: 1.5;
 }
 

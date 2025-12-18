@@ -8,6 +8,7 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { useToast } from '@/composables'
 import { CEREBRAS_MODELS, testApiConnection } from '@/services/api/cerebras'
 import { useApiStore } from '@/stores/api'
 
@@ -15,6 +16,7 @@ import SettingsCard from './SettingsCard.vue'
 
 const { t } = useI18n()
 const apiStore = useApiStore()
+const toast = useToast()
 
 // Writable computed for two-way binding (silent auto-save)
 const apiKey = computed({
@@ -33,38 +35,24 @@ const selectedModel = computed({
 
 // Connection test state
 const testingConnection = ref(false)
-const testResult = ref<{ success: boolean; message: string } | null>(null)
-
-// Model options
-const modelOptions = CEREBRAS_MODELS.map(m => ({
-  title: m.name,
-  value: m.id,
-}))
 
 // Methods
 async function handleTestConnection() {
   if (!apiKey.value.trim()) {
-    testResult.value = {
-      message: t('settings.api.apiKeyPlaceholder'),
-      success: false,
-    }
+    toast.error(t('settings.api.apiKeyPlaceholder'))
     return
   }
 
   testingConnection.value = true
-  testResult.value = null
 
   const result = await testApiConnection()
 
   testingConnection.value = false
 
   if (result.success) {
-    testResult.value = { message: t('settings.api.connectionSuccess'), success: true }
+    toast.success(t('settings.api.connectionSuccess'))
   } else {
-    testResult.value = {
-      message: result.error ?? t('settings.api.connectionFailed'),
-      success: false,
-    }
+    toast.error(result.error ?? t('settings.api.connectionFailed'))
   }
 }
 </script>
@@ -74,39 +62,45 @@ async function handleTestConnection() {
     icon="mdi-key"
     :title="$t('settings.api.title')"
   >
-    <v-text-field
-      v-model="apiKey"
-      :label="$t('settings.api.apiKey')"
-      type="password"
-      variant="outlined"
-      :placeholder="$t('settings.api.apiKeyPlaceholder')"
-      :hint="$t('settings.api.apiKeyHint')"
-      persistent-hint
-      class="mb-4 api-key-input"
-      clearable
-    />
+    <div class="setting-row">
+      <label class="setting-label">{{ $t('settings.api.apiKey') }}</label>
+      <v-text-field
+        v-model="apiKey"
+        type="password"
+        variant="outlined"
+        density="default"
+        :placeholder="$t('settings.api.apiKeyPlaceholder')"
+        hide-details
+        class="setting-input"
+        clearable
+      />
+      <p class="setting-hint">{{ $t('settings.api.apiKeyHint') }}</p>
+    </div>
 
-    <v-select
-      v-model="selectedModel"
-      :items="modelOptions"
-      :label="$t('settings.api.model')"
-      variant="outlined"
-    />
-
-    <!-- Connection Test Result -->
-    <v-alert
-      v-if="testResult"
-      :type="testResult.success ? 'success' : 'error'"
-      class="mb-4"
-      closable
-      @click:close="testResult = null"
-    >
-      {{ testResult.message }}
-    </v-alert>
+    <div class="setting-row">
+      <label class="setting-label">{{ $t('settings.api.model') }}</label>
+      <v-radio-group
+        v-model="selectedModel"
+        hide-details
+        class="model-options"
+      >
+        <v-radio
+          v-for="model in CEREBRAS_MODELS"
+          :key="model.id"
+          :value="model.id"
+          class="model-option"
+        >
+          <template #label>
+            <span>{{ model.name }}</span>
+          </template>
+        </v-radio>
+      </v-radio-group>
+    </div>
 
     <template #actions>
       <v-btn
         variant="outlined"
+        size="small"
         :loading="testingConnection"
         @click="handleTestConnection"
       >
@@ -117,12 +111,50 @@ async function handleTestConnection() {
 </template>
 
 <style scoped>
-.api-key-input :deep(.v-field__clearable) {
+.setting-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.setting-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgb(var(--v-theme-on-surface));
+}
+
+.setting-input {
+  max-width: 100%;
+}
+
+.setting-input :deep(.v-field__clearable) {
   opacity: 0;
   transition: opacity 0.2s ease;
 }
 
-.api-key-input:hover :deep(.v-field__clearable) {
+.setting-input:hover :deep(.v-field__clearable) {
+  opacity: 1;
+}
+
+.setting-hint {
+  font-size: 0.8125rem;
+  color: rgba(var(--v-theme-on-surface), 0.6);
+  margin: 0;
+}
+
+.model-options {
+  margin-top: -4px;
+}
+
+.model-option {
+  margin-bottom: 4px;
+}
+
+.model-option:last-child {
+  margin-bottom: 0;
+}
+
+.model-option :deep(.v-label) {
   opacity: 1;
 }
 </style>

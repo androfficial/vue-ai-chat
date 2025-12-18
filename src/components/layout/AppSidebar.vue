@@ -212,9 +212,14 @@ function deleteChat(chatId: string, event: Event) {
 
 <style scoped>
 .sidebar-drawer {
-  border-right: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  border-right: 1px solid var(--border-subtle);
   transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
   overflow: hidden;
+}
+
+/* Make dividers less contrasting */
+.sidebar-drawer :deep(.v-divider) {
+  opacity: 0.4;
 }
 
 .sidebar-content {
@@ -321,7 +326,7 @@ function deleteChat(chatId: string, event: Event) {
 
 .v-list-item {
   transition:
-    background-color 0.15s ease,
+    background-color var(--transition-fast),
     margin 0.2s ease,
     padding 0.2s ease,
     min-width 0.2s ease,
@@ -329,6 +334,7 @@ function deleteChat(chatId: string, event: Event) {
   margin-bottom: 2px;
   padding-top: 4px !important;
   padding-bottom: 4px !important;
+  border-radius: var(--radius-sm) !important;
 }
 
 /* Reduce spacing between icon and text */
@@ -375,15 +381,15 @@ function deleteChat(chatId: string, event: Event) {
 }
 
 .sidebar-group-title {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.02em;
-  color: rgba(var(--v-theme-on-surface), 0.7);
+  letter-spacing: 0.03em;
+  color: rgb(var(--v-theme-text-secondary));
   text-transform: uppercase;
 }
 
 .sidebar-group-header:hover {
-  background-color: rgba(var(--v-theme-on-surface), 0.04);
+  background-color: rgb(var(--v-theme-sidebar-hover));
 }
 
 .sidebar-group-icon {
@@ -412,11 +418,11 @@ function deleteChat(chatId: string, event: Event) {
 }
 
 :deep(.v-btn) {
-  transition: background-color 0.15s ease;
+  transition: background-color var(--transition-fast);
 }
 
 :deep(.v-btn:hover) {
-  background-color: rgba(var(--v-theme-on-surface), 0.08);
+  background-color: rgb(var(--v-theme-sidebar-hover));
 }
 
 .pa-3 {

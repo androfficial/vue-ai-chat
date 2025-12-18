@@ -1,89 +1,96 @@
 <script setup lang="ts">
 /**
- * Settings card wrapper component
- * Provides consistent card layout for settings sections
+ * Settings section wrapper component
+ * Clean, minimal design inspired by Claude/ChatGPT
  */
 
 interface Props {
-  icon: string
+  icon?: string
   title: string
   variant?: 'default' | 'danger'
 }
 
 withDefaults(defineProps<Props>(), {
+  icon: undefined,
   variant: 'default',
 })
 </script>
 
 <template>
-  <v-card
-    class="settings-card"
-    :class="{ 'settings-card--danger': variant === 'danger' }"
-    elevation="0"
+  <section
+    class="settings-section"
+    :class="{ 'settings-section--danger': variant === 'danger' }"
   >
-    <v-card-title
-      class="settings-card__title"
-      :class="{ 'text-error': variant === 'danger' }"
-    >
+    <header class="settings-section__header">
       <v-icon
+        v-if="icon"
         :icon="icon"
-        class="mr-3"
-        size="22"
+        :class="{ 'text-error': variant === 'danger' }"
+        size="20"
       />
-      {{ title }}
-    </v-card-title>
+      <h2
+        class="settings-section__title"
+        :class="{ 'text-error': variant === 'danger' }"
+      >
+        {{ title }}
+      </h2>
+    </header>
 
-    <v-divider class="mx-4" />
-
-    <v-card-text class="settings-card__content">
+    <div class="settings-section__content">
       <slot />
-    </v-card-text>
+    </div>
 
-    <template v-if="$slots.actions">
-      <v-divider class="mx-4" />
-      <v-card-actions class="settings-card__actions">
-        <slot name="actions" />
-      </v-card-actions>
-    </template>
-  </v-card>
+    <div
+      v-if="$slots.actions"
+      class="settings-section__actions"
+    >
+      <slot name="actions" />
+    </div>
+  </section>
 </template>
 
 <style scoped>
-.settings-card {
-  margin-bottom: 24px;
-  border-radius: 16px !important;
-  border: 1px solid rgba(var(--v-border-color), 0.08);
-  transition:
-    box-shadow 0.2s ease,
-    border-color 0.2s ease;
+.settings-section {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
-.settings-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+.settings-section:last-child {
+  border-bottom: none;
 }
 
-.settings-card__title {
-  font-size: 1rem;
-  font-weight: 600;
-  padding: 20px 24px;
+.settings-section__header {
   display: flex;
   align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
 }
 
-.settings-card__content {
-  padding: 20px 24px;
+.settings-section__title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: rgb(var(--v-theme-on-surface));
 }
 
-.settings-card__actions {
-  padding: 16px 24px;
+.settings-section__content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.settings-card--danger {
-  border: 1px solid rgba(var(--v-theme-error), 0.3);
-  background: rgba(var(--v-theme-error), 0.02);
+.settings-section__actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 8px;
 }
 
-.settings-card--danger:hover {
-  border-color: rgba(var(--v-theme-error), 0.5);
+.settings-section--danger {
+  padding-top: 24px;
+  margin-top: 8px;
+  border-bottom: none;
+}
+
+.settings-section--danger .settings-section__header {
+  color: rgb(var(--v-theme-error));
 }
 </style>

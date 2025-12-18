@@ -339,7 +339,7 @@ function saveApiKey() {
 
 .chat-page__temp-toggle:hover {
   opacity: 1;
-  background-color: rgba(var(--v-theme-on-surface), 0.05) !important;
+  background-color: var(--border-subtle) !important;
 }
 
 .chat-page__temp-toggle--active {
@@ -370,8 +370,13 @@ function saveApiKey() {
 
 .chat-page__input-wrapper {
   flex-shrink: 0;
-  background: linear-gradient(to top, rgb(var(--v-theme-background)) 85%, transparent);
-  padding-top: 20px;
+  background: linear-gradient(
+    to top,
+    rgb(var(--v-theme-background)) 0%,
+    rgb(var(--v-theme-background)) 70%,
+    transparent 100%
+  );
+  padding-top: 24px;
   position: relative;
   z-index: 10;
 }

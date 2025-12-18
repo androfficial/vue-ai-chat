@@ -35,21 +35,19 @@ function deleteAllChats() {
     :title="$t('settings.danger.title')"
     variant="danger"
   >
-    <div
-      class="d-flex flex-column flex-sm-row align-start align-sm-center justify-space-between ga-4"
-    >
-      <div class="flex-grow-1">
-        <div class="text-subtitle-1 font-weight-medium">
+    <div class="danger-action">
+      <div class="danger-action__content">
+        <div class="danger-action__title">
           {{ $t('settings.danger.deleteAllChats') }}
         </div>
-        <div class="text-body-2 text-medium-emphasis mt-1">
+        <div class="danger-action__description">
           {{ $t('settings.danger.deleteAllChatsDescription') }}
         </div>
       </div>
       <v-btn
         color="error"
         variant="outlined"
-        class="flex-shrink-0"
+        size="small"
         @click="confirmDeleteChats"
       >
         {{ $t('settings.danger.deleteAllButton') }}
@@ -63,24 +61,26 @@ function deleteAllChats() {
     max-width="400"
   >
     <v-card>
-      <v-card-title class="text-h5 pa-6 pb-2 text-error">
+      <v-card-title class="text-h6 pa-5 pb-2 text-error">
         {{ $t('settings.danger.confirmDelete') }}
       </v-card-title>
 
-      <v-card-text class="pa-6 pt-2">
+      <v-card-text class="pa-5 pt-2 text-body-2">
         {{ $t('settings.danger.confirmDeleteDescription') }}
       </v-card-text>
 
-      <v-card-actions class="pa-6 pt-0">
+      <v-card-actions class="pa-5 pt-0">
         <v-spacer />
         <v-btn
           variant="text"
+          size="small"
           @click="showDeleteDialog = false"
         >
           {{ $t('common.cancel') }}
         </v-btn>
         <v-btn
           color="error"
+          size="small"
           @click="deleteAllChats"
         >
           {{ $t('settings.danger.deleteAllButton') }}
@@ -89,3 +89,36 @@ function deleteAllChats() {
     </v-card>
   </v-dialog>
 </template>
+
+<style scoped>
+.danger-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.danger-action__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.danger-action__title {
+  font-size: 1rem;
+  font-weight: 500;
+  color: rgb(var(--v-theme-on-surface));
+  margin-bottom: 4px;
+}
+
+.danger-action__description {
+  font-size: 0.875rem;
+  color: rgba(var(--v-theme-on-surface), 0.6);
+}
+
+@media (max-width: 480px) {
+  .danger-action {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+</style>

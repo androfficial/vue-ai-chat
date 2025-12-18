@@ -63,8 +63,8 @@ const emit = defineEmits<{
   opacity: 0;
   transform: translateY(-4px);
   transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
+    opacity var(--transition-fast),
+    transform var(--transition-fast);
   display: flex;
   gap: 2px;
   margin-top: 4px;
@@ -85,8 +85,8 @@ const emit = defineEmits<{
 }
 
 .message-actions__btn {
-  border-radius: 6px !important;
-  transition: all 0.15s ease !important;
+  border-radius: var(--radius-sm) !important;
+  transition: all var(--transition-fast) !important;
   width: 28px !important;
   height: 28px !important;
 }
@@ -96,7 +96,7 @@ const emit = defineEmits<{
 }
 
 .message-actions__btn:hover {
-  background-color: rgba(var(--v-theme-on-surface), 0.08) !important;
+  background-color: var(--border-subtle) !important;
   transform: scale(1.05);
 }
 

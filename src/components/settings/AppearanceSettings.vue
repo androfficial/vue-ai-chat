@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Appearance settings section component
- * Theme configuration
+ * Theme configuration with radio button group
  */
 
 import { computed } from 'vue'
@@ -24,9 +24,21 @@ const theme = computed({
 
 // Options with reactivity for translations
 const themeOptions = computed(() => [
-  { title: t('settings.appearance.themeLight'), value: 'light' },
-  { title: t('settings.appearance.themeDark'), value: 'dark' },
-  { title: t('settings.appearance.themeSystem'), value: 'system' },
+  {
+    icon: 'mdi-white-balance-sunny',
+    title: t('settings.appearance.themeLight'),
+    value: 'light',
+  },
+  {
+    icon: 'mdi-weather-night',
+    title: t('settings.appearance.themeDark'),
+    value: 'dark',
+  },
+  {
+    icon: 'mdi-laptop',
+    title: t('settings.appearance.themeSystem'),
+    value: 'system',
+  },
 ])
 </script>
 
@@ -35,11 +47,45 @@ const themeOptions = computed(() => [
     icon="mdi-palette"
     :title="$t('settings.appearance.title')"
   >
-    <v-select
+    <v-radio-group
       v-model="theme"
-      :items="themeOptions"
-      :label="$t('settings.appearance.theme')"
-      variant="outlined"
-    />
+      hide-details
+      class="theme-options"
+    >
+      <v-radio
+        v-for="option in themeOptions"
+        :key="option.value"
+        :value="option.value"
+        class="theme-option"
+      >
+        <template #label>
+          <div class="d-flex align-center ga-2">
+            <v-icon
+              :icon="option.icon"
+              size="18"
+            />
+            <span>{{ option.title }}</span>
+          </div>
+        </template>
+      </v-radio>
+    </v-radio-group>
   </SettingsCard>
 </template>
+
+<style scoped>
+.theme-options {
+  margin-top: -4px;
+}
+
+.theme-option {
+  margin-bottom: 4px;
+}
+
+.theme-option:last-child {
+  margin-bottom: 0;
+}
+
+.theme-option :deep(.v-label) {
+  opacity: 1;
+}
+</style>

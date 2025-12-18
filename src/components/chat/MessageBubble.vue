@@ -215,7 +215,7 @@ function regenerate() {
 <style scoped>
 .message-bubble {
   padding: 12px 0;
-  transition: background-color 0.2s ease;
+  transition: background-color var(--transition-fast);
 }
 
 .message-bubble__container {
@@ -234,7 +234,7 @@ function regenerate() {
 }
 
 .message-bubble__header-row :deep(.v-avatar) {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-sm);
 }
 
 /* User message - ChatGPT style bubble */
@@ -251,7 +251,8 @@ function regenerate() {
 }
 
 .message-bubble__user-bubble {
-  background-color: rgba(var(--v-theme-primary), 0.15);
+  background-color: rgb(var(--v-theme-chat-user-bg));
+  border: 1px solid var(--border-subtle);
   border-radius: 20px;
   padding: 12px 18px;
   text-align: left;
@@ -262,7 +263,7 @@ function regenerate() {
 .message-bubble__edited-text {
   display: block;
   font-size: 0.75rem;
-  color: rgba(var(--v-theme-on-surface), 0.5);
+  color: rgb(var(--v-theme-text-secondary));
   margin-top: 4px;
   font-style: italic;
 }

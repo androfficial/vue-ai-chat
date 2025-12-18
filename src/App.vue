@@ -4,7 +4,7 @@
  * Main layout with sidebar and router view
  */
 
-import { watch } from 'vue'
+import { onMounted, watch } from 'vue'
 import { useTheme } from 'vuetify'
 
 import AppSidebar from '@/components/layout/AppSidebar.vue'
@@ -20,18 +20,31 @@ const userStore = useUserStore()
 // Manage document head (title, description, lang)
 useHead()
 
-// Sync theme with user preferences and watch for changes
+/**
+ * Apply theme based on user preference
+ * Uses Vuetify 3.9+ theme.change() API for proper theme switching
+ */
 function applyTheme(themeMode: string) {
   if (themeMode === 'system') {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    theme.global.name.value = prefersDark ? 'dark' : 'light'
+    theme.change(prefersDark ? 'dark' : 'light')
   } else {
-    theme.global.name.value = themeMode
+    theme.change(themeMode)
   }
 }
 
-// Apply initial theme
+// Apply initial theme immediately (before mount to prevent flash)
 applyTheme(userStore.preferences.theme)
+
+// Listen to system theme changes when in 'system' mode
+onMounted(() => {
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+  mediaQuery.addEventListener('change', () => {
+    if (userStore.preferences.theme === 'system') {
+      applyTheme('system')
+    }
+  })
+})
 
 // Watch for theme preference changes
 watch(
@@ -59,16 +72,13 @@ watch(
     <v-snackbar
       v-model="toast.isVisible.value"
       :timeout="toast.timeout.value"
+      :color="toast.type.value"
       location="top right"
       rounded="lg"
-      elevation="8"
+      variant="flat"
       class="app-snackbar"
-      content-class="app-snackbar__content"
     >
-      <div
-        class="app-snackbar__inner"
-        :class="`app-snackbar--${toast.type.value}`"
-      >
+      <div class="d-flex align-center ga-2">
         <v-icon
           :icon="
             toast.type.value === 'success'
@@ -80,9 +90,8 @@ watch(
                   : 'mdi-information'
           "
           size="20"
-          class="app-snackbar__icon"
         />
-        <span class="app-snackbar__text">{{ toast.message.value }}</span>
+        <span>{{ toast.message.value }}</span>
       </div>
     </v-snackbar>
   </v-app>
@@ -131,85 +140,42 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(128, 128, 128, 0.3);
+  background: rgba(128, 128, 128, 0.25);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(128, 128, 128, 0.5);
+  background: rgba(128, 128, 128, 0.4);
 }
 
 /* Snackbar Toast Styles */
+.app-snackbar {
+  margin-top: 16px !important;
+  margin-right: 16px !important;
+}
+
 .app-snackbar .v-snackbar__wrapper {
   min-width: auto !important;
-  margin: 16px;
 }
 
-.app-snackbar__content {
-  padding: 0 !important;
-}
-
-.app-snackbar__inner {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  border-radius: 12px;
-  font-size: 14px;
+.app-snackbar .v-snackbar__content {
   font-weight: 500;
-  line-height: 1.4;
-  backdrop-filter: blur(8px);
 }
 
-.app-snackbar__icon {
-  flex-shrink: 0;
+/* Bright snackbar colors for both themes */
+.app-snackbar .v-snackbar__wrapper[class*='bg-success'] {
+  background-color: #22c55e !important;
 }
 
-.app-snackbar__text {
-  flex: 1;
+.app-snackbar .v-snackbar__wrapper[class*='bg-error'] {
+  background-color: #ef4444 !important;
 }
 
-/* Success variant */
-.app-snackbar--success {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: white;
-  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+.app-snackbar .v-snackbar__wrapper[class*='bg-warning'] {
+  background-color: #f59e0b !important;
 }
 
-.app-snackbar--success .app-snackbar__icon {
-  color: rgba(255, 255, 255, 0.95);
-}
-
-/* Error variant */
-.app-snackbar--error {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  color: white;
-  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
-}
-
-.app-snackbar--error .app-snackbar__icon {
-  color: rgba(255, 255, 255, 0.95);
-}
-
-/* Warning variant */
-.app-snackbar--warning {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-  color: white;
-  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
-}
-
-.app-snackbar--warning .app-snackbar__icon {
-  color: rgba(255, 255, 255, 0.95);
-}
-
-/* Info variant */
-.app-snackbar--info {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: white;
-  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
-}
-
-.app-snackbar--info .app-snackbar__icon {
-  color: rgba(255, 255, 255, 0.95);
+.app-snackbar .v-snackbar__wrapper[class*='bg-info'] {
+  background-color: #3b82f6 !important;
 }
 </style>

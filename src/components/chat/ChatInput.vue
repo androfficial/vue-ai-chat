@@ -144,14 +144,14 @@ function handleKeydown(event: KeyboardEvent) {
 }
 
 .chat-input__card {
-  border: 1px solid rgba(var(--v-border-color), 0.3);
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border-subtle);
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
 }
 
 .chat-input__card:focus-within {
-  border-color: rgba(var(--v-theme-primary), 0.5);
-  box-shadow: 0 2px 12px rgba(var(--v-theme-primary), 0.15);
+  border-color: rgb(var(--v-theme-primary));
+  box-shadow: var(--shadow-focus);
 }
 
 .chat-input__wrapper {
@@ -207,12 +207,12 @@ function handleKeydown(event: KeyboardEvent) {
 }
 
 .chat-input__textarea::-webkit-scrollbar-thumb {
-  background-color: rgba(var(--v-theme-on-surface), 0.3);
+  background-color: rgba(128, 128, 128, 0.25);
   border-radius: 3px;
 }
 
 .chat-input__textarea::placeholder {
-  color: rgba(var(--v-theme-on-surface), 0.5);
+  color: rgb(var(--v-theme-text-secondary));
 }
 
 .chat-input__hint-wrapper {

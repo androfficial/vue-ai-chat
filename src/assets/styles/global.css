@@ -3,7 +3,9 @@
  * Provides consistent design tokens across the application
  */
 
-/* Design tokens */
+/* ============================================
+   Design Tokens
+   ============================================ */
 :root {
   /* Spacing scale */
   --spacing-xs: 4px;
@@ -24,11 +26,7 @@
   --transition-fast: 0.15s ease;
   --transition-normal: 0.2s ease;
   --transition-slow: 0.3s ease;
-
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+  --transition-theme: 0.25s ease-out;
 
   /* Typography */
   --font-weight-normal: 400;
@@ -41,9 +39,53 @@
   --sidebar-width: 280px;
 }
 
+/* Light theme shadows - subtle and warm */
+:root,
+.v-theme--light {
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.06), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+  --shadow-focus: 0 0 0 3px rgba(13, 148, 136, 0.15);
+  --shadow-input: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --border-default: rgba(0, 0, 0, 0.1);
+  --overlay-bg: rgba(0, 0, 0, 0.4);
+}
+
+/* Dark theme shadows - deeper and more pronounced */
+.v-theme--dark {
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.35), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  --shadow-focus: 0 0 0 3px rgba(20, 184, 166, 0.25);
+  --shadow-input: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.1);
+  --overlay-bg: rgba(0, 0, 0, 0.6);
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
+}
+
+/* Better default font rendering */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* Custom scrollbar for webkit browsers */
@@ -57,18 +99,18 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(128, 128, 128, 0.3);
+  background: rgba(128, 128, 128, 0.25);
   border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(128, 128, 128, 0.5);
+  background: rgba(128, 128, 128, 0.4);
 }
 
 /* Firefox scrollbar */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(128, 128, 128, 0.3) transparent;
+  scrollbar-color: rgba(128, 128, 128, 0.25) transparent;
 }
 
 /* Focus styles for accessibility */
@@ -87,19 +129,19 @@ html {
   background: rgba(var(--v-theme-primary), 0.2);
 }
 
-/* Better default font rendering */
-body {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
+/* ============================================
+   Utility Classes
+   ============================================ */
 
-/* Utility classes */
 .truncate {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* ============================================
+   Transitions
+   ============================================ */
 
 .fade-enter-active,
 .fade-leave-active {
@@ -125,7 +167,11 @@ body {
   transform: translateY(-10px);
 }
 
-/* Code block styling improvements */
+/* ============================================
+   Component Overrides
+   ============================================ */
+
+/* Code block styling */
 pre {
   border-radius: var(--radius-md) !important;
 }
@@ -138,6 +184,8 @@ code {
 .v-btn {
   text-transform: none !important;
   letter-spacing: normal !important;
+  font-weight: var(--font-weight-medium);
+  transition: all var(--transition-fast);
 }
 
 /* Input improvements */
@@ -145,7 +193,80 @@ code {
   border-radius: var(--radius-md) !important;
 }
 
+.v-field--focused {
+  box-shadow: var(--shadow-focus);
+}
+
 /* Card improvements */
 .v-card {
   border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-card);
+  transition:
+    box-shadow var(--transition-normal),
+    border-color var(--transition-normal);
+}
+
+/* Remove focus outline from dialog cards and overlay content */
+.v-dialog .v-card,
+.v-dialog .v-card:focus,
+.v-dialog .v-card:focus-visible,
+.v-overlay--active .v-card,
+.v-overlay__content:focus,
+.v-overlay__content:focus-visible,
+.v-dialog > .v-overlay__content,
+.v-dialog > .v-overlay__content:focus,
+.v-dialog > .v-overlay__content:focus-visible {
+  outline: none !important;
+}
+
+/* Dialog button styles - works well on both themes */
+.v-dialog .v-card-actions .v-btn {
+  min-width: 80px;
+  border-radius: var(--radius-md) !important;
+  font-weight: var(--font-weight-semibold);
+  text-transform: none;
+  letter-spacing: normal;
+  padding: 0 16px;
+}
+
+/* Cancel/secondary button - subtle but visible */
+.v-dialog .v-card-actions .v-btn--variant-text {
+  color: rgb(var(--v-theme-text-secondary));
+}
+
+.v-dialog .v-card-actions .v-btn--variant-text:hover {
+  background-color: var(--border-subtle);
+}
+
+/* Primary action button */
+.v-dialog .v-card-actions .v-btn--variant-flat[color='primary'] {
+  background-color: rgb(var(--v-theme-primary));
+  color: white;
+}
+
+.v-dialog .v-card-actions .v-btn--variant-flat[color='primary']:hover {
+  filter: brightness(1.1);
+}
+
+.v-dialog .v-card-actions .v-btn--variant-flat[color='primary']:disabled {
+  opacity: 0.5;
+}
+
+/* Dialog overlay */
+.v-overlay__scrim {
+  background: var(--overlay-bg) !important;
+  backdrop-filter: blur(4px);
+}
+
+/* ============================================
+   Theme Configuration
+   ============================================ */
+
+/* Set color-scheme for browser UI elements (scrollbars, form controls) */
+.v-theme--light {
+  color-scheme: light;
+}
+
+.v-theme--dark {
+  color-scheme: dark;
 }

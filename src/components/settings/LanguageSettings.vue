@@ -1,6 +1,7 @@
 <script setup lang="ts">
 /**
  * Language settings section component
+ * Clean radio group for language selection
  */
 
 import { computed } from 'vue'
@@ -21,8 +22,8 @@ const locale = computed({
 
 // Static options - no need for reactivity
 const localeOptions = [
-  { title: 'English', value: 'en' },
-  { title: 'Українська', value: 'uk' },
+  { flag: '🇬🇧', title: 'English', value: 'en' },
+  { flag: '🇺🇦', title: 'Українська', value: 'uk' },
 ]
 </script>
 
@@ -31,11 +32,47 @@ const localeOptions = [
     icon="mdi-translate"
     :title="$t('settings.language.title')"
   >
-    <v-select
+    <v-radio-group
       v-model="locale"
-      :items="localeOptions"
-      :label="$t('settings.language.interfaceLanguage')"
-      variant="outlined"
-    />
+      hide-details
+      class="language-options"
+    >
+      <v-radio
+        v-for="option in localeOptions"
+        :key="option.value"
+        :value="option.value"
+        class="language-option"
+      >
+        <template #label>
+          <div class="d-flex align-center ga-2">
+            <span class="flag-emoji">{{ option.flag }}</span>
+            <span>{{ option.title }}</span>
+          </div>
+        </template>
+      </v-radio>
+    </v-radio-group>
   </SettingsCard>
 </template>
+
+<style scoped>
+.language-options {
+  margin-top: -4px;
+}
+
+.language-option {
+  margin-bottom: 4px;
+}
+
+.language-option:last-child {
+  margin-bottom: 0;
+}
+
+.language-option :deep(.v-label) {
+  opacity: 1;
+}
+
+.flag-emoji {
+  font-size: 1.125rem;
+  line-height: 1;
+}
+</style>
