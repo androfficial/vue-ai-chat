@@ -151,6 +151,7 @@ function handleKeydown(event: KeyboardEvent) {
 @media (max-width: 600px) {
   .chat-input {
     padding: 0 8px 12px !important;
+    padding-bottom: max(12px, env(safe-area-inset-bottom)) !important;
   }
 }
 
