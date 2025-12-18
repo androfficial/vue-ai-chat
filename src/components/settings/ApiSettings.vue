@@ -133,9 +133,9 @@ async function handleTestConnection() {
 }
 
 .setting-hint {
-  font-size: 0.8125rem;
-  color: rgba(var(--v-theme-on-surface), 0.6);
   margin: 0;
+  font-size: 0.8125rem;
+  color: rgb(var(--v-theme-on-surface), 0.6);
 }
 
 .model-options {

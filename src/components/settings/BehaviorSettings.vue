@@ -63,9 +63,9 @@ const showTimestamps = computed({
 <style scoped>
 .setting-toggle {
   display: flex;
+  gap: 16px;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
 }
 
 .setting-toggle__content {
@@ -80,8 +80,8 @@ const showTimestamps = computed({
 }
 
 .setting-toggle__hint {
-  font-size: 0.8125rem;
-  color: rgba(var(--v-theme-on-surface), 0.6);
   margin-top: 2px;
+  font-size: 0.8125rem;
+  color: rgb(var(--v-theme-on-surface), 0.6);
 }
 </style>

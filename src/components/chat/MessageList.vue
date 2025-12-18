@@ -221,22 +221,21 @@ defineExpose({
 <style scoped>
 .message-list {
   position: relative;
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
   display: flex;
+  flex: 1;
   flex-direction: column;
+  overflow: hidden auto;
 }
 
 .message-list__empty {
-  padding: 48px 24px;
-  max-width: 500px;
-  margin: auto;
-  flex: 1;
   display: flex;
+  flex: 1;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  max-width: 500px;
+  padding: 48px 24px;
+  margin: auto;
 }
 
 .message-list__title {
@@ -251,7 +250,7 @@ defineExpose({
   transform: translateY(-8px);
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .message-list__empty {
     padding: 32px 16px;
   }
@@ -266,17 +265,17 @@ defineExpose({
 }
 
 .message-list__messages {
-  padding-bottom: 24px;
-  padding-top: 16px;
-  flex: 1;
   display: flex;
+  flex: 1;
   flex-direction: column;
+  padding-top: 16px;
+  padding-bottom: 24px;
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .message-list__messages {
-    padding-bottom: 16px;
     padding-top: 12px;
+    padding-bottom: 16px;
   }
 }
 </style>

@@ -272,9 +272,9 @@ function renameChat(chatId: string, newTitle: string) {
 
 <style scoped>
 .sidebar-drawer {
+  overflow: hidden;
   border-right: 1px solid var(--border-subtle);
   transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-  overflow: hidden;
 }
 
 /* Make dividers less contrasting */
@@ -292,94 +292,94 @@ function renameChat(chatId: string, newTitle: string) {
 .sidebar-chat-list {
   flex: 1;
   min-height: 0;
-  overflow-y: auto !important;
   overflow-x: hidden;
+  overflow-y: auto !important;
 }
 
 /* Smooth transitions for the title */
 .sidebar-title {
+  overflow: hidden;
+  white-space: nowrap;
   transition:
     opacity 0.15s ease,
     transform 0.15s ease,
     width 0.15s ease;
-  white-space: nowrap;
-  overflow: hidden;
 }
 
 .sidebar-title-hidden {
-  opacity: 0;
   width: 0;
-  transform: translateX(-10px);
   pointer-events: none;
+  opacity: 0;
+  transform: translateX(-10px);
 }
 
 /* New chat button in the header */
 .sidebar-new-chat-btn {
+  flex-shrink: 0;
   transition:
     opacity 0.15s ease,
     transform 0.15s ease;
-  flex-shrink: 0;
 }
 
 .sidebar-new-chat-btn-hidden {
-  opacity: 0;
-  transform: scale(0.8);
-  pointer-events: none;
   position: absolute;
   right: 0;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.8);
 }
 
 /* New chat button in rail mode */
 .sidebar-rail-new-chat {
-  opacity: 0;
+  justify-content: flex-start !important;
   height: 0;
+  padding-left: 8px !important;
   overflow: hidden;
+  opacity: 0;
   transition:
     opacity 0.15s ease,
     height 0.15s ease;
-  justify-content: flex-start !important;
-  padding-left: 8px !important;
 }
 
 .sidebar-rail-new-chat-visible {
-  opacity: 1;
   height: auto;
+  opacity: 1;
 }
 
 /* Smooth hiding of chat list */
 .sidebar-list {
-  transition: opacity 0.15s ease;
   width: 100%;
+  transition: opacity 0.15s ease;
 }
 
 .sidebar-list-hidden {
-  opacity: 0;
-  pointer-events: none;
   visibility: hidden;
   width: 0;
   overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
 }
 
 /* Smooth hiding of text in bottom menu */
 .sidebar-item-title {
+  overflow: hidden;
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
   transition:
     opacity 0.15s ease,
     width 0.15s ease;
-  white-space: nowrap;
-  overflow: hidden;
-  font-weight: 500;
-  font-size: 0.9rem;
 }
 
 .sidebar-item-title-hidden {
-  opacity: 0;
   width: 0;
   pointer-events: none;
+  opacity: 0;
 }
 
 .v-list-item--active {
-  background-color: rgb(var(--v-theme-sidebar-active)) !important;
   font-weight: 500;
+  background-color: rgb(var(--v-theme-sidebar-active)) !important;
 }
 
 .v-list-item:hover:not(.v-list-item--active) {
@@ -387,16 +387,16 @@ function renameChat(chatId: string, newTitle: string) {
 }
 
 .v-list-item {
+  padding-top: 4px !important;
+  padding-bottom: 4px !important;
+  margin-bottom: 2px;
+  border-radius: var(--radius-sm) !important;
   transition:
     background-color var(--transition-fast),
     margin 0.2s ease,
     padding 0.2s ease,
     min-width 0.2s ease,
     width 0.2s ease;
-  margin-bottom: 2px;
-  padding-top: 4px !important;
-  padding-bottom: 4px !important;
-  border-radius: var(--radius-sm) !important;
 }
 
 /* Reduce spacing between icon and text */
@@ -415,10 +415,10 @@ function renameChat(chatId: string, newTitle: string) {
 }
 
 :deep(.v-list-item__content) {
+  overflow: hidden;
   transition:
     opacity 0.15s ease,
     width 0.2s ease;
-  overflow: hidden;
 }
 
 /* Reduce padding in sidebar lists */
@@ -431,23 +431,23 @@ function renameChat(chatId: string, newTitle: string) {
 /* Group header with collapse toggle */
 .sidebar-group-header {
   display: flex;
-  align-items: center;
   gap: 4px;
+  align-items: center;
+  min-height: 28px;
   padding: 4px 12px;
   margin-top: 8px;
   cursor: pointer;
   user-select: none;
   border-radius: 6px;
   transition: background-color 0.15s ease;
-  min-height: 28px;
 }
 
 .sidebar-group-title {
   font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.03em;
   color: rgb(var(--v-theme-text-secondary));
   text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .sidebar-group-header:hover {
@@ -471,12 +471,12 @@ function renameChat(chatId: string, newTitle: string) {
 }
 
 .v-list-subheader {
+  min-height: 28px !important;
+  padding-right: 12px !important;
+  padding-left: 12px !important;
+  margin-top: 8px;
   font-weight: 600;
   letter-spacing: 0.02em;
-  margin-top: 8px;
-  padding-left: 12px !important;
-  padding-right: 12px !important;
-  min-height: 28px !important;
 }
 
 :deep(.v-btn) {
@@ -493,13 +493,13 @@ function renameChat(chatId: string, newTitle: string) {
 
 /* Header styles */
 .sidebar-header {
-  display: flex;
-  align-items: center;
-  padding: 12px 12px;
-  min-height: 48px;
   position: relative;
-  transition: padding 0.2s ease;
+  display: flex;
   flex-shrink: 0;
+  align-items: center;
+  min-height: 48px;
+  padding: 12px;
+  transition: padding 0.2s ease;
 }
 
 .sidebar-header-railed {
@@ -519,22 +519,22 @@ function renameChat(chatId: string, newTitle: string) {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 8px 8px !important;
+  padding: 8px !important;
 }
 
 .sidebar-railed :deep(.v-list-item) {
   display: flex !important;
-  justify-content: flex-start !important;
   align-items: center !important;
-  padding: 8px !important;
-  min-width: 40px !important;
+  justify-content: flex-start !important;
   width: 40px !important;
-  margin: 0 0 2px 0 !important;
+  min-width: 40px !important;
+  padding: 8px !important;
+  margin: 0 0 2px !important;
 }
 
 .sidebar-railed :deep(.v-list-item__prepend) {
-  margin: 0 !important;
   padding: 0 !important;
+  margin: 0 !important;
   margin-inline-end: 0 !important;
 }
 
@@ -545,11 +545,11 @@ function renameChat(chatId: string, newTitle: string) {
 }
 
 .sidebar-railed :deep(.v-list-item__content) {
-  opacity: 0;
+  position: absolute;
   width: 0 !important;
   max-width: 0 !important;
   overflow: hidden;
-  position: absolute;
+  opacity: 0;
 }
 
 .sidebar-railed :deep(.v-list-item .v-icon) {
@@ -566,7 +566,7 @@ function renameChat(chatId: string, newTitle: string) {
   transition: none !important;
 }
 
-@media (max-width: 960px) {
+@media (width <= 960px) {
   .sidebar-header {
     padding: 16px;
   }
@@ -578,8 +578,8 @@ function renameChat(chatId: string, newTitle: string) {
   }
 
   .sidebar-group-header {
-    padding: 8px 16px;
     min-height: 36px;
+    padding: 8px 16px;
   }
 }
 </style>

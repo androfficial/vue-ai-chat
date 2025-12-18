@@ -61,8 +61,8 @@ withDefaults(defineProps<Props>(), {
 
 .settings-section__header {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
   margin-bottom: 16px;
 }
 
@@ -79,9 +79,9 @@ withDefaults(defineProps<Props>(), {
 }
 
 .settings-section__actions {
-  margin-top: 16px;
   display: flex;
   gap: 8px;
+  margin-top: 16px;
 }
 
 .settings-section--danger {

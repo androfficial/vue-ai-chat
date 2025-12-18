@@ -59,35 +59,35 @@ const emit = defineEmits<{
 
 <style scoped>
 .message-actions {
-  opacity: 0;
-  transform: translateY(-4px);
-  transition:
-    opacity var(--transition-fast),
-    transform var(--transition-fast);
   display: flex;
   gap: 2px;
   margin-top: 4px;
   margin-left: -6px;
   pointer-events: none;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity var(--transition-fast),
+    transform var(--transition-fast);
 }
 
 .message-actions--visible {
+  pointer-events: auto;
   opacity: 1;
   transform: translateY(0);
-  pointer-events: auto;
 }
 
 .message-actions--always-visible {
+  pointer-events: auto;
   opacity: 1;
   transform: translateY(0);
-  pointer-events: auto;
 }
 
 .message-actions__btn {
-  border-radius: var(--radius-sm) !important;
-  transition: all var(--transition-fast) !important;
   width: 28px !important;
   height: 28px !important;
+  border-radius: var(--radius-sm) !important;
+  transition: all var(--transition-fast) !important;
 }
 
 .message-actions__btn :deep(.v-icon) {
@@ -101,6 +101,6 @@ const emit = defineEmits<{
 
 .message-actions__btn--danger:hover {
   color: rgb(var(--v-theme-error)) !important;
-  background-color: rgba(var(--v-theme-error), 0.1) !important;
+  background-color: rgb(var(--v-theme-error), 0.1) !important;
 }
 </style>

@@ -47,17 +47,17 @@ function goBack() {
 
 <style scoped>
 .settings-page {
+  display: flex;
+  justify-content: center;
   width: 100%;
   height: 100%;
   padding: 24px 16px 48px;
-  display: flex;
-  justify-content: center;
-  background-color: rgb(var(--v-theme-background));
   overflow-y: auto;
+  background-color: rgb(var(--v-theme-background));
   -webkit-overflow-scrolling: touch;
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .settings-page {
     padding: 16px 12px 32px;
   }
@@ -70,10 +70,10 @@ function goBack() {
 
 .settings-header {
   display: flex;
-  align-items: center;
-  margin-bottom: 24px;
   gap: 12px;
+  align-items: center;
   padding-bottom: 16px;
+  margin-bottom: 24px;
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -93,7 +93,7 @@ function goBack() {
   letter-spacing: -0.02em;
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .settings-header__title {
     font-size: 1.25rem;
   }

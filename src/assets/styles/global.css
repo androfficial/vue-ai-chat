@@ -109,8 +109,8 @@ body {
 
 /* Firefox scrollbar */
 * {
-  scrollbar-width: thin;
   scrollbar-color: rgba(128, 128, 128, 0.25) transparent;
+  scrollbar-width: thin;
 }
 
 /* Focus styles for accessibility */
@@ -182,9 +182,9 @@ code {
 
 /* Button improvements */
 .v-btn {
+  font-weight: var(--font-weight-medium);
   text-transform: none !important;
   letter-spacing: normal !important;
-  font-weight: var(--font-weight-medium);
   transition: all var(--transition-fast);
 }
 
@@ -223,12 +223,12 @@ code {
 .v-dialog .v-card-actions .v-btn {
   min-width: 88px;
   height: 40px;
-  border-radius: var(--radius-md) !important;
+  padding: 0 20px;
+  font-size: 0.9375rem;
   font-weight: var(--font-weight-medium);
   text-transform: none;
   letter-spacing: normal;
-  padding: 0 20px;
-  font-size: 0.9375rem;
+  border-radius: var(--radius-md) !important;
 }
 
 /* Cancel/secondary button - subtle but visible */
@@ -242,8 +242,8 @@ code {
 
 /* Primary action button */
 .v-dialog .v-card-actions .v-btn--variant-flat[color='primary'] {
-  background-color: rgb(var(--v-theme-primary));
   color: white;
+  background-color: rgb(var(--v-theme-primary));
 }
 
 .v-dialog .v-card-actions .v-btn--variant-flat[color='primary']:hover {

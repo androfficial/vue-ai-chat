@@ -104,7 +104,7 @@ function regenerate() {
           >
             <MessageContent
               :content="message.content"
-              :status="message.status"
+              :message-status="message.status"
               :error="message.error"
               is-user
             />
@@ -191,7 +191,7 @@ function regenerate() {
           <div class="message-bubble__body">
             <MessageContent
               :content="message.content"
-              :status="message.status"
+              :message-status="message.status"
               :error="message.error"
               :is-user="false"
             />
@@ -223,17 +223,17 @@ function regenerate() {
   flex-direction: column;
   gap: 8px;
   max-width: 848px;
-  margin: 0 auto;
   padding: 0 24px;
+  margin: 0 auto;
 }
 
-@media (max-width: 960px) {
+@media (width <= 960px) {
   .message-bubble__container {
     padding: 0 16px;
   }
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .message-bubble__container {
     padding: 0 12px;
   }
@@ -241,8 +241,8 @@ function regenerate() {
 
 .message-bubble__header-row {
   display: flex;
-  align-items: center;
   gap: 8px;
+  align-items: center;
 }
 
 .message-bubble__header-row :deep(.v-avatar) {
@@ -257,41 +257,41 @@ function regenerate() {
 .message-bubble__user-wrapper {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
   gap: 4px;
+  align-items: flex-end;
   max-width: 85%;
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .message-bubble__user-wrapper {
     max-width: 92%;
   }
 }
 
 .message-bubble__user-bubble {
+  padding: 12px 18px;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  text-align: left;
   background-color: rgb(var(--v-theme-chat-user-bg));
   border: 1px solid var(--border-subtle);
   border-radius: 20px;
-  padding: 12px 18px;
-  text-align: left;
-  line-height: 1.6;
-  font-size: 0.9375rem;
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .message-bubble__user-bubble {
     padding: 10px 14px;
-    border-radius: 18px;
     font-size: 0.9rem;
+    border-radius: 18px;
   }
 }
 
 .message-bubble__edited-text {
   display: block;
-  font-size: 0.75rem;
-  color: rgb(var(--v-theme-text-secondary));
   margin-top: 4px;
+  font-size: 0.75rem;
   font-style: italic;
+  color: rgb(var(--v-theme-text-secondary));
 }
 
 .message-bubble--user .message-bubble__edit {
@@ -299,7 +299,7 @@ function regenerate() {
   min-width: 280px;
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .message-bubble--user .message-bubble__edit {
     min-width: 200px;
   }
@@ -311,14 +311,14 @@ function regenerate() {
 
 .message-bubble__content {
   display: flex;
-  flex-direction: column;
   flex-grow: 1;
+  flex-direction: column;
   min-width: 0;
 }
 
 .message-bubble__body {
-  line-height: 1.65;
   font-size: 0.9375rem;
+  line-height: 1.65;
 }
 
 .message-bubble__assistant-name {
@@ -341,6 +341,7 @@ function regenerate() {
     opacity: 0;
     transform: translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

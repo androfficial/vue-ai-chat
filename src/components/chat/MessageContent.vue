@@ -14,7 +14,7 @@ interface Props {
   content: string
   error?: string
   isUser?: boolean
-  status: MessageStatus
+  messageStatus: MessageStatus
 }
 
 const props = defineProps<Props>()
@@ -42,7 +42,7 @@ const renderedContent = computed(() => {
 <template>
   <!-- Loading indicator for pending -->
   <div
-    v-if="status === 'pending'"
+    v-if="messageStatus === 'pending'"
     class="d-flex align-center"
   >
     <v-progress-circular
@@ -56,7 +56,7 @@ const renderedContent = computed(() => {
 
   <!-- Streaming content with typing indicator -->
   <div
-    v-else-if="status === 'streaming'"
+    v-else-if="messageStatus === 'streaming'"
     class="message-content__streaming"
   >
     <!-- Show thinking indicator when no content yet -->
@@ -83,7 +83,7 @@ const renderedContent = computed(() => {
 
   <!-- Error state -->
   <div
-    v-else-if="status === 'error'"
+    v-else-if="messageStatus === 'error'"
     class="message-content__error"
   >
     <v-icon
@@ -113,8 +113,8 @@ const renderedContent = computed(() => {
 
 <style scoped>
 .message-content__text {
-  word-break: break-word;
   line-height: 1.6;
+  word-break: break-word;
 }
 
 .message-content__text--user {
@@ -122,7 +122,7 @@ const renderedContent = computed(() => {
 }
 
 .message-content__markdown :deep(p) {
-  margin: 0 0 1em 0;
+  margin: 0 0 1em;
 }
 
 .message-content__markdown :deep(p:last-child) {
@@ -131,8 +131,8 @@ const renderedContent = computed(() => {
 
 .message-content__markdown :deep(ul),
 .message-content__markdown :deep(ol) {
-  margin: 0 0 1em 0;
   padding-left: 1.5em;
+  margin: 0 0 1em;
 }
 
 .message-content__markdown :deep(li) {
@@ -140,32 +140,32 @@ const renderedContent = computed(() => {
 }
 
 .message-content__markdown :deep(code) {
-  background-color: rgb(var(--v-theme-surface-variant));
   padding: 0.2em 0.4em;
-  border-radius: 4px;
-  font-family: 'Fira Code', 'Consolas', monospace;
+  font-family: 'Fira Code', Consolas, monospace;
   font-size: 0.9em;
+  background-color: rgb(var(--v-theme-surface-variant));
+  border-radius: 4px;
 }
 
 .message-content__markdown :deep(pre) {
-  background-color: rgb(var(--v-theme-surface-variant));
   padding: 1em;
-  border-radius: var(--radius-md);
+  margin: 0 0 1em;
   overflow-x: auto;
-  margin: 0 0 1em 0;
+  background-color: rgb(var(--v-theme-surface-variant));
+  border-radius: var(--radius-md);
 }
 
 .message-content__markdown :deep(pre code) {
-  background: none;
   padding: 0;
   font-size: 0.875em;
+  background: none;
 }
 
 .message-content__markdown :deep(blockquote) {
-  border-left: 3px solid rgb(var(--v-theme-primary));
-  margin: 0 0 1em 0;
   padding-left: 1em;
+  margin: 0 0 1em;
   color: rgb(var(--v-theme-text-secondary));
+  border-left: 3px solid rgb(var(--v-theme-primary));
 }
 
 .message-content__markdown :deep(strong) {
@@ -185,7 +185,7 @@ const renderedContent = computed(() => {
 .message-content__markdown :deep(h2),
 .message-content__markdown :deep(h3),
 .message-content__markdown :deep(h4) {
-  margin: 1em 0 0.5em 0;
+  margin: 1em 0 0.5em;
   font-weight: 600;
 }
 
@@ -200,9 +200,9 @@ const renderedContent = computed(() => {
   display: flex;
   align-items: flex-start;
   padding: 12px 16px;
-  background-color: rgba(var(--v-theme-error), 0.1);
-  border-radius: var(--radius-md);
   line-height: 1.5;
+  background-color: rgb(var(--v-theme-error), 0.1);
+  border-radius: var(--radius-md);
 }
 
 .message-content__error span {
@@ -229,8 +229,8 @@ const renderedContent = computed(() => {
 .thinking-dot {
   width: 8px;
   height: 8px;
-  border-radius: 50%;
   background-color: rgb(var(--v-theme-primary));
+  border-radius: 50%;
   animation: thinking-bounce 1.4s infinite ease-in-out both;
 }
 
@@ -250,20 +250,21 @@ const renderedContent = computed(() => {
   0%,
   80%,
   100% {
-    transform: scale(0.6);
     opacity: 0.5;
+    transform: scale(0.6);
   }
+
   40% {
-    transform: scale(1);
     opacity: 1;
+    transform: scale(1);
   }
 }
 
 .streaming-cursor {
-  color: rgb(var(--v-theme-primary));
-  font-weight: normal;
-  animation: blink 0.8s step-end infinite;
   margin-left: 1px;
+  font-weight: normal;
+  color: rgb(var(--v-theme-primary));
+  animation: blink 0.8s step-end infinite;
 }
 
 @keyframes blink {

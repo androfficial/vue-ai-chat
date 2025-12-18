@@ -209,8 +209,8 @@ function cancelRename() {
 
 <style scoped>
 .chat-list-item {
-  padding: 10px 12px !important;
   min-height: 52px !important;
+  padding: 10px 12px !important;
   transition: all var(--transition-fast);
 }
 
@@ -219,18 +219,18 @@ function cancelRename() {
 }
 
 .chat-list-item :deep(.v-list-item-title) {
-  font-size: 0.875rem;
-  line-height: 1.4;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  -webkit-box-orient: vertical;
 }
 
 .chat-list-item :deep(.v-list-item-subtitle) {
-  font-size: 0.75rem;
   margin-top: 2px;
+  font-size: 0.75rem;
   opacity: 0.65;
 }
 
@@ -251,15 +251,15 @@ function cancelRename() {
 <!-- Global styles for dropdown menu and dialog (teleported outside component) -->
 <style>
 .v-menu > .v-overlay__content > .v-list {
-  padding: 4px 0 !important;
   min-width: 140px;
+  padding: 4px 0 !important;
 }
 
 .v-menu .v-list-item {
-  border-radius: 0 !important;
   min-height: 36px !important;
   padding: 0 12px !important;
   margin: 0 !important;
+  border-radius: 0 !important;
 }
 
 .v-menu .v-list-item__prepend {
@@ -287,20 +287,20 @@ function cancelRename() {
 
 /* Delete confirmation dialog */
 .delete-dialog {
-  border-radius: 16px !important;
   padding: 8px !important;
+  border-radius: 16px !important;
 }
 
 .delete-dialog__title {
+  padding: 16px 20px 8px !important;
   font-size: 1.1rem !important;
   font-weight: 600 !important;
-  padding: 16px 20px 8px !important;
 }
 
 .delete-dialog__text {
+  padding: 8px 20px 16px !important;
   font-size: 0.9rem !important;
   color: rgb(var(--v-theme-text-secondary)) !important;
-  padding: 8px 20px 16px !important;
 }
 
 .delete-dialog__text strong {
@@ -309,7 +309,7 @@ function cancelRename() {
 }
 
 .delete-dialog__actions {
-  padding: 8px 16px 16px !important;
   gap: 8px;
+  padding: 8px 16px 16px !important;
 }
 </style>

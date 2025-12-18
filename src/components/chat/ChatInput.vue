@@ -136,19 +136,19 @@ function handleKeydown(event: KeyboardEvent) {
 
 <style scoped>
 .chat-input {
-  max-width: 848px;
-  margin: 0 auto;
   width: 100%;
+  max-width: 848px;
   padding: 0 24px 24px !important;
+  margin: 0 auto;
 }
 
-@media (max-width: 960px) {
+@media (width <= 960px) {
   .chat-input {
     padding: 0 12px 16px !important;
   }
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .chat-input {
     padding: 0 8px 12px !important;
     padding-bottom: max(12px, env(safe-area-inset-bottom)) !important;
@@ -157,8 +157,8 @@ function handleKeydown(event: KeyboardEvent) {
 
 .chat-input__card {
   border: 1px solid var(--border-subtle);
-  transition: all var(--transition-fast);
   box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
 }
 
 .chat-input__card:focus-within {
@@ -168,53 +168,53 @@ function handleKeydown(event: KeyboardEvent) {
 
 .chat-input__wrapper {
   display: flex;
-  align-items: flex-end;
   gap: 8px;
+  align-items: flex-end;
   padding: 12px 12px 12px 16px;
 }
 
-@media (max-width: 600px) {
+@media (width <= 600px) {
   .chat-input__wrapper {
-    padding: 10px 10px 10px 14px;
     gap: 6px;
+    padding: 10px 10px 10px 14px;
   }
 }
 
 .chat-input__actions {
   display: flex;
-  align-items: center;
   flex-shrink: 0;
+  align-items: center;
   height: 40px;
 }
 
 .chat-input__textarea-wrapper {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  min-height: 40px;
   display: flex;
+  flex: 1;
   flex-direction: column;
   justify-content: flex-end;
+  min-width: 0;
+  min-height: 40px;
+  overflow: hidden;
 }
 
 .chat-input__textarea {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  min-height: 40px;
+  max-height: 200px;
+  padding: 8px 0;
+  overflow-y: hidden;
   font-family: inherit;
   font-size: 0.9375rem;
   line-height: 1.5;
-  resize: none;
-  border: none;
-  outline: none;
-  background: transparent;
   color: rgb(var(--v-theme-on-surface));
-  min-height: 40px;
-  max-height: 200px;
-  width: 100%;
-  overflow-y: hidden;
+  resize: none;
+  outline: none;
+  scrollbar-color: rgb(var(--v-theme-on-surface), 0.3) transparent;
   scrollbar-width: thin;
-  scrollbar-color: rgba(var(--v-theme-on-surface), 0.3) transparent;
-  box-sizing: border-box;
-  padding: 8px 0;
-  display: block;
+  background: transparent;
+  border: none;
 }
 
 .chat-input__textarea::-webkit-scrollbar {
@@ -226,7 +226,7 @@ function handleKeydown(event: KeyboardEvent) {
 }
 
 .chat-input__textarea::-webkit-scrollbar-thumb {
-  background-color: rgba(128, 128, 128, 0.25);
+  background-color: rgb(128 128 128 / 25%);
   border-radius: 3px;
 }
 
@@ -239,13 +239,13 @@ function handleKeydown(event: KeyboardEvent) {
 }
 
 .chat-input__divider {
-  opacity: 0.15;
   margin: 0 12px;
+  opacity: 0.15;
 }
 
 .chat-input__hint {
-  text-align: center;
   font-size: 0.75rem;
+  text-align: center;
   letter-spacing: 0.02em;
 }
 </style>

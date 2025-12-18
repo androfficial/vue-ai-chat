@@ -119,9 +119,9 @@ body {
 }
 
 #main-content {
-  height: 100%;
   display: flex;
   flex-direction: column;
+  height: 100%;
   overflow: hidden; /* Changed from overflow-y: auto */
 }
 
@@ -137,7 +137,7 @@ body {
 }
 
 /* Mobile - no padding for overlay sidebar */
-@media (max-width: 960px) {
+@media (width <= 960px) {
   .v-main {
     --v-layout-left: 0 !important;
     padding-left: 0 !important;
@@ -155,12 +155,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(128, 128, 128, 0.25);
+  background: rgb(128 128 128 / 25%);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(128, 128, 128, 0.4);
+  background: rgb(128 128 128 / 40%);
 }
 
 /* Snackbar Toast Styles */

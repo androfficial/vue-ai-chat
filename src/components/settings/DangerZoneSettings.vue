@@ -88,9 +88,9 @@ function deleteAllChats() {
 <style scoped>
 .danger-action {
   display: flex;
+  gap: 16px;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
 }
 
 .danger-action__content {
@@ -99,18 +99,18 @@ function deleteAllChats() {
 }
 
 .danger-action__title {
+  margin-bottom: 4px;
   font-size: 1rem;
   font-weight: 500;
   color: rgb(var(--v-theme-on-surface));
-  margin-bottom: 4px;
 }
 
 .danger-action__description {
   font-size: 0.875rem;
-  color: rgba(var(--v-theme-on-surface), 0.6);
+  color: rgb(var(--v-theme-on-surface), 0.6);
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .danger-action {
     flex-direction: column;
     align-items: flex-start;
