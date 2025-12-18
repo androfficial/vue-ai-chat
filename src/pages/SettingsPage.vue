@@ -48,11 +48,13 @@ function goBack() {
 <style scoped>
 .settings-page {
   width: 100%;
-  min-height: 100%;
+  height: 100%;
   padding: 24px 16px 48px;
   display: flex;
   justify-content: center;
   background-color: rgb(var(--v-theme-background));
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 @media (max-width: 600px) {
