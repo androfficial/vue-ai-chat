@@ -16,6 +16,8 @@ export interface UserPreferences {
   showLineNumbers: boolean
   /** Whether to show timestamps on messages */
   showTimestamps: boolean
+  /** Whether sidebar is collapsed */
+  sidebarCollapsed: boolean
   /** Whether to enable sound notifications */
   soundEnabled: boolean
   /** Current theme mode */
@@ -32,6 +34,7 @@ export const DEFAULT_USER_PREFERENCES: UserPreferences = {
   sendOnEnter: true,
   showLineNumbers: true,
   showTimestamps: false,
+  sidebarCollapsed: false,
   soundEnabled: false,
   theme: 'dark',
 }

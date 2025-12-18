@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTheme } from 'vuetify'
 
 import { useDateFormatter } from '@/composables'
 import { useChatStore } from '@/stores/chat'
+import { useUserStore } from '@/stores/user'
 import { getDateGroup } from '@/utils/date'
 
 import ChatListItem from './ChatListItem.vue'
@@ -13,12 +14,17 @@ const route = useRoute()
 const router = useRouter()
 const theme = useTheme()
 const chatStore = useChatStore()
+const userStore = useUserStore()
 
 const { formatDateGroup, getTimeDiffFormatted, locale } = useDateFormatter()
 
 const drawer = ref(true)
-const rail = ref(false)
+const rail = ref(userStore.preferences.sidebarCollapsed)
 const collapsedGroups = ref<Set<string>>(new Set())
+
+watch(rail, newValue => {
+  userStore.updatePreferences({ sidebarCollapsed: newValue })
+})
 
 function toggleGroup(group: string) {
   if (collapsedGroups.value.has(group)) {
