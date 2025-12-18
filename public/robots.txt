@@ -1,0 +1,10 @@
+# Robots.txt for Cerebras AI Chat
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://cerebras-chat.app/sitemap.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1
