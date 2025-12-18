@@ -253,10 +253,3 @@ export async function testApiConnection(): Promise<ApiResponse<boolean>> {
     return { error: message, success: false }
   }
 }
-
-export const CEREBRAS_MODELS = [
-  { id: 'llama-3.3-70b', name: 'Llama 3.3 70B (Recommended)' },
-  { id: 'llama3.1-8b', name: 'Llama 3.1 8B (Fast)' },
-  { id: 'qwen-3-32b', name: 'Qwen 3 32B' },
-  { id: 'gpt-oss-120b', name: 'GPT OSS 120B (Reasoning)' },
-] as const

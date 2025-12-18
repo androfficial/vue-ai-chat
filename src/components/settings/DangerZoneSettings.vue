@@ -1,4 +1,9 @@
 <script setup lang="ts">
+/**
+ * Danger zone settings component
+ * Destructive actions like clearing all chats
+ */
+
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 

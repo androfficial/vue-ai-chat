@@ -1,4 +1,9 @@
 <script setup lang="ts">
+/**
+ * Application sidebar component
+ * Contains navigation, chat list, and theme controls
+ */
+
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDisplay, useTheme } from 'vuetify'

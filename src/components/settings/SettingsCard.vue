@@ -1,4 +1,9 @@
 <script setup lang="ts">
+/**
+ * Settings card component
+ * Reusable container for settings sections
+ */
+
 interface Props {
   icon?: string
   title: string

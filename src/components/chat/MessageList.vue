@@ -1,4 +1,9 @@
 <script setup lang="ts">
+/**
+ * Message list component
+ * Displays chat messages with auto-scroll functionality
+ */
+
 import type { Message } from '@/types/message'
 
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
@@ -37,7 +42,7 @@ const isAnimating = ref(false)
 let titleInterval: ReturnType<typeof setInterval> | null = null
 
 const titles = computed(() => {
-  const rawTitles = tm('chat.emptyState.titles')
+  const rawTitles = tm('chat.emptyState.titles') as string[] | undefined
   return Array.isArray(rawTitles) ? rawTitles : [t('chat.emptyState.title')]
 })
 

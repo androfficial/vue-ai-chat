@@ -1,4 +1,9 @@
 <script setup lang="ts">
+/**
+ * Language settings component
+ * Manages application locale
+ */
+
 import { computed } from 'vue'
 
 import { useUserStore } from '@/stores/user'

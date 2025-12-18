@@ -1,4 +1,9 @@
 <script setup lang="ts">
+/**
+ * Main chat page component
+ * Displays chat messages and handles user interactions
+ */
+
 import { computed, inject, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 

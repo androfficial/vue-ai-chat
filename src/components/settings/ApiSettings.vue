@@ -1,10 +1,16 @@
 <script setup lang="ts">
+/**
+ * API settings component
+ * Manages Cerebras API configuration
+ */
+
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 import { useToast } from '@/composables'
-import { CEREBRAS_MODELS, testApiConnection } from '@/services/api/cerebras'
+import { testApiConnection } from '@/services/api/cerebras'
 import { useApiStore } from '@/stores/api'
+import { CEREBRAS_MODELS } from '@/types/api'
 
 import SettingsCard from './SettingsCard.vue'
 

@@ -1,4 +1,9 @@
 <script setup lang="ts">
+/**
+ * Chat list item component
+ * Displays individual chat entry in sidebar
+ */
+
 import type { ChatListItem } from '@/types/chat'
 
 import { computed, ref } from 'vue'

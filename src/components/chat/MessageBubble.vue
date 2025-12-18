@@ -1,4 +1,9 @@
 <script setup lang="ts">
+/**
+ * Message bubble component
+ * Renders individual chat messages with actions
+ */
+
 import type { Message } from '@/types/message'
 
 import { computed, ref } from 'vue'

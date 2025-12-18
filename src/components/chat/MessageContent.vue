@@ -1,8 +1,21 @@
 <script setup lang="ts">
+/**
+ * Message content component
+ * Renders message content with markdown support for assistant messages
+ */
+
 import type { MessageStatus } from '@/types/message'
 
 import { marked } from 'marked'
 import { computed } from 'vue'
+
+// Props
+interface Props {
+  content: string
+  error?: string
+  isUser?: boolean
+  status: MessageStatus
+}
 
 const props = defineProps<Props>()
 
@@ -16,14 +29,6 @@ marked.setOptions({
   breaks: true,
   gfm: true,
 })
-
-// Props
-interface Props {
-  content: string
-  error?: string
-  isUser?: boolean
-  status: MessageStatus
-}
 
 // Render markdown for assistant messages
 const renderedContent = computed(() => {

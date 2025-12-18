@@ -1,4 +1,9 @@
 <script setup lang="ts">
+/**
+ * Settings page component
+ * Provides access to all application settings
+ */
+
 import { useRouter } from 'vue-router'
 
 import ApiSettings from '@/components/settings/ApiSettings.vue'

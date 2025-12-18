@@ -1,4 +1,9 @@
 <script setup lang="ts">
+/**
+ * Message actions component
+ * Provides copy, edit, and regenerate actions for messages
+ */
+
 interface Props {
   isUser: boolean
   visible: boolean

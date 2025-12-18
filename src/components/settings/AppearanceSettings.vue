@@ -1,4 +1,9 @@
 <script setup lang="ts">
+/**
+ * Appearance settings component
+ * Manages theme preferences
+ */
+
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 

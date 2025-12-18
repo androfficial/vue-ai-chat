@@ -10,7 +10,6 @@ import { getStorageItem, setStorageItem, STORAGE_KEYS } from '@/utils/storage'
 
 export const useUserStore = defineStore('user', () => {
   const preferences = ref<UserPreferences>(loadPreferences())
-  const activeChatId = ref<string | null>(null)
 
   function loadPreferences(): UserPreferences {
     const stored = getStorageItem<UserPreferences>(STORAGE_KEYS.USER_PREFERENCES)
@@ -50,17 +49,11 @@ export const useUserStore = defineStore('user', () => {
     preferences.value = { ...DEFAULT_USER_PREFERENCES }
   }
 
-  function setActiveChat(chatId: string | null) {
-    activeChatId.value = chatId
-  }
-
   return {
-    activeChatId,
     isDarkMode,
     locale,
     preferences,
     resetPreferences,
-    setActiveChat,
     setLocale,
     setTheme,
     theme,

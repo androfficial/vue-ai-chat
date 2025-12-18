@@ -1,4 +1,9 @@
 <script setup lang="ts">
+/**
+ * Chat input component
+ * Handles user message input with auto-resize textarea
+ */
+
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
