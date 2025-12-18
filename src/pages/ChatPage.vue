@@ -1,10 +1,4 @@
 <script setup lang="ts">
-/**
- * Chat page component
- * Main view for chat conversations
- * Refactored to use composables for better separation of concerns
- */
-
 import { computed, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 

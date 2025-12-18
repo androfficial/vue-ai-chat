@@ -1,8 +1,3 @@
-/**
- * Composables index
- * Re-exports all composables for convenient importing
- */
-
 export { useAutoResizeTextarea } from './useAutoResizeTextarea'
 export type {
   UseAutoResizeTextareaOptions,

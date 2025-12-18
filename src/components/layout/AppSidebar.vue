@@ -1,10 +1,4 @@
 <script setup lang="ts">
-/**
- * Application sidebar component
- * Contains chat list and navigation
- * Refactored to use composables for date formatting
- */
-
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTheme } from 'vuetify'
@@ -20,15 +14,12 @@ const router = useRouter()
 const theme = useTheme()
 const chatStore = useChatStore()
 
-// Use composable for date formatting
 const { formatDateGroup, getTimeDiffFormatted, locale } = useDateFormatter()
 
-// Sidebar state
 const drawer = ref(true)
 const rail = ref(false)
 const collapsedGroups = ref<Set<string>>(new Set())
 
-// Toggle group collapse
 function toggleGroup(group: string) {
   if (collapsedGroups.value.has(group)) {
     collapsedGroups.value.delete(group)
@@ -41,11 +32,9 @@ function isGroupCollapsed(group: string): boolean {
   return collapsedGroups.value.has(group)
 }
 
-// Computed
 const chatList = computed(() => chatStore.persistentChatList)
 const currentChatId = computed(() => route.params.id as string)
 
-// Group chats by date
 const groupedChats = computed(() => {
   const groups: Record<string, typeof chatList.value> = {}
 
@@ -61,7 +50,6 @@ const groupedChats = computed(() => {
   return groups
 })
 
-// Actions
 function createNewChat() {
   router.push('/chat/new')
 }
@@ -307,6 +295,8 @@ function deleteChat(chatId: string, event: Event) {
     width 0.15s ease;
   white-space: nowrap;
   overflow: hidden;
+  font-weight: 500;
+  font-size: 0.9rem;
 }
 
 .sidebar-item-title-hidden {

@@ -1,9 +1,4 @@
 <script setup lang="ts">
-/**
- * Chat list item component
- * Isolated component for sidebar chat items to reduce re-renders
- */
-
 import type { ChatListItem } from '@/types/chat'
 
 import { computed, ref } from 'vue'
@@ -19,19 +14,16 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-// Props
 interface Props {
   chat: ChatListItem
   isActive: boolean
   timestamp: string
 }
 
-// Local state
 const showMenu = ref(false)
 const showDeleteDialog = ref(false)
 const deleteEvent = ref<Event | null>(null)
 
-// Computed for stability
 const chatTitle = computed(() => props.chat.title)
 
 // Methods
@@ -120,7 +112,6 @@ function cancelDelete() {
         <v-card-actions class="delete-dialog__actions">
           <v-btn
             variant="text"
-            class="delete-dialog__btn delete-dialog__btn--cancel"
             @click="cancelDelete"
           >
             {{ t('common.cancel') }}
@@ -128,7 +119,6 @@ function cancelDelete() {
           <v-btn
             color="error"
             variant="flat"
-            class="delete-dialog__btn delete-dialog__btn--delete"
             @click="confirmDelete"
           >
             {{ t('common.delete') }}
@@ -243,20 +233,5 @@ function cancelDelete() {
 .delete-dialog__actions {
   padding: 8px 16px 16px !important;
   gap: 8px;
-}
-
-.delete-dialog__btn {
-  border-radius: 20px !important;
-  text-transform: none !important;
-  font-weight: 500 !important;
-  min-width: 80px !important;
-}
-
-.delete-dialog__btn--cancel {
-  color: rgb(var(--v-theme-text-secondary)) !important;
-}
-
-.delete-dialog__btn--delete {
-  background-color: rgb(var(--v-theme-error)) !important;
 }
 </style>

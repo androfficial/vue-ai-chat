@@ -1,9 +1,4 @@
 <script setup lang="ts">
-/**
- * Appearance settings section component
- * Theme configuration with radio button group
- */
-
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -14,7 +9,6 @@ import SettingsCard from './SettingsCard.vue'
 const { t } = useI18n()
 const userStore = useUserStore()
 
-// Writable computed for two-way binding (silent auto-save)
 const theme = computed({
   get: () => userStore.preferences.theme,
   set: value => {
@@ -22,7 +16,6 @@ const theme = computed({
   },
 })
 
-// Options with reactivity for translations
 const themeOptions = computed(() => [
   {
     icon: 'mdi-white-balance-sunny',

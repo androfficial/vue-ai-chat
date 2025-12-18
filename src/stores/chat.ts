@@ -1,8 +1,3 @@
-/**
- * Chat store
- * Manages chat conversations with localStorage persistence
- */
-
 import type { Chat, ChatListItem, CreateChatPayload, UpdateChatPayload } from '@/types/chat'
 import type { CreateMessagePayload, Message, MessageStatus } from '@/types/message'
 
@@ -15,20 +10,16 @@ import { getStorageItem, setStorageItem, STORAGE_KEYS } from '@/utils/storage'
 import { generateChatTitle } from '@/utils/validation'
 
 export const useChatStore = defineStore('chat', () => {
-  // State
   const chats = ref<Chat[]>(loadChats())
   const activeChatId = ref<string | null>(null)
   const isLoading = ref(false)
   const temporaryChatMode = ref(false)
 
-  // Load chats from localStorage
   function loadChats(): Chat[] {
     const stored = getStorageItem<Chat[]>(STORAGE_KEYS.CHATS) ?? []
-    // Filter out any temporary chats that might have been saved by mistake
     return stored.filter(chat => !chat.isTemporary)
   }
 
-  // Persist chats to localStorage (excluding temporary chats)
   watch(
     chats,
     newChats => {
@@ -38,7 +29,6 @@ export const useChatStore = defineStore('chat', () => {
     { deep: true },
   )
 
-  // Getters
   const activeChat = computed(() => {
     if (!activeChatId.value) return null
     return chats.value.find(chat => chat.id === activeChatId.value) ?? null
@@ -55,7 +45,6 @@ export const useChatStore = defineStore('chat', () => {
         updatedAt: chat.updatedAt,
       }))
       .sort((a, b) => {
-        // Pinned chats first, then by updated date
         if (a.isPinned !== b.isPinned) {
           return a.isPinned ? -1 : 1
         }
@@ -63,14 +52,12 @@ export const useChatStore = defineStore('chat', () => {
       })
   })
 
-  // Non-temporary chats for sidebar
   const persistentChatList = computed<ChatListItem[]>(() => {
     return chatList.value.filter(chat => !chat.isTemporary)
   })
 
   const hasChats = computed(() => chats.value.length > 0)
 
-  // Actions
   function getChatById(id: string): Chat | undefined {
     return chats.value.find(chat => chat.id === id)
   }
@@ -129,7 +116,6 @@ export const useChatStore = defineStore('chat', () => {
 
     chats.value.splice(index, 1)
 
-    // If deleted chat was active, clear selection
     if (activeChatId.value === chatId) {
       activeChatId.value = chats.value[0]?.id ?? null
     }
@@ -140,7 +126,6 @@ export const useChatStore = defineStore('chat', () => {
     activeChatId.value = null
   }
 
-  // Message management
   function addMessage(payload: CreateMessagePayload): Message {
     const chat = getChatById(payload.chatId)
     if (!chat) {
@@ -160,7 +145,6 @@ export const useChatStore = defineStore('chat', () => {
     chat.messages.push(message)
     chat.updatedAt = now()
 
-    // Auto-generate title from first user message
     if (chat.messages.length === 1 && payload.role === 'user') {
       chat.title = generateChatTitle(payload.content)
     }

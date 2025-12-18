@@ -1,10 +1,4 @@
 <script setup lang="ts">
-/**
- * Message content component
- * Handles different message states: pending, streaming, error, complete
- * Supports Markdown rendering for AI responses
- */
-
 import type { MessageStatus } from '@/types/message'
 
 import { marked } from 'marked'
@@ -17,10 +11,10 @@ defineEmits<{
   retry: []
 }>()
 
-// Configure marked for safe rendering
+// Configure marked
 marked.setOptions({
-  breaks: true, // Convert \n to <br>
-  gfm: true, // GitHub Flavored Markdown
+  breaks: true,
+  gfm: true,
 })
 
 // Props
@@ -31,7 +25,7 @@ interface Props {
   status: MessageStatus
 }
 
-// Render markdown for assistant messages, plain text for user
+// Render markdown for assistant messages
 const renderedContent = computed(() => {
   if (props.isUser) {
     return props.content

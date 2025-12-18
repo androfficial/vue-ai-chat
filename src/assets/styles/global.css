@@ -221,12 +221,14 @@ code {
 
 /* Dialog button styles - works well on both themes */
 .v-dialog .v-card-actions .v-btn {
-  min-width: 80px;
+  min-width: 88px;
+  height: 40px;
   border-radius: var(--radius-md) !important;
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   text-transform: none;
   letter-spacing: normal;
-  padding: 0 16px;
+  padding: 0 20px;
+  font-size: 0.9375rem;
 }
 
 /* Cancel/secondary button - subtle but visible */

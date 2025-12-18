@@ -1,8 +1,3 @@
-/**
- * Cerebras AI API service
- * Handles chat completions with streaming support
- */
-
 import type {
   ApiMessage,
   ApiResponse,
@@ -16,9 +11,6 @@ import axios from 'axios'
 
 import { useApiStore } from '@/stores/api'
 
-/**
- * Error codes for API errors
- */
 export type ApiErrorCode =
   | 'unauthorized'
   | 'rateLimited'
@@ -26,9 +18,6 @@ export type ApiErrorCode =
   | 'networkError'
   | 'unknown'
 
-/**
- * Maps HTTP status codes to user-friendly error codes
- */
 export function getErrorCodeFromStatus(status: number): ApiErrorCode {
   if (status === 401 || status === 403) return 'unauthorized'
   if (status === 429) return 'rateLimited'
@@ -36,9 +25,6 @@ export function getErrorCodeFromStatus(status: number): ApiErrorCode {
   return 'unknown'
 }
 
-/**
- * Gets error code from error message or status
- */
 export function getErrorCode(error: unknown, status?: number): ApiErrorCode {
   if (status) {
     return getErrorCodeFromStatus(status)
@@ -68,9 +54,6 @@ export function getErrorCode(error: unknown, status?: number): ApiErrorCode {
   return 'unknown'
 }
 
-/**
- * Creates an Axios instance configured for Cerebras API
- */
 function createApiInstance(): AxiosInstance {
   const apiStore = useApiStore()
 
@@ -79,10 +62,9 @@ function createApiInstance(): AxiosInstance {
     headers: {
       'Content-Type': 'application/json',
     },
-    timeout: 60000, // 60 seconds for streaming
+    timeout: 60000,
   })
 
-  // Request interceptor to add auth header
   instance.interceptors.request.use(config => {
     const apiStore = useApiStore()
     if (apiStore.apiKey) {
@@ -91,7 +73,6 @@ function createApiInstance(): AxiosInstance {
     return config
   })
 
-  // Response interceptor for error handling
   instance.interceptors.response.use(
     response => response,
     error => {
@@ -113,9 +94,6 @@ function createApiInstance(): AxiosInstance {
   return instance
 }
 
-/**
- * Sends a chat completion request (non-streaming)
- */
 export async function sendChatCompletion(
   messages: ApiMessage[],
 ): Promise<ApiResponse<ChatCompletionResponse>> {
@@ -147,14 +125,6 @@ export async function sendChatCompletion(
   }
 }
 
-/**
- * Sends a streaming chat completion request
- * @param messages - Array of messages in the conversation
- * @param onChunk - Callback for each streaming chunk
- * @param onComplete - Callback when streaming is complete
- * @param onError - Callback for errors
- * @param signal - AbortController signal for cancellation
- */
 export async function sendStreamingChatCompletion(
   messages: ApiMessage[],
   onChunk: (content: string) => void,
@@ -194,8 +164,6 @@ export async function sendStreamingChatCompletion(
       throw new Error('Response body is not readable')
     }
 
-    // Streaming started
-
     const decoder = new TextDecoder()
     let buffer = ''
 
@@ -203,7 +171,6 @@ export async function sendStreamingChatCompletion(
       const { done, value } = await reader.read()
 
       if (done) {
-        // Streaming done
         break
       }
 
@@ -242,7 +209,6 @@ export async function sendStreamingChatCompletion(
               return
             }
           } catch {
-            // Skip malformed JSON
             console.warn('Failed to parse streaming chunk:', trimmedLine)
           }
         }
@@ -253,10 +219,8 @@ export async function sendStreamingChatCompletion(
   } catch (error) {
     if (error instanceof Error) {
       if (error.name === 'AbortError') {
-        // Request was cancelled, don't treat as error
         return
       }
-      // If error message is already an error code, pass it through
       const knownCodes: ApiErrorCode[] = [
         'unauthorized',
         'rateLimited',
@@ -267,7 +231,6 @@ export async function sendStreamingChatCompletion(
       if (knownCodes.includes(error.message as ApiErrorCode)) {
         onError(error.message)
       } else {
-        // Convert error to code
         onError(getErrorCode(error))
       }
     } else {
@@ -276,9 +239,6 @@ export async function sendStreamingChatCompletion(
   }
 }
 
-/**
- * Tests API connection with a simple request
- */
 export async function testApiConnection(): Promise<ApiResponse<boolean>> {
   try {
     const result = await sendChatCompletion([{ content: 'Hello', role: 'user' }])
@@ -294,11 +254,6 @@ export async function testApiConnection(): Promise<ApiResponse<boolean>> {
   }
 }
 
-/**
- * Available Cerebras models
- * Updated to match current Cerebras API documentation
- * @see https://inference-docs.cerebras.ai/api-reference/chat-completions
- */
 export const CEREBRAS_MODELS = [
   { id: 'llama-3.3-70b', name: 'Llama 3.3 70B (Recommended)' },
   { id: 'llama3.1-8b', name: 'Llama 3.1 8B (Fast)' },

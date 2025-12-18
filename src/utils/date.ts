@@ -1,13 +1,7 @@
-/**
- * Returns current timestamp in milliseconds
- */
 export function now(): number {
   return Date.now()
 }
 
-/**
- * Time difference result type
- */
 export type TimeDiffResult =
   | { type: 'justNow' }
   | { type: 'minutes'; value: number }
@@ -15,11 +9,6 @@ export type TimeDiffResult =
   | { type: 'days'; value: number }
   | { type: 'date'; value: string }
 
-/**
- * Gets time difference for display (returns structured data for i18n)
- * @param timestamp - Timestamp in milliseconds
- * @param locale - Locale for date formatting
- */
 export function getTimeDiff(timestamp: number, locale: string = 'en'): TimeDiffResult {
   const date = new Date(timestamp)
   const now = new Date()
@@ -56,10 +45,6 @@ export function getTimeDiff(timestamp: number, locale: string = 'en'): TimeDiffR
   }
 }
 
-/**
- * Formats time for message display (HH:MM)
- * @param timestamp - Timestamp in milliseconds
- */
 export function formatMessageTime(timestamp: number): string {
   const date = new Date(timestamp)
   return date.toLocaleTimeString('en-US', {
@@ -69,11 +54,6 @@ export function formatMessageTime(timestamp: number): string {
   })
 }
 
-/**
- * Formats full date and time
- * @param timestamp - Timestamp in milliseconds
- * @param locale - Locale for formatting
- */
 export function formatFullDateTime(timestamp: number, locale: string = 'en'): string {
   const date = new Date(timestamp)
   return date.toLocaleString(locale === 'uk' ? 'uk-UA' : 'en-US', {
@@ -85,9 +65,6 @@ export function formatFullDateTime(timestamp: number, locale: string = 'en'): st
   })
 }
 
-/**
- * Date group result type
- */
 export type DateGroupResult =
   | { type: 'today' }
   | { type: 'yesterday' }
@@ -99,11 +76,6 @@ export type DateGroupResult =
   | { type: 'lastMonth' }
   | { type: 'older'; value: string }
 
-/**
- * Groups dates by period for chat list (returns structured data for i18n)
- * @param timestamp - Timestamp in milliseconds
- * @param locale - Locale for date formatting
- */
 export function getDateGroup(timestamp: number, locale: string = 'en'): DateGroupResult {
   const date = new Date(timestamp)
   const now = new Date()

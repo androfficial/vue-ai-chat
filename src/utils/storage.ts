@@ -1,22 +1,11 @@
-/**
- * Storage keys for localStorage
- */
 export const STORAGE_KEYS = {
   API_CONFIG: 'ai-chat:api-config',
   CHATS: 'ai-chat:chats',
   USER_PREFERENCES: 'ai-chat:preferences',
 } as const
 
-/**
- * Type for storage keys
- */
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS]
 
-/**
- * Safely gets an item from localStorage
- * @param key - Storage key
- * @returns Parsed value or null if not found/invalid
- */
 export function getStorageItem<T>(key: StorageKey): T | null {
   try {
     const item = localStorage.getItem(key)
@@ -30,12 +19,6 @@ export function getStorageItem<T>(key: StorageKey): T | null {
   }
 }
 
-/**
- * Safely sets an item in localStorage
- * @param key - Storage key
- * @param value - Value to store
- * @returns Success status
- */
 export function setStorageItem<T>(key: StorageKey, value: T): boolean {
   try {
     localStorage.setItem(key, JSON.stringify(value))
@@ -46,10 +29,6 @@ export function setStorageItem<T>(key: StorageKey, value: T): boolean {
   }
 }
 
-/**
- * Removes an item from localStorage
- * @param key - Storage key
- */
 export function removeStorageItem(key: StorageKey): void {
   try {
     localStorage.removeItem(key)
@@ -58,35 +37,25 @@ export function removeStorageItem(key: StorageKey): void {
   }
 }
 
-/**
- * Clears all app-related items from localStorage
- */
 export function clearAllStorage(): void {
   Object.values(STORAGE_KEYS).forEach(key => {
     removeStorageItem(key)
   })
 }
 
-/**
- * Gets the approximate size of stored data in bytes
- */
 export function getStorageSize(): number {
   let totalSize = 0
 
   Object.values(STORAGE_KEYS).forEach(key => {
     const item = localStorage.getItem(key)
     if (item) {
-      totalSize += item.length * 2 // UTF-16 encoding
+      totalSize += item.length * 2
     }
   })
 
   return totalSize
 }
 
-/**
- * Formats storage size for display
- * @param bytes - Size in bytes
- */
 export function formatStorageSize(bytes: number): string {
   if (bytes < 1024) {
     return `${bytes} B`

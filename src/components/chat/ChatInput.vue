@@ -1,10 +1,4 @@
 <script setup lang="ts">
-/**
- * Chat input component
- * Multi-line input with send functionality
- * Refactored to use composables for better code reuse
- */
-
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 

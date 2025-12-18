@@ -1,9 +1,4 @@
 <script setup lang="ts">
-/**
- * Settings section wrapper component
- * Clean, minimal design inspired by Claude/ChatGPT
- */
-
 interface Props {
   icon?: string
   title: string
@@ -62,7 +57,7 @@ withDefaults(defineProps<Props>(), {
 .settings-section__header {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   margin-bottom: 16px;
 }
 

@@ -1,11 +1,3 @@
-/**
- * Chat messages composable
- * Handles message sending, streaming, and abort logic
- *
- * @example
- * const { sendMessage, stopGeneration, isLoading } = useChatMessages()
- */
-
 import type { ApiMessage } from '@/types/api'
 import type { Ref } from 'vue'
 
@@ -18,21 +10,13 @@ import { useApiStore } from '@/stores/api'
 import { useChatStore } from '@/stores/chat'
 
 export interface UseChatMessagesReturn {
-  /** Current AbortController for cancelling requests */
   abortController: Ref<AbortController | null>
-  /** Whether a message is currently being generated */
   isLoading: Ref<boolean>
-  /** Regenerate assistant message (without adding new user message) */
   regenerateMessage: (chatId: string, assistantMessageId: string) => Promise<void>
-  /** Send a message and get streaming response */
   sendMessage: (chatId: string, content: string, skipAddUserMessage?: boolean) => Promise<void>
-  /** Stop current generation */
   stopGeneration: () => void
 }
 
-/**
- * Creates chat message handling logic
- */
 export function useChatMessages(): UseChatMessagesReturn {
   const chatStore = useChatStore()
   const apiStore = useApiStore()
@@ -41,9 +25,6 @@ export function useChatMessages(): UseChatMessagesReturn {
   const isLoading = ref(false)
   const abortController = ref<AbortController | null>(null)
 
-  /**
-   * Maps error codes to user-friendly localized messages
-   */
   function getLocalizedErrorMessage(errorCode: string): string {
     const errorMap: Record<ApiErrorCode, string> = {
       networkError: t('errors.networkError'),
@@ -56,9 +37,6 @@ export function useChatMessages(): UseChatMessagesReturn {
     return errorMap[errorCode as ApiErrorCode] || t('errors.unknown')
   }
 
-  /**
-   * Creates a stream buffer instance for a specific message
-   */
   function createMessageBuffer(chatId: string, messageId: string) {
     return useStreamBuffer({
       onFlush: text => {
@@ -117,11 +95,9 @@ export function useChatMessages(): UseChatMessagesReturn {
 
     await sendStreamingChatCompletion(
       apiMessages,
-      // On chunk - push to buffer instead of direct update
       chunk => {
         streamBuffer.push(chunk)
       },
-      // On complete - flush remaining buffer
       () => {
         streamingComplete = true
         streamBuffer.flushImmediate()
@@ -129,7 +105,6 @@ export function useChatMessages(): UseChatMessagesReturn {
         isLoading.value = false
         abortController.value = null
       },
-      // On error
       errorCode => {
         streamBuffer.flushImmediate()
         chatStore.updateMessageStatus(chatId, assistantMessage.id, 'error')
@@ -158,10 +133,6 @@ export function useChatMessages(): UseChatMessagesReturn {
     }
   }
 
-  /**
-   * Regenerate assistant message - clears the assistant message and re-sends request
-   * without adding a new user message
-   */
   async function regenerateMessage(chatId: string, assistantMessageId: string): Promise<void> {
     if (!apiStore.hasApiKey) {
       throw new Error('API key is not configured')
@@ -208,7 +179,6 @@ export function useChatMessages(): UseChatMessagesReturn {
         isLoading.value = false
         abortController.value = null
       },
-      // On error
       errorCode => {
         streamBuffer.flushImmediate()
         chatStore.updateMessageStatus(chatId, assistantMessageId, 'error')
@@ -223,7 +193,6 @@ export function useChatMessages(): UseChatMessagesReturn {
       abortController.value.signal,
     )
 
-    // If streaming finished but buffer hasn't flushed yet (abort case)
     if (!streamingComplete) {
       streamBuffer.flushImmediate()
     }

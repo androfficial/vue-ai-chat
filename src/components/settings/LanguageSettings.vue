@@ -1,9 +1,4 @@
 <script setup lang="ts">
-/**
- * Language settings section component
- * Clean radio group for language selection
- */
-
 import { computed } from 'vue'
 
 import { useUserStore } from '@/stores/user'
@@ -12,7 +7,6 @@ import SettingsCard from './SettingsCard.vue'
 
 const userStore = useUserStore()
 
-// Writable computed for two-way binding (silent auto-save)
 const locale = computed({
   get: () => userStore.preferences.locale,
   set: value => {
@@ -20,7 +14,6 @@ const locale = computed({
   },
 })
 
-// Static options - no need for reactivity
 const localeOptions = [
   { flag: '🇬🇧', title: 'English', value: 'en' },
   { flag: '🇺🇦', title: 'Українська', value: 'uk' },

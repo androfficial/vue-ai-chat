@@ -1,10 +1,4 @@
 <script setup lang="ts">
-/**
- * Message actions component
- * Isolated action buttons to prevent re-renders of parent
- */
-
-// Props
 interface Props {
   isUser: boolean
   visible: boolean

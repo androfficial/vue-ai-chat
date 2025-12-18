@@ -1,11 +1,3 @@
-/**
- * Date formatter composable
- * Provides localized date formatting with i18n support
- *
- * @example
- * const { formatDateGroup, formatTimeDiff } = useDateFormatter()
- */
-
 import type { SupportedLocale } from '@/types'
 import type { DateGroupResult, TimeDiffResult } from '@/utils/date'
 import type { ComputedRef } from 'vue'
@@ -17,30 +9,19 @@ import { useUserStore } from '@/stores/user'
 import { getDateGroup as utilGetDateGroup, getTimeDiff as utilGetTimeDiff } from '@/utils/date'
 
 export interface UseDateFormatterReturn {
-  /** Formats a date group result to translated string */
   formatDateGroup: (result: DateGroupResult) => string
-  /** Formats a time diff result to translated string */
   formatTimeDiff: (result: TimeDiffResult) => string
-  /** Gets formatted date group for a timestamp */
   getDateGroupFormatted: (timestamp: number) => string
-  /** Gets formatted time diff for a timestamp */
   getTimeDiffFormatted: (timestamp: number) => string
-  /** Current locale */
   locale: ComputedRef<SupportedLocale>
 }
 
-/**
- * Creates date formatting functionality with i18n support
- */
 export function useDateFormatter(): UseDateFormatterReturn {
   const { t } = useI18n()
   const userStore = useUserStore()
 
   const locale = computed(() => userStore.locale)
 
-  /**
-   * Formats date group result to translated string
-   */
   function formatDateGroup(result: DateGroupResult): string {
     switch (result.type) {
       case 'today':
@@ -64,9 +45,6 @@ export function useDateFormatter(): UseDateFormatterReturn {
     }
   }
 
-  /**
-   * Formats time difference result to translated string
-   */
   function formatTimeDiff(result: TimeDiffResult): string {
     switch (result.type) {
       case 'justNow':
@@ -82,17 +60,11 @@ export function useDateFormatter(): UseDateFormatterReturn {
     }
   }
 
-  /**
-   * Gets formatted date group string for a timestamp
-   */
   function getDateGroupFormatted(timestamp: number): string {
     const group = utilGetDateGroup(timestamp, locale.value)
     return formatDateGroup(group)
   }
 
-  /**
-   * Gets formatted time diff string for a timestamp
-   */
   function getTimeDiffFormatted(timestamp: number): string {
     const diff = utilGetTimeDiff(timestamp, locale.value)
     return formatTimeDiff(diff)

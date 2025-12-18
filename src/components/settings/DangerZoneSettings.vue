@@ -1,9 +1,4 @@
 <script setup lang="ts">
-/**
- * Danger zone settings section component
- * Destructive actions like deleting all chats
- */
-
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -14,10 +9,8 @@ import SettingsCard from './SettingsCard.vue'
 const router = useRouter()
 const chatStore = useChatStore()
 
-// Local dialog state - isolated from parent
 const showDeleteDialog = ref(false)
 
-// Methods
 function confirmDeleteChats() {
   showDeleteDialog.value = true
 }
@@ -47,7 +40,6 @@ function deleteAllChats() {
       <v-btn
         color="error"
         variant="outlined"
-        size="small"
         @click="confirmDeleteChats"
       >
         {{ $t('settings.danger.deleteAllButton') }}
@@ -73,14 +65,12 @@ function deleteAllChats() {
         <v-spacer />
         <v-btn
           variant="text"
-          size="small"
           @click="showDeleteDialog = false"
         >
           {{ $t('common.cancel') }}
         </v-btn>
         <v-btn
           color="error"
-          size="small"
           @click="deleteAllChats"
         >
           {{ $t('settings.danger.deleteAllButton') }}

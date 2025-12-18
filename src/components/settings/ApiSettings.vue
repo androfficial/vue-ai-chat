@@ -1,10 +1,4 @@
 <script setup lang="ts">
-/**
- * API settings section component
- * Handles API key, model selection, and configuration
- * All settings auto-save immediately on change (silent)
- */
-
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -18,7 +12,6 @@ const { t } = useI18n()
 const apiStore = useApiStore()
 const toast = useToast()
 
-// Writable computed for two-way binding (silent auto-save)
 const apiKey = computed({
   get: () => apiStore.apiKey,
   set: value => {
@@ -33,10 +26,8 @@ const selectedModel = computed({
   },
 })
 
-// Connection test state
 const testingConnection = ref(false)
 
-// Methods
 async function handleTestConnection() {
   if (!apiKey.value.trim()) {
     toast.error(t('settings.api.apiKeyPlaceholder'))
@@ -100,7 +91,6 @@ async function handleTestConnection() {
     <template #actions>
       <v-btn
         variant="outlined"
-        size="small"
         :loading="testingConnection"
         @click="handleTestConnection"
       >

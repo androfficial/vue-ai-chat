@@ -1,37 +1,19 @@
-/**
- * Stream buffer composable
- * Provides smooth text streaming with word-by-word animation
- * similar to ChatGPT/Claude typing effect
- */
-
 import { ref, type Ref } from 'vue'
 
 export interface UseStreamBufferOptions {
-  /** Callback when text chunk is flushed */
   onFlush?: (text: string) => void
-  /** Delay between words in ms (default: 50) */
   wordDelay?: number
 }
 
 export interface UseStreamBufferReturn {
-  /** Clear the buffer and stop streaming */
   clear: () => void
-  /** Flush all remaining content immediately */
   flushImmediate: () => void
-  /** Whether the buffer is currently streaming */
   isStreaming: Ref<boolean>
-  /** Add content to the buffer */
   push: (content: string) => void
-  /** Start streaming from buffer (call after setting onFlush) */
   start: () => void
-  /** Stop streaming but keep buffer */
   stop: () => void
 }
 
-/**
- * Creates a stream buffer that outputs text smoothly
- * word by word with natural typing animation
- */
 export function useStreamBuffer(options: UseStreamBufferOptions = {}): UseStreamBufferReturn {
   const { onFlush, wordDelay = 50 } = options
 
@@ -40,9 +22,6 @@ export function useStreamBuffer(options: UseStreamBufferOptions = {}): UseStream
   const flushedLength = ref(0)
   let timeoutId: ReturnType<typeof setTimeout> | null = null
 
-  /**
-   * Process next word/chunk from buffer
-   */
   function processNext(): void {
     if (!isStreaming.value) return
 
@@ -111,25 +90,16 @@ export function useStreamBuffer(options: UseStreamBufferOptions = {}): UseStream
     timeoutId = setTimeout(processNext, delay)
   }
 
-  /**
-   * Add content to the buffer
-   */
   function push(content: string): void {
     buffer.value += content
   }
 
-  /**
-   * Start streaming from buffer
-   */
   function start(): void {
     if (isStreaming.value) return
     isStreaming.value = true
     processNext()
   }
 
-  /**
-   * Stop streaming but keep buffer
-   */
   function stop(): void {
     isStreaming.value = false
     if (timeoutId !== null) {
@@ -138,9 +108,6 @@ export function useStreamBuffer(options: UseStreamBufferOptions = {}): UseStream
     }
   }
 
-  /**
-   * Flush all remaining content immediately
-   */
   function flushImmediate(): void {
     stop()
     const remaining = buffer.value.slice(flushedLength.value)
@@ -150,9 +117,6 @@ export function useStreamBuffer(options: UseStreamBufferOptions = {}): UseStream
     }
   }
 
-  /**
-   * Clear the buffer and stop streaming
-   */
   function clear(): void {
     stop()
     buffer.value = ''

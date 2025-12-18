@@ -1,8 +1,3 @@
-/**
- * Toast notification composable
- * Uses Vuetify v-snackbar for notifications
- */
-
 import { ref } from 'vue'
 
 export interface ToastOptions {
@@ -19,7 +14,6 @@ const timeout = ref(2000)
 
 export function useToast() {
   function show(options: ToastOptions | string) {
-    // Parse options
     if (typeof options === 'string') {
       message.value = options
       type.value = 'success'
@@ -30,7 +24,6 @@ export function useToast() {
       timeout.value = options.timeout ?? 2000
     }
 
-    // Reset and show (ensures snackbar restarts if already visible)
     isVisible.value = false
     setTimeout(() => {
       isVisible.value = true
@@ -57,10 +50,8 @@ export function useToast() {
     error,
     hide,
     info,
-    // State
     isVisible,
     message,
-    // Methods
     show,
     success,
     timeout,

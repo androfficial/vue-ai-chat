@@ -1,9 +1,4 @@
 <script setup lang="ts">
-/**
- * Settings page component
- * Modern, clean design inspired by Claude/ChatGPT settings
- */
-
 import { useRouter } from 'vue-router'
 
 import ApiSettings from '@/components/settings/ApiSettings.vue'

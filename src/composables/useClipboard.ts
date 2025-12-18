@@ -1,34 +1,16 @@
-/**
- * Clipboard composable
- * Provides clipboard copy functionality with status tracking
- *
- * @example
- * const { copy, copied, error } = useClipboard()
- * await copy('text to copy')
- */
-
 import { ref } from 'vue'
 
 export interface UseClipboardOptions {
-  /** Duration in ms to show copied state (default: 2000) */
   copiedDuration?: number
 }
 
 export interface UseClipboardReturn {
-  /** Whether content was recently copied successfully */
   copied: ReturnType<typeof ref<boolean>>
-  /** Copy text to clipboard */
   copy: (text: string) => Promise<boolean>
-  /** Error message if copy failed */
   error: ReturnType<typeof ref<string | null>>
-  /** Whether copy is supported in current environment */
   isSupported: boolean
 }
 
-/**
- * Creates clipboard copy functionality
- * @param options - Configuration options
- */
 export function useClipboard(options: UseClipboardOptions = {}): UseClipboardReturn {
   const { copiedDuration = 2000 } = options
 
@@ -39,7 +21,6 @@ export function useClipboard(options: UseClipboardOptions = {}): UseClipboardRet
   let timeoutId: ReturnType<typeof setTimeout> | null = null
 
   async function copy(text: string): Promise<boolean> {
-    // Clear previous state
     error.value = null
     copied.value = false
 
@@ -57,7 +38,6 @@ export function useClipboard(options: UseClipboardOptions = {}): UseClipboardRet
       await navigator.clipboard.writeText(text)
       copied.value = true
 
-      // Reset copied state after duration
       timeoutId = setTimeout(() => {
         copied.value = false
         timeoutId = null
