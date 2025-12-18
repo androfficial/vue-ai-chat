@@ -166,7 +166,7 @@ function regenerate() {
         <!-- Avatar + Header row -->
         <div class="message-bubble__header-row">
           <v-avatar
-            color="secondary"
+            color="primary"
             size="28"
           >
             <v-icon
@@ -174,7 +174,7 @@ function regenerate() {
               size="18"
             />
           </v-avatar>
-          <span class="text-subtitle-2 font-weight-bold text-secondary">
+          <span class="message-bubble__assistant-name">
             {{ $t('chat.assistant') }}
           </span>
           <span
@@ -319,6 +319,12 @@ function regenerate() {
 .message-bubble__body {
   line-height: 1.65;
   font-size: 0.9375rem;
+}
+
+.message-bubble__assistant-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgb(var(--v-theme-primary));
 }
 
 .message-bubble:hover :deep(.message-actions) {
