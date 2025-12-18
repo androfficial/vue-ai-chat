@@ -144,8 +144,6 @@ Configure in Settings page or provide on first launch:
 
 - **Theme** - Light / Dark / System
 - **Language** - English / Ukrainian
-- **Send on Enter** - Toggle Enter to send behavior
-- **Show Timestamps** - Display message timestamps
 
 ### Storage Keys
 
