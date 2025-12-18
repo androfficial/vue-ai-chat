@@ -18,6 +18,12 @@ export default {
     editMessage: 'Редагувати текст повідомлення',
     emptyState: {
       subtitle: 'Почніть розмову, ввівши повідомлення нижче',
+      suggestions: [
+        { icon: 'mdi-atom', text: 'Поясни квантові обчислення простими словами' },
+        { icon: 'mdi-code-braces', text: 'Напиши Python функцію для сортування списку' },
+        { icon: 'mdi-email-outline', text: 'Допоможи написати професійний лист' },
+        { icon: 'mdi-lightbulb-outline', text: 'Дай 5 креативних ідей для проєкту' },
+      ],
       title: 'Чим я можу вам допомогти?',
       titles: [
         'Чим я можу вам допомогти?',

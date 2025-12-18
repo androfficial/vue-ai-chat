@@ -243,6 +243,7 @@ function saveApiKey() {
         @delete="handleDeleteMessage"
         @edit="handleEditMessage"
         @regenerate="handleRegenerateMessage"
+        @suggestion="handleSendMessage"
       />
     </div>
 

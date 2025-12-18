@@ -18,6 +18,12 @@ export default {
     editMessage: 'Edit message content',
     emptyState: {
       subtitle: 'Start a conversation by typing a message below',
+      suggestions: [
+        { icon: 'mdi-atom', text: 'Explain quantum computing in simple terms' },
+        { icon: 'mdi-code-braces', text: 'Write a Python function to sort a list' },
+        { icon: 'mdi-email-outline', text: 'Help me draft a professional email' },
+        { icon: 'mdi-lightbulb-outline', text: 'Give me 5 creative project ideas' },
+      ],
       title: 'How can I help you today?',
       titles: [
         'How can I help you today?',

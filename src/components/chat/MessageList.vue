@@ -24,6 +24,7 @@ const emit = defineEmits<{
   delete: [messageId: string]
   edit: [messageId: string, content: string]
   regenerate: [messageId: string]
+  suggestion: [text: string]
 }>()
 
 const { t, tm } = useI18n()
@@ -45,6 +46,20 @@ const titles = computed(() => {
   const rawTitles = tm('chat.emptyState.titles') as string[] | undefined
   return Array.isArray(rawTitles) ? rawTitles : [t('chat.emptyState.title')]
 })
+
+interface Suggestion {
+  icon: string
+  text: string
+}
+
+const suggestions = computed(() => {
+  const rawSuggestions = tm('chat.emptyState.suggestions') as Suggestion[] | undefined
+  return Array.isArray(rawSuggestions) ? rawSuggestions : []
+})
+
+function handleSuggestionClick(text: string) {
+  emit('suggestion', text)
+}
 
 const currentTitle = computed(() => titles.value[currentTitleIndex.value] || titles.value[0])
 
@@ -193,9 +208,25 @@ defineExpose({
       >
         {{ currentTitle }}
       </h2>
-      <p class="text-body-1 text-medium-emphasis text-center">
+      <p class="text-body-1 text-medium-emphasis text-center mb-6">
         {{ $t('chat.emptyState.subtitle') }}
       </p>
+
+      <!-- Prompt Suggestions -->
+      <div class="message-list__suggestions">
+        <button
+          v-for="(suggestion, index) in suggestions"
+          :key="index"
+          class="message-list__suggestion"
+          @click="handleSuggestionClick(suggestion.text)"
+        >
+          <v-icon
+            :icon="suggestion.icon"
+            class="message-list__suggestion-icon"
+          />
+          <span class="message-list__suggestion-text">{{ suggestion.text }}</span>
+        </button>
+      </div>
     </div>
 
     <!-- Messages -->
@@ -233,9 +264,8 @@ defineExpose({
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  max-width: 500px;
+  width: 100%;
   padding: 48px 24px;
-  margin: auto;
 }
 
 .message-list__title {
@@ -250,17 +280,106 @@ defineExpose({
   transform: translateY(-8px);
 }
 
+.message-list__suggestions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.message-list__suggestion {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 16px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: rgb(var(--v-theme-on-surface));
+  text-align: left;
+  cursor: pointer;
+  background-color: rgb(var(--v-theme-surface));
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.message-list__suggestion:hover {
+  background-color: rgb(var(--v-theme-surface-variant));
+  border-color: var(--border-default);
+}
+
+.message-list__suggestion:active {
+  transform: scale(0.98);
+}
+
+.message-list__suggestion-icon {
+  flex-shrink: 0;
+  width: 20px !important;
+  height: 20px !important;
+  margin-top: 2px;
+  font-size: 20px !important;
+  color: rgb(var(--v-theme-primary));
+}
+
+.message-list__suggestion-icon :deep(svg),
+.message-list__suggestion-icon :deep(i) {
+  width: 20px !important;
+  height: 20px !important;
+  font-size: 20px !important;
+}
+
+.message-list__suggestion-text {
+  flex: 1;
+  overflow-wrap: break-word;
+}
+
 @media (width <= 600px) {
   .message-list__empty {
-    padding: 32px 16px;
+    padding: 48px 16px 24px;
   }
 
   .message-list__empty .text-h5 {
-    font-size: 1.25rem !important;
+    font-size: 1.125rem !important;
   }
 
-  .message-list__empty .v-icon {
-    font-size: 64px !important;
+  .message-list__empty > .v-icon {
+    font-size: 48px !important;
+  }
+
+  .message-list__suggestions {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    max-width: 100%;
+  }
+
+  .message-list__suggestion {
+    flex-direction: row;
+    gap: 12px;
+    align-items: center;
+    min-height: 52px;
+    padding: 12px 14px;
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  .message-list__suggestion-text {
+    overflow-wrap: break-word;
+  }
+
+  .message-list__suggestion-icon {
+    width: 20px !important;
+    height: 20px !important;
+    margin-top: 0;
+    font-size: 20px !important;
+  }
+
+  .message-list__suggestion-icon :deep(svg),
+  .message-list__suggestion-icon :deep(i) {
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 20px !important;
   }
 }
 
