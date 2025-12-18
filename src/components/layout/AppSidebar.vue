@@ -559,6 +559,11 @@ function renameChat(chatId: string, newTitle: string) {
 /* Mobile styles */
 .sidebar-drawer--mobile {
   z-index: 1100 !important;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.sidebar-drawer--mobile :deep(.v-navigation-drawer__content) {
+  transition: none !important;
 }
 
 @media (max-width: 960px) {
