@@ -103,16 +103,11 @@ Configure your Cerebras API settings in the Settings page:
 
 - API Key
 - Model selection
-- Max tokens
-- Temperature
 
 ### User Preferences
 
 - Theme (Light/Dark/System)
 - Language (English/Ukrainian)
-- Font size
-- Send on Enter behavior
-- Show timestamps
 
 ## License
 
