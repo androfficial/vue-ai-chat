@@ -106,7 +106,22 @@ function openSettings() {
 
 function deleteChat(chatId: string, event: Event) {
   event.stopPropagation()
+  const isCurrentChat = currentChatId.value === chatId
   chatStore.deleteChat(chatId)
+
+  // Navigate only if deleting the current chat
+  if (isCurrentChat) {
+    const nextChat = chatStore.chatList[0]
+    if (nextChat) {
+      router.push(`/chat/${nextChat.id}`)
+    } else {
+      router.push('/chat/new')
+    }
+  }
+}
+
+function renameChat(chatId: string, newTitle: string) {
+  chatStore.updateChat(chatId, { title: newTitle })
 }
 </script>
 
@@ -216,6 +231,7 @@ function deleteChat(chatId: string, event: Event) {
               :timestamp="getTimeDiffFormatted(chat.updatedAt)"
               @click="openChat(chat.id)"
               @delete="deleteChat(chat.id, $event)"
+              @rename="renameChat(chat.id, $event)"
             />
           </template>
         </template>

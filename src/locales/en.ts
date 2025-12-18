@@ -79,6 +79,10 @@ export default {
       descriptionStart: 'This will delete the conversation "',
       title: 'Delete chat?',
     },
+    renameChat: {
+      label: 'Chat name',
+      title: 'Rename chat',
+    },
   },
 
   errors: {

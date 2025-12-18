@@ -15,6 +15,7 @@ const props = defineProps<Props>()
 const emit = defineEmits<{
   click: []
   delete: [event: Event]
+  rename: [newTitle: string]
 }>()
 
 const { t } = useI18n()
@@ -27,7 +28,9 @@ interface Props {
 
 const showMenu = ref(false)
 const showDeleteDialog = ref(false)
+const showRenameDialog = ref(false)
 const deleteEvent = ref<Event | null>(null)
+const newChatTitle = ref('')
 
 const chatTitle = computed(() => props.chat.title)
 
@@ -53,6 +56,25 @@ function confirmDelete() {
 function cancelDelete() {
   showDeleteDialog.value = false
   deleteEvent.value = null
+}
+
+function openRenameDialog() {
+  newChatTitle.value = props.chat.title
+  showMenu.value = false
+  showRenameDialog.value = true
+}
+
+function confirmRename() {
+  const trimmedTitle = newChatTitle.value.trim()
+  if (trimmedTitle && trimmedTitle !== props.chat.title) {
+    emit('rename', trimmedTitle)
+  }
+  showRenameDialog.value = false
+}
+
+function cancelRename() {
+  showRenameDialog.value = false
+  newChatTitle.value = ''
 }
 </script>
 
@@ -91,6 +113,11 @@ function cancelDelete() {
           class="dropdown-menu py-1"
         >
           <v-list-item
+            prepend-icon="mdi-pencil-outline"
+            :title="$t('sidebar.renameChat')"
+            @click="openRenameDialog"
+          />
+          <v-list-item
             prepend-icon="mdi-delete-outline"
             :title="$t('common.delete')"
             class="delete-item"
@@ -127,6 +154,52 @@ function cancelDelete() {
             @click="confirmDelete"
           >
             {{ t('common.delete') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Rename Dialog -->
+    <v-dialog
+      v-model="showRenameDialog"
+      max-width="400"
+    >
+      <v-card>
+        <v-card-title class="text-h6 pa-5 pb-2 d-flex align-center justify-space-between">
+          {{ t('dialog.renameChat.title') }}
+          <v-btn
+            icon="mdi-close"
+            variant="text"
+            density="comfortable"
+            size="small"
+            @click="cancelRename"
+          />
+        </v-card-title>
+        <v-card-text class="pa-5 pt-2">
+          <v-text-field
+            v-model="newChatTitle"
+            :label="t('dialog.renameChat.label')"
+            variant="outlined"
+            density="comfortable"
+            autofocus
+            hide-details
+            @keydown.enter="confirmRename"
+          />
+        </v-card-text>
+        <v-card-actions class="pa-5 pt-0">
+          <v-spacer />
+          <v-btn
+            variant="text"
+            @click="cancelRename"
+          >
+            {{ t('common.cancel') }}
+          </v-btn>
+          <v-btn
+            color="primary"
+            :disabled="!newChatTitle.trim()"
+            @click="confirmRename"
+          >
+            {{ t('common.save') }}
           </v-btn>
         </v-card-actions>
       </v-card>

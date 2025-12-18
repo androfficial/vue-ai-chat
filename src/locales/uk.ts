@@ -79,6 +79,10 @@ export default {
       descriptionStart: 'Це видалить розмову «',
       title: 'Видалити чат?',
     },
+    renameChat: {
+      label: 'Назва чату',
+      title: 'Перейменувати чат',
+    },
   },
 
   errors: {
