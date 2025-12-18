@@ -55,12 +55,32 @@ const renderedContent = computed(() => {
     <span class="text-medium-emphasis">{{ $t('chat.thinking') }}</span>
   </div>
 
-  <!-- Streaming indicator -->
+  <!-- Streaming content with typing indicator -->
   <div
     v-else-if="status === 'streaming'"
-    class="message-content__text"
-    v-html="renderedContent"
-  />
+    class="message-content__streaming"
+  >
+    <!-- Show thinking indicator when no content yet -->
+    <div
+      v-if="!content"
+      class="message-content__thinking"
+    >
+      <div class="thinking-dots">
+        <span class="thinking-dot" />
+        <span class="thinking-dot" />
+        <span class="thinking-dot" />
+      </div>
+      <span class="text-medium-emphasis ml-2">{{ $t('chat.thinking') }}</span>
+    </div>
+    <!-- Show content with blinking cursor -->
+    <template v-else>
+      <div
+        class="message-content__text message-content__markdown"
+        v-html="renderedContent"
+      />
+      <span class="streaming-cursor">▌</span>
+    </template>
+  </div>
 
   <!-- Error state -->
   <div
@@ -190,8 +210,61 @@ const renderedContent = computed(() => {
   word-break: break-word;
 }
 
+.message-content__streaming {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.message-content__thinking {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.thinking-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.thinking-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: rgb(var(--v-theme-primary));
+  animation: thinking-bounce 1.4s infinite ease-in-out both;
+}
+
+.thinking-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.thinking-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+.thinking-dot:nth-child(3) {
+  animation-delay: 0s;
+}
+
+@keyframes thinking-bounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 .streaming-cursor {
-  animation: blink 1s step-end infinite;
+  color: rgb(var(--v-theme-primary));
+  font-weight: normal;
+  animation: blink 0.8s step-end infinite;
+  margin-left: 1px;
 }
 
 @keyframes blink {

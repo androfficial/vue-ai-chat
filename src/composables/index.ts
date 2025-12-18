@@ -23,5 +23,8 @@ export { useHead } from './useHead'
 export { useDateFormatter } from './useDateFormatter'
 export type { UseDateFormatterReturn } from './useDateFormatter'
 
+export { useStreamBuffer } from './useStreamBuffer'
+export type { UseStreamBufferOptions, UseStreamBufferReturn } from './useStreamBuffer'
+
 export { useToast } from './useToast'
 export type { ToastOptions, UseToastReturn } from './useToast'
