@@ -333,6 +333,7 @@ function saveApiKey() {
   position: relative;
   overflow: hidden;
   height: 100%;
+  min-height: 0; /* Important for flex children */
 }
 
 /* Mobile header */
@@ -442,6 +443,7 @@ function saveApiKey() {
 @media (max-width: 960px) {
   .chat-page__input-wrapper {
     padding-top: 16px;
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
 

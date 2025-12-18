@@ -114,6 +114,7 @@ body {
 /* Allow scrolling in main content */
 .v-main {
   height: 100vh;
+  height: 100dvh; /* Dynamic viewport height for mobile */
   overflow: hidden;
 }
 
@@ -121,7 +122,7 @@ body {
   height: 100%;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
+  overflow: hidden; /* Changed from overflow-y: auto */
 }
 
 /* Disable v-main padding animation when sidebar toggles */
