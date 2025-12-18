@@ -222,6 +222,18 @@ function regenerate() {
   padding: 0 24px;
 }
 
+@media (max-width: 960px) {
+  .message-bubble__container {
+    padding: 0 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .message-bubble__container {
+    padding: 0 12px;
+  }
+}
+
 .message-bubble__header-row {
   display: flex;
   align-items: center;
@@ -245,6 +257,12 @@ function regenerate() {
   max-width: 85%;
 }
 
+@media (max-width: 600px) {
+  .message-bubble__user-wrapper {
+    max-width: 92%;
+  }
+}
+
 .message-bubble__user-bubble {
   background-color: rgb(var(--v-theme-chat-user-bg));
   border: 1px solid var(--border-subtle);
@@ -253,6 +271,14 @@ function regenerate() {
   text-align: left;
   line-height: 1.6;
   font-size: 0.9375rem;
+}
+
+@media (max-width: 600px) {
+  .message-bubble__user-bubble {
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-size: 0.9rem;
+  }
 }
 
 .message-bubble__edited-text {
@@ -265,7 +291,13 @@ function regenerate() {
 
 .message-bubble--user .message-bubble__edit {
   width: 100%;
-  min-width: 300px;
+  min-width: 280px;
+}
+
+@media (max-width: 600px) {
+  .message-bubble--user .message-bubble__edit {
+    min-width: 200px;
+  }
 }
 
 .message-bubble--user :deep(.message-actions) {

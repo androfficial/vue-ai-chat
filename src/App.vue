@@ -4,8 +4,8 @@
  * Main layout with sidebar and router view
  */
 
-import { onMounted, watch } from 'vue'
-import { useTheme } from 'vuetify'
+import { onMounted, provide, ref, watch } from 'vue'
+import { useDisplay, useTheme } from 'vuetify'
 
 import AppSidebar from '@/components/layout/AppSidebar.vue'
 import { useHead, useToast } from '@/composables'
@@ -16,6 +16,12 @@ const toast = useToast()
 
 const theme = useTheme()
 const userStore = useUserStore()
+const display = useDisplay()
+
+const sidebarRef = ref<InstanceType<typeof AppSidebar> | null>(null)
+
+provide('toggleSidebar', () => sidebarRef.value?.toggleDrawer())
+provide('isMobile', () => display.smAndDown.value)
 
 // Manage document head (title, description, lang)
 useHead()
@@ -56,7 +62,7 @@ watch(
 <template>
   <v-app>
     <!-- Sidebar navigation -->
-    <AppSidebar />
+    <AppSidebar ref="sidebarRef" />
 
     <!-- Main content area -->
     <v-main>
@@ -124,9 +130,17 @@ body {
 }
 
 .v-main {
-  --v-layout-left: 260px !important;
-  padding-left: 260px !important;
+  --v-layout-left: 280px !important;
+  padding-left: 280px !important;
   transition: none !important;
+}
+
+/* Mobile - no padding for overlay sidebar */
+@media (max-width: 960px) {
+  .v-main {
+    --v-layout-left: 0 !important;
+    padding-left: 0 !important;
+  }
 }
 
 /* Scrollbar styling */

@@ -183,11 +183,32 @@ defineExpose({
   align-items: center;
 }
 
+@media (max-width: 600px) {
+  .message-list__empty {
+    padding: 32px 16px;
+  }
+
+  .message-list__empty .text-h5 {
+    font-size: 1.25rem !important;
+  }
+
+  .message-list__empty .v-icon {
+    font-size: 64px !important;
+  }
+}
+
 .message-list__messages {
   padding-bottom: 24px;
   padding-top: 16px;
   flex: 1;
   display: flex;
   flex-direction: column;
+}
+
+@media (max-width: 600px) {
+  .message-list__messages {
+    padding-bottom: 16px;
+    padding-top: 12px;
+  }
 }
 </style>

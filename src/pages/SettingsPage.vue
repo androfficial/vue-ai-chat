@@ -50,6 +50,12 @@ function goBack() {
   background-color: rgb(var(--v-theme-background));
 }
 
+@media (max-width: 600px) {
+  .settings-page {
+    padding: 16px 12px 32px;
+  }
+}
+
 .settings-page__content {
   width: 100%;
   max-width: 560px;
@@ -78,6 +84,12 @@ function goBack() {
   font-size: 1.5rem;
   font-weight: 600;
   letter-spacing: -0.02em;
+}
+
+@media (max-width: 600px) {
+  .settings-header__title {
+    font-size: 1.25rem;
+  }
 }
 
 .settings-sections {

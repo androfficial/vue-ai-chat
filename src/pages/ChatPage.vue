@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, inject, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import ChatInput from '@/components/chat/ChatInput.vue'
@@ -12,6 +12,8 @@ const route = useRoute()
 const router = useRouter()
 const chatStore = useChatStore()
 const apiStore = useApiStore()
+
+const toggleSidebar = inject<() => void>('toggleSidebar')
 
 // Use composables
 const { isLoading, regenerateMessage, sendMessage, stopGeneration } = useChatMessages()
@@ -162,6 +164,25 @@ function saveApiKey() {
 
 <template>
   <div class="chat-page d-flex flex-column">
+    <!-- Mobile header with menu button -->
+    <div class="chat-page__mobile-header">
+      <v-btn
+        icon="mdi-menu"
+        variant="text"
+        size="40"
+        :aria-label="$t('sidebar.expandSidebar')"
+        @click="toggleSidebar?.()"
+      />
+      <span class="chat-page__mobile-title">AI Chat</span>
+      <v-btn
+        icon="mdi-square-edit-outline"
+        variant="text"
+        size="40"
+        :aria-label="$t('sidebar.newChat')"
+        @click="router.push('/chat/new')"
+      />
+    </div>
+
     <!-- Top right temporary chat toggle -->
     <div
       v-if="canToggleTemporaryMode"
@@ -309,6 +330,28 @@ function saveApiKey() {
   height: 100%;
 }
 
+/* Mobile header */
+.chat-page__mobile-header {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 8px;
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+  background-color: rgb(var(--v-theme-background));
+}
+
+.chat-page__mobile-title {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 960px) {
+  .chat-page__mobile-header {
+    display: flex;
+  }
+}
+
 /* Header with temporary chat toggle */
 .chat-page__header {
   position: absolute;
@@ -317,6 +360,16 @@ function saveApiKey() {
   z-index: 100;
   display: flex;
   align-items: center;
+}
+
+@media (max-width: 960px) {
+  .chat-page__header {
+    position: relative;
+    top: 0;
+    right: 0;
+    padding: 8px 12px;
+    justify-content: center;
+  }
 }
 
 .chat-page__temp-toggle {
@@ -362,6 +415,12 @@ function saveApiKey() {
   padding-top: 48px;
 }
 
+@media (max-width: 960px) {
+  .chat-page__messages {
+    padding-top: 0;
+  }
+}
+
 .chat-page__input-wrapper {
   flex-shrink: 0;
   background: linear-gradient(
@@ -373,6 +432,12 @@ function saveApiKey() {
   padding-top: 24px;
   position: relative;
   z-index: 10;
+}
+
+@media (max-width: 960px) {
+  .chat-page__input-wrapper {
+    padding-top: 16px;
+  }
 }
 
 .chat-page__input-container {

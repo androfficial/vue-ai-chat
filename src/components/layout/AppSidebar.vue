@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useTheme } from 'vuetify'
+import { useDisplay, useTheme } from 'vuetify'
 
 import { useDateFormatter } from '@/composables'
 import { useChatStore } from '@/stores/chat'
@@ -15,6 +15,7 @@ const router = useRouter()
 const theme = useTheme()
 const chatStore = useChatStore()
 const userStore = useUserStore()
+const display = useDisplay()
 
 const { formatDateGroup, getTimeDiffFormatted, locale } = useDateFormatter()
 
@@ -22,9 +23,36 @@ const drawer = ref(true)
 const rail = ref(userStore.preferences.sidebarCollapsed)
 const collapsedGroups = ref<Set<string>>(new Set())
 
+const isMobile = computed(() => display.smAndDown.value)
+
 watch(rail, newValue => {
-  userStore.updatePreferences({ sidebarCollapsed: newValue })
+  if (!isMobile.value) {
+    userStore.updatePreferences({ sidebarCollapsed: newValue })
+  }
 })
+
+watch(isMobile, mobile => {
+  if (mobile) {
+    drawer.value = false
+    rail.value = false
+  } else {
+    drawer.value = true
+    rail.value = userStore.preferences.sidebarCollapsed
+  }
+})
+
+onMounted(() => {
+  if (isMobile.value) {
+    drawer.value = false
+    rail.value = false
+  }
+})
+
+function toggleDrawer() {
+  drawer.value = !drawer.value
+}
+
+defineExpose({ drawer, toggleDrawer })
 
 function toggleGroup(group: string) {
   if (collapsedGroups.value.has(group)) {
@@ -57,14 +85,17 @@ const groupedChats = computed(() => {
 })
 
 function createNewChat() {
+  if (isMobile.value) drawer.value = false
   router.push('/chat/new')
 }
 
 function openChat(chatId: string) {
+  if (isMobile.value) drawer.value = false
   router.push(`/chat/${chatId}`)
 }
 
 function openSettings() {
+  if (isMobile.value) drawer.value = false
   router.push('/settings')
 }
 
@@ -77,17 +108,21 @@ function deleteChat(chatId: string, event: Event) {
 <template>
   <v-navigation-drawer
     v-model="drawer"
-    :rail="rail"
+    :rail="!isMobile && rail"
     :color="theme.current.value.colors['sidebar-bg']"
-    permanent
-    width="260"
+    :permanent="!isMobile"
+    :temporary="isMobile"
+    width="280"
     :rail-width="56"
     class="sidebar-drawer"
+    :class="{ 'sidebar-drawer--mobile': isMobile }"
   >
     <div class="sidebar-content">
       <!-- Header -->
-      <div :class="['sidebar-header', { 'sidebar-header-railed': rail }]">
+      <div :class="['sidebar-header', { 'sidebar-header-railed': !isMobile && rail }]">
+        <!-- Desktop: Rail toggle button -->
         <v-btn
+          v-if="!isMobile"
           :icon="rail ? 'mdi-menu' : 'mdi-menu-open'"
           variant="text"
           density="comfortable"
@@ -95,9 +130,18 @@ function deleteChat(chatId: string, event: Event) {
           :aria-expanded="!rail"
           @click="rail = !rail"
         />
+        <!-- Mobile: Close button -->
+        <v-btn
+          v-else
+          icon="mdi-close"
+          variant="text"
+          density="comfortable"
+          :aria-label="$t('common.close')"
+          @click="drawer = false"
+        />
         <span
           class="sidebar-title text-h6 font-weight-bold flex-grow-1 ml-2"
-          :class="{ 'sidebar-title-hidden': rail }"
+          :class="{ 'sidebar-title-hidden': !isMobile && rail }"
           style="cursor: pointer"
           @click="createNewChat"
         >
@@ -109,15 +153,16 @@ function deleteChat(chatId: string, event: Event) {
           density="comfortable"
           :aria-label="$t('sidebar.newChat')"
           class="sidebar-new-chat-btn"
-          :class="{ 'sidebar-new-chat-btn-hidden': rail }"
+          :class="{ 'sidebar-new-chat-btn-hidden': !isMobile && rail }"
           @click="createNewChat"
         />
       </div>
 
       <v-divider />
 
-      <!-- New Chat Button (when railed) -->
+      <!-- New Chat Button (when railed - desktop only) -->
       <div
+        v-if="!isMobile"
         class="sidebar-rail-new-chat d-flex justify-center pa-2"
         :class="{ 'sidebar-rail-new-chat-visible': rail }"
       >
@@ -136,7 +181,7 @@ function deleteChat(chatId: string, event: Event) {
         density="compact"
         nav
         class="pa-2 sidebar-list sidebar-chat-list"
-        :class="{ 'sidebar-list-hidden': rail }"
+        :class="{ 'sidebar-list-hidden': !isMobile && rail }"
       >
         <template
           v-for="(chats, group) in groupedChats"
@@ -186,7 +231,7 @@ function deleteChat(chatId: string, event: Event) {
       <v-list
         density="compact"
         nav
-        :class="['pa-2 sidebar-bottom', { 'sidebar-railed': rail }]"
+        :class="['pa-2 sidebar-bottom', { 'sidebar-railed': !isMobile && rail }]"
       >
         <v-list-item
           prepend-icon="mdi-cog-outline"
@@ -194,7 +239,7 @@ function deleteChat(chatId: string, event: Event) {
         >
           <v-list-item-title
             class="sidebar-item-title"
-            :class="{ 'sidebar-item-title-hidden': rail }"
+            :class="{ 'sidebar-item-title-hidden': !isMobile && rail }"
           >
             {{ $t('common.settings') }}
           </v-list-item-title>
@@ -488,5 +533,27 @@ function deleteChat(chatId: string, event: Event) {
 
 .sidebar-railed :deep(.v-list-item .v-icon) {
   margin: 0 auto !important;
+}
+
+/* Mobile styles */
+.sidebar-drawer--mobile {
+  z-index: 1100 !important;
+}
+
+@media (max-width: 960px) {
+  .sidebar-header {
+    padding: 16px;
+  }
+
+  .sidebar-list :deep(.v-list-item),
+  .sidebar-bottom :deep(.v-list-item) {
+    min-height: 48px !important;
+    padding-inline: 16px !important;
+  }
+
+  .sidebar-group-header {
+    padding: 8px 16px;
+    min-height: 36px;
+  }
 }
 </style>

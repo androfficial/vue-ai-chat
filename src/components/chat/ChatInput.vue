@@ -137,6 +137,18 @@ function handleKeydown(event: KeyboardEvent) {
   padding: 0 24px 24px !important;
 }
 
+@media (max-width: 960px) {
+  .chat-input {
+    padding: 0 12px 16px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .chat-input {
+    padding: 0 8px 12px !important;
+  }
+}
+
 .chat-input__card {
   border: 1px solid var(--border-subtle);
   transition: all var(--transition-fast);
@@ -153,6 +165,13 @@ function handleKeydown(event: KeyboardEvent) {
   align-items: flex-end;
   gap: 8px;
   padding: 12px 12px 12px 16px;
+}
+
+@media (max-width: 600px) {
+  .chat-input__wrapper {
+    padding: 10px 10px 10px 14px;
+    gap: 6px;
+  }
 }
 
 .chat-input__actions {
