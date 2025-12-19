@@ -155,12 +155,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgb(128 128 128 / 25%);
+  background: var(--scrollbar-thumb);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgb(128 128 128 / 40%);
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* Snackbar Toast Styles */
@@ -179,18 +179,18 @@ body {
 
 /* Bright snackbar colors for both themes */
 .app-snackbar .v-snackbar__wrapper[class*='bg-success'] {
-  background-color: #22c55e !important;
+  background-color: var(--color-success) !important;
 }
 
 .app-snackbar .v-snackbar__wrapper[class*='bg-error'] {
-  background-color: #ef4444 !important;
+  background-color: var(--color-error) !important;
 }
 
 .app-snackbar .v-snackbar__wrapper[class*='bg-warning'] {
-  background-color: #f59e0b !important;
+  background-color: var(--color-warning) !important;
 }
 
 .app-snackbar .v-snackbar__wrapper[class*='bg-info'] {
-  background-color: #3b82f6 !important;
+  background-color: var(--color-info) !important;
 }
 </style>

@@ -226,7 +226,7 @@ function handleKeydown(event: KeyboardEvent) {
 }
 
 .chat-input__textarea::-webkit-scrollbar-thumb {
-  background-color: rgb(128 128 128 / 25%);
+  background-color: var(--scrollbar-thumb);
   border-radius: 3px;
 }
 
