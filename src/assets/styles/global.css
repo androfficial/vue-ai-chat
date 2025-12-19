@@ -64,6 +64,16 @@
   --color-error: #ef4444;
   --color-warning: #f59e0b;
   --color-info: #3b82f6;
+
+  /* Syntax highlighting colors (GitHub Light inspired) */
+  --hljs-text: #24292e;
+  --hljs-comment: #6a737d;
+  --hljs-keyword: #d73a49;
+  --hljs-string: #032f62;
+  --hljs-title: #6f42c1;
+  --hljs-attribute: #005cc5;
+  --hljs-symbol: #e36209;
+  --hljs-built-in: #22863a;
 }
 
 /* Dark theme shadows - deeper and more pronounced */
@@ -90,6 +100,16 @@
   --color-error: #ef4444;
   --color-warning: #f59e0b;
   --color-info: #3b82f6;
+
+  /* Syntax highlighting colors (GitHub Dark inspired) */
+  --hljs-text: #e6edf3;
+  --hljs-comment: #8b949e;
+  --hljs-keyword: #ff7b72;
+  --hljs-string: #a5d6ff;
+  --hljs-title: #d2a8ff;
+  --hljs-attribute: #79c0ff;
+  --hljs-symbol: #ffa657;
+  --hljs-built-in: #7ee787;
 }
 
 /* ============================================

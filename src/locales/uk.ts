@@ -59,6 +59,11 @@ export default {
     you: 'Ви',
   },
 
+  codeBlock: {
+    copied: 'Скопійовано!',
+    copyCode: 'Копіювати код',
+  },
+
   common: {
     cancel: 'Скасувати',
     close: 'Закрити',

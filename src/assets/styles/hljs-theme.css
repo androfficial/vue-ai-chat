@@ -1,0 +1,91 @@
+/**
+ * Highlight.js theme for code blocks
+ * Uses CSS variables from global.css for theming
+ * Adapts automatically to light/dark Vuetify themes
+ */
+
+/* Base text color */
+.hljs {
+  display: block;
+  padding: 0;
+  overflow-x: auto;
+  color: var(--hljs-text);
+  background: transparent !important;
+}
+
+/* Comments and quotes */
+.hljs-comment,
+.hljs-quote {
+  font-style: italic;
+  color: var(--hljs-comment);
+}
+
+/* Keywords and control flow */
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-addition {
+  color: var(--hljs-keyword);
+}
+
+/* Strings and literals */
+.hljs-number,
+.hljs-string,
+.hljs-meta .hljs-meta-string,
+.hljs-literal,
+.hljs-doctag,
+.hljs-regexp {
+  color: var(--hljs-string);
+}
+
+/* Titles and sections */
+.hljs-title,
+.hljs-section,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-function {
+  color: var(--hljs-title);
+}
+
+/* Attributes and variables */
+.hljs-attribute,
+.hljs-attr,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-class .hljs-title,
+.hljs-type {
+  color: var(--hljs-attribute);
+}
+
+/* Symbols and metadata */
+.hljs-symbol,
+.hljs-bullet,
+.hljs-subst,
+.hljs-meta,
+.hljs-meta .hljs-keyword,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-link {
+  color: var(--hljs-symbol);
+}
+
+/* Built-ins */
+.hljs-built_in,
+.hljs-deletion {
+  color: var(--hljs-built-in);
+}
+
+/* Parameters inherit text color */
+.hljs-function .hljs-params,
+.hljs-params {
+  color: var(--hljs-text);
+}
+
+/* Text emphasis */
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}

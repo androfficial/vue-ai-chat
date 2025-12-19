@@ -2,10 +2,13 @@
 /**
  * Message content component
  * Renders message content with markdown support for assistant messages
+ * Code blocks are rendered with syntax highlighting and copy functionality
  */
 
 import type { MessageStatus } from '@/types/message'
+import type { Tokens } from 'marked'
 
+import hljs from 'highlight.js'
 import { marked } from 'marked'
 import { computed } from 'vue'
 
@@ -24,11 +27,111 @@ defineEmits<{
   retry: []
 }>()
 
-// Configure marked
-marked.setOptions({
+/**
+ * Escape HTML to prevent XSS
+ */
+function escapeHtml(text: string): string {
+  const div = document.createElement('div')
+  div.textContent = text
+  return div.innerHTML
+}
+
+/**
+ * Generate unique ID for code block copy functionality
+ */
+function generateCodeBlockId(): string {
+  return `code-block-${Math.random().toString(36).substring(2, 11)}`
+}
+
+/**
+ * Custom renderer for code blocks with syntax highlighting and copy button
+ */
+const renderer = {
+  code({ lang, text }: Tokens.Code): string {
+    const language = lang || ''
+    const codeBlockId = generateCodeBlockId()
+
+    // Normalize language name for display
+    const languageMap: Record<string, string> = {
+      js: 'javascript',
+      jsx: 'javascript',
+      md: 'markdown',
+      py: 'python',
+      rb: 'ruby',
+      sh: 'bash',
+      shell: 'bash',
+      ts: 'typescript',
+      tsx: 'typescript',
+      yml: 'yaml',
+    }
+    const displayLanguage = languageMap[language.toLowerCase()] || language.toLowerCase() || 'text'
+
+    // Highlight code
+    let highlightedCode: string
+    if (language && hljs.getLanguage(language)) {
+      try {
+        highlightedCode = hljs.highlight(text, { language }).value
+      } catch {
+        highlightedCode = escapeHtml(text)
+      }
+    } else {
+      try {
+        highlightedCode = hljs.highlightAuto(text).value
+      } catch {
+        highlightedCode = escapeHtml(text)
+      }
+    }
+
+    return `<div class="code-block" data-code-block-id="${codeBlockId}">
+      <div class="code-block__header">
+        <span class="code-block__language">${displayLanguage}</span>
+        <button class="code-block__copy-btn" data-copy-code="${codeBlockId}" onclick="window.__copyCodeBlock('${codeBlockId}')">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          <span class="code-block__copy-text">Copy code</span>
+        </button>
+      </div>
+      <div class="code-block__content">
+        <pre class="code-block__pre"><code class="code-block__code hljs" data-code-content="${codeBlockId}">${highlightedCode}</code></pre>
+      </div>
+      <textarea class="code-block__hidden-textarea" data-code-raw="${codeBlockId}" aria-hidden="true">${escapeHtml(text)}</textarea>
+    </div>`
+  },
+}
+
+// Configure marked with custom renderer
+marked.use({
   breaks: true,
   gfm: true,
+  renderer,
 })
+
+// Global function for copy button click handler
+if (typeof window !== 'undefined') {
+  ;(window as Window & { __copyCodeBlock?: (id: string) => void }).__copyCodeBlock = (
+    id: string,
+  ) => {
+    const textarea = document.querySelector(
+      `textarea[data-code-raw="${id}"]`,
+    ) as HTMLTextAreaElement
+    const button = document.querySelector(`button[data-copy-code="${id}"]`) as HTMLButtonElement
+
+    if (textarea && button) {
+      navigator.clipboard.writeText(textarea.value).then(() => {
+        const textSpan = button.querySelector('.code-block__copy-text')
+        if (textSpan) {
+          const originalText = textSpan.textContent
+          textSpan.textContent = 'Copied!'
+          button.classList.add('code-block__copy-btn--copied')
+
+          setTimeout(() => {
+            textSpan.textContent = originalText
+            button.classList.remove('code-block__copy-btn--copied')
+          }, 2000)
+        }
+      })
+    }
+  }
+}
 
 // Render markdown for assistant messages
 const renderedContent = computed(() => {
@@ -103,7 +206,7 @@ const renderedContent = computed(() => {
     {{ content }}
   </div>
 
-  <!-- Markdown content for assistant -->
+  <!-- Markdown content for assistant with code blocks -->
   <div
     v-else
     class="message-content__text message-content__markdown"
@@ -147,7 +250,92 @@ const renderedContent = computed(() => {
   border-radius: 4px;
 }
 
-.message-content__markdown :deep(pre) {
+/* Code block container */
+.message-content__markdown :deep(.code-block) {
+  margin: 1em 0;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+}
+
+.message-content__markdown :deep(.code-block__header) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background-color: rgb(var(--v-theme-surface-variant));
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.message-content__markdown :deep(.code-block__language) {
+  font-family: 'Fira Code', Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgb(var(--v-theme-text-secondary));
+  text-transform: lowercase;
+}
+
+.message-content__markdown :deep(.code-block__copy-btn) {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 4px 10px;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgb(var(--v-theme-text-secondary));
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+}
+
+.message-content__markdown :deep(.code-block__copy-btn:hover) {
+  color: rgb(var(--v-theme-on-surface));
+  background-color: var(--border-subtle);
+}
+
+.message-content__markdown :deep(.code-block__copy-btn:active) {
+  transform: scale(0.95);
+}
+
+.message-content__markdown :deep(.code-block__copy-btn--copied) {
+  color: rgb(var(--v-theme-primary));
+}
+
+.message-content__markdown :deep(.code-block__copy-text) {
+  line-height: 1;
+}
+
+.message-content__markdown :deep(.code-block__content) {
+  overflow-x: auto;
+  background-color: rgb(var(--v-theme-surface-variant));
+}
+
+.message-content__markdown :deep(.code-block__pre) {
+  padding: 1em;
+  margin: 0;
+  overflow-x: auto;
+  background: transparent !important;
+}
+
+.message-content__markdown :deep(.code-block__code) {
+  font-family: 'Fira Code', Consolas, monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  background: transparent !important;
+}
+
+.message-content__markdown :deep(.code-block__hidden-textarea) {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* Legacy pre styles for non-code-block pre elements */
+.message-content__markdown :deep(pre:not(.code-block__pre)) {
   padding: 1em;
   margin: 0 0 1em;
   overflow-x: auto;
@@ -155,7 +343,7 @@ const renderedContent = computed(() => {
   border-radius: var(--radius-md);
 }
 
-.message-content__markdown :deep(pre code) {
+.message-content__markdown :deep(pre:not(.code-block__pre) code) {
   padding: 0;
   font-size: 0.875em;
   background: none;

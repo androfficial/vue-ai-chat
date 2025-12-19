@@ -59,6 +59,11 @@ export default {
     you: 'You',
   },
 
+  codeBlock: {
+    copied: 'Copied!',
+    copyCode: 'Copy code',
+  },
+
   common: {
     cancel: 'Cancel',
     close: 'Close',

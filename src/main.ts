@@ -12,6 +12,8 @@ import router from './plugins/router'
 import vuetify from './plugins/vuetify'
 // Global styles
 import './assets/styles/global.css'
+// Highlight.js theme for code blocks
+import './assets/styles/hljs-theme.css'
 
 // Create Vue application instance
 const app = createApp(App)
