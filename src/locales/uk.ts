@@ -19,10 +19,10 @@ export default {
     emptyState: {
       subtitle: 'Почніть розмову, ввівши повідомлення нижче',
       suggestions: [
-        { icon: 'mdi-atom', text: 'Поясни квантові обчислення простими словами' },
-        { icon: 'mdi-code-braces', text: 'Напиши Python функцію для сортування списку' },
-        { icon: 'mdi-email-outline', text: 'Допоможи написати професійний лист' },
-        { icon: 'mdi-lightbulb-outline', text: 'Дай 5 креативних ідей для проєкту' },
+        { text: 'Поясни квантові обчислення' },
+        { text: 'Напиши функцію сортування' },
+        { text: 'Склади професійний лист' },
+        { text: 'Ідеї для проєкту' },
       ],
       title: 'Чим я можу вам допомогти?',
       titles: [
@@ -169,10 +169,12 @@ export default {
   sidebar: {
     chatOptions: 'Опції чату',
     collapseSidebar: 'Згорнути бічну панель',
+    darkMode: 'Темна тема',
     deleteChat: 'Видалити чат',
     expandSidebar: 'Розгорнути бічну панель',
     lastMonth: 'Минулий місяць',
     lastWeek: 'Минулий тиждень',
+    lightMode: 'Світла тема',
     newChat: 'Новий чат',
     noChats: 'Ще немає розмов',
     older: 'Раніше',

@@ -255,6 +255,17 @@ function renameChat(chatId: string, newTitle: string) {
         :class="['pa-2 sidebar-bottom', { 'sidebar-railed': !isMobile && rail }]"
       >
         <v-list-item
+          :prepend-icon="userStore.isDarkMode ? 'mdi-weather-night' : 'mdi-white-balance-sunny'"
+          @click="userStore.toggleTheme()"
+        >
+          <v-list-item-title
+            class="sidebar-item-title"
+            :class="{ 'sidebar-item-title-hidden': !isMobile && rail }"
+          >
+            {{ userStore.isDarkMode ? $t('sidebar.lightMode') : $t('sidebar.darkMode') }}
+          </v-list-item-title>
+        </v-list-item>
+        <v-list-item
           prepend-icon="mdi-cog-outline"
           @click="openSettings"
         >
@@ -426,6 +437,11 @@ function renameChat(chatId: string, newTitle: string) {
 .sidebar-bottom :deep(.v-list-item) {
   min-height: 40px !important;
   padding-inline: 12px !important;
+}
+
+/* Reduce gap between icon and text in bottom actions */
+.sidebar-bottom :deep(.v-list-item__prepend) {
+  margin-inline-end: 12px;
 }
 
 /* Group header with collapse toggle */

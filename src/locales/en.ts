@@ -19,10 +19,10 @@ export default {
     emptyState: {
       subtitle: 'Start a conversation by typing a message below',
       suggestions: [
-        { icon: 'mdi-atom', text: 'Explain quantum computing in simple terms' },
-        { icon: 'mdi-code-braces', text: 'Write a Python function to sort a list' },
-        { icon: 'mdi-email-outline', text: 'Help me draft a professional email' },
-        { icon: 'mdi-lightbulb-outline', text: 'Give me 5 creative project ideas' },
+        { text: 'Explain quantum computing' },
+        { text: 'Write a sorting function' },
+        { text: 'Draft a professional email' },
+        { text: 'Creative project ideas' },
       ],
       title: 'How can I help you today?',
       titles: [
@@ -170,10 +170,12 @@ export default {
   sidebar: {
     chatOptions: 'Chat options',
     collapseSidebar: 'Collapse sidebar',
+    darkMode: 'Dark mode',
     deleteChat: 'Delete chat',
     expandSidebar: 'Expand sidebar',
     lastMonth: 'Last Month',
     lastWeek: 'Last Week',
+    lightMode: 'Light mode',
     newChat: 'New Chat',
     noChats: 'No conversations yet',
     older: 'Older',

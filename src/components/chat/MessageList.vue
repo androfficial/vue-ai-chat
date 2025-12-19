@@ -220,10 +220,6 @@ defineExpose({
           class="message-list__suggestion"
           @click="handleSuggestionClick(suggestion.text)"
         >
-          <v-icon
-            :icon="suggestion.icon"
-            class="message-list__suggestion-icon"
-          />
           <span class="message-list__suggestion-text">{{ suggestion.text }}</span>
         </button>
       </div>
@@ -282,26 +278,22 @@ defineExpose({
 
 .message-list__suggestions {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(2, auto);
+  gap: 8px;
+  justify-content: center;
   width: 100%;
-  max-width: 600px;
+  max-width: 680px;
 }
 
 .message-list__suggestion {
-  display: flex;
-  flex-direction: row;
-  gap: 12px;
-  align-items: flex-start;
-  padding: 16px;
+  padding: 10px 16px;
   font-size: 0.875rem;
-  line-height: 1.5;
+  line-height: 1.4;
   color: rgb(var(--v-theme-on-surface));
-  text-align: left;
   cursor: pointer;
-  background-color: rgb(var(--v-theme-surface));
+  background-color: transparent;
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: 999px;
   transition: all var(--transition-fast);
 }
 
@@ -314,25 +306,8 @@ defineExpose({
   transform: scale(0.98);
 }
 
-.message-list__suggestion-icon {
-  flex-shrink: 0;
-  width: 20px !important;
-  height: 20px !important;
-  margin-top: 2px;
-  font-size: 20px !important;
-  color: rgb(var(--v-theme-primary));
-}
-
-.message-list__suggestion-icon :deep(svg),
-.message-list__suggestion-icon :deep(i) {
-  width: 20px !important;
-  height: 20px !important;
-  font-size: 20px !important;
-}
-
 .message-list__suggestion-text {
-  flex: 1;
-  overflow-wrap: break-word;
+  white-space: nowrap;
 }
 
 @media (width <= 600px) {
@@ -350,36 +325,16 @@ defineExpose({
 
   .message-list__suggestions {
     grid-template-columns: 1fr;
-    gap: 8px;
-    max-width: 100%;
+    max-width: 280px;
   }
 
   .message-list__suggestion {
-    flex-direction: row;
-    gap: 12px;
-    align-items: center;
-    min-height: 52px;
-    padding: 12px 14px;
-    font-size: 0.875rem;
-    line-height: 1.4;
+    padding: 12px 16px;
+    text-align: center;
   }
 
   .message-list__suggestion-text {
-    overflow-wrap: break-word;
-  }
-
-  .message-list__suggestion-icon {
-    width: 20px !important;
-    height: 20px !important;
-    margin-top: 0;
-    font-size: 20px !important;
-  }
-
-  .message-list__suggestion-icon :deep(svg),
-  .message-list__suggestion-icon :deep(i) {
-    width: 20px !important;
-    height: 20px !important;
-    font-size: 20px !important;
+    white-space: normal;
   }
 }
 
