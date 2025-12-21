@@ -1,4 +1,4 @@
-import type { ApiMessage } from '@/types/api'
+import type { ApiMessage } from '@/types'
 import type { Ref } from 'vue'
 
 import { ref } from 'vue'
@@ -17,6 +17,9 @@ export interface UseChatMessagesReturn {
   stopGeneration: () => void
 }
 
+/**
+ * Composable for managing chat messages with AI streaming responses
+ */
 export function useChatMessages(): UseChatMessagesReturn {
   const chatStore = useChatStore()
   const apiStore = useApiStore()
@@ -25,6 +28,9 @@ export function useChatMessages(): UseChatMessagesReturn {
   const isLoading = ref(false)
   const abortController = ref<AbortController | null>(null)
 
+  /**
+   * Get localized error message for API error codes
+   */
   function getLocalizedErrorMessage(errorCode: string): string {
     const errorMap: Record<ApiErrorCode, string> = {
       networkError: t('errors.networkError'),
@@ -37,6 +43,9 @@ export function useChatMessages(): UseChatMessagesReturn {
     return errorMap[errorCode as ApiErrorCode] || t('errors.unknown')
   }
 
+  /**
+   * Create a stream buffer for smooth character-by-character animation
+   */
   function createMessageBuffer(chatId: string, messageId: string) {
     return useStreamBuffer({
       onFlush: text => {
@@ -44,6 +53,64 @@ export function useChatMessages(): UseChatMessagesReturn {
       },
       wordDelay: 50,
     })
+  }
+
+  /**
+   * Handle streaming response completion
+   */
+  function handleStreamComplete(chatId: string, messageId: string) {
+    chatStore.updateMessageStatus(chatId, messageId, 'completed')
+    isLoading.value = false
+    abortController.value = null
+  }
+
+  /**
+   * Handle streaming response error
+   */
+  function handleStreamError(chatId: string, messageId: string, errorCode: string) {
+    chatStore.updateMessageStatus(chatId, messageId, 'error')
+    const currentChat = chatStore.getChatById(chatId)
+    const msg = currentChat?.messages.find(m => m.id === messageId)
+    if (msg) {
+      msg.error = getLocalizedErrorMessage(errorCode)
+    }
+    isLoading.value = false
+    abortController.value = null
+  }
+
+  /**
+   * Execute streaming request with common setup and cleanup
+   */
+  async function executeStreamingRequest(
+    chatId: string,
+    messageId: string,
+    apiMessages: ApiMessage[],
+  ): Promise<void> {
+    const streamBuffer = createMessageBuffer(chatId, messageId)
+    streamBuffer.start()
+
+    abortController.value = new AbortController()
+    let streamingComplete = false
+
+    await sendStreamingChatCompletion(
+      apiMessages,
+      chunk => streamBuffer.push(chunk),
+      () => {
+        streamingComplete = true
+        streamBuffer.flushImmediate()
+        handleStreamComplete(chatId, messageId)
+      },
+      errorCode => {
+        streamBuffer.flushImmediate()
+        handleStreamError(chatId, messageId, errorCode)
+      },
+      abortController.value.signal,
+    )
+
+    // Handle abort case - flush remaining buffer
+    if (!streamingComplete) {
+      streamBuffer.flushImmediate()
+    }
   }
 
   async function sendMessage(
@@ -74,7 +141,7 @@ export function useChatMessages(): UseChatMessagesReturn {
     chatStore.updateMessageStatus(chatId, assistantMessage.id, 'streaming')
     isLoading.value = true
 
-    // Prepare messages for API
+    // Prepare messages for API (exclude the new assistant message)
     const chat = chatStore.getChatById(chatId)
     const apiMessages: ApiMessage[] =
       chat?.messages
@@ -84,45 +151,7 @@ export function useChatMessages(): UseChatMessagesReturn {
           role: msg.role,
         })) ?? []
 
-    // Create stream buffer for smooth character-by-character animation
-    const streamBuffer = createMessageBuffer(chatId, assistantMessage.id)
-    streamBuffer.start()
-
-    // Send streaming request
-    abortController.value = new AbortController()
-
-    let streamingComplete = false
-
-    await sendStreamingChatCompletion(
-      apiMessages,
-      chunk => {
-        streamBuffer.push(chunk)
-      },
-      () => {
-        streamingComplete = true
-        streamBuffer.flushImmediate()
-        chatStore.updateMessageStatus(chatId, assistantMessage.id, 'completed')
-        isLoading.value = false
-        abortController.value = null
-      },
-      errorCode => {
-        streamBuffer.flushImmediate()
-        chatStore.updateMessageStatus(chatId, assistantMessage.id, 'error')
-        const currentChat = chatStore.getChatById(chatId)
-        const msg = currentChat?.messages.find(m => m.id === assistantMessage.id)
-        if (msg) {
-          msg.error = getLocalizedErrorMessage(errorCode)
-        }
-        isLoading.value = false
-        abortController.value = null
-      },
-      abortController.value.signal,
-    )
-
-    // If streaming finished but buffer hasn't flushed yet (abort case)
-    if (!streamingComplete) {
-      streamBuffer.flushImmediate()
-    }
+    await executeStreamingRequest(chatId, assistantMessage.id, apiMessages)
   }
 
   function stopGeneration(): void {
@@ -156,46 +185,7 @@ export function useChatMessages(): UseChatMessagesReturn {
       role: msg.role,
     }))
 
-    // Create stream buffer for smooth character-by-character animation
-    const streamBuffer = createMessageBuffer(chatId, assistantMessageId)
-    streamBuffer.start()
-
-    // Send streaming request
-    abortController.value = new AbortController()
-
-    let streamingComplete = false
-
-    await sendStreamingChatCompletion(
-      apiMessages,
-      // On chunk - push to buffer instead of direct update
-      chunk => {
-        streamBuffer.push(chunk)
-      },
-      // On complete - flush remaining buffer
-      () => {
-        streamingComplete = true
-        streamBuffer.flushImmediate()
-        chatStore.updateMessageStatus(chatId, assistantMessageId, 'completed')
-        isLoading.value = false
-        abortController.value = null
-      },
-      errorCode => {
-        streamBuffer.flushImmediate()
-        chatStore.updateMessageStatus(chatId, assistantMessageId, 'error')
-        const currentChat = chatStore.getChatById(chatId)
-        const msg = currentChat?.messages.find(m => m.id === assistantMessageId)
-        if (msg) {
-          msg.error = getLocalizedErrorMessage(errorCode)
-        }
-        isLoading.value = false
-        abortController.value = null
-      },
-      abortController.value.signal,
-    )
-
-    if (!streamingComplete) {
-      streamBuffer.flushImmediate()
-    }
+    await executeStreamingRequest(chatId, assistantMessageId, apiMessages)
   }
 
   return {

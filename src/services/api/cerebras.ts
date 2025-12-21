@@ -4,19 +4,40 @@ import type {
   ChatCompletionRequest,
   ChatCompletionResponse,
   StreamingChunk,
-} from '@/types/api'
+} from '@/types'
 import type { AxiosInstance } from 'axios'
 
 import axios from 'axios'
 
 import { useApiStore } from '@/stores/api'
 
+/**
+ * API error codes for handling different error scenarios
+ */
 export type ApiErrorCode =
-  | 'unauthorized'
+  | 'networkError'
   | 'rateLimited'
   | 'serverError'
-  | 'networkError'
+  | 'unauthorized'
   | 'unknown'
+
+/**
+ * Array of all valid API error codes for type checking
+ */
+const API_ERROR_CODES: readonly ApiErrorCode[] = [
+  'networkError',
+  'rateLimited',
+  'serverError',
+  'unauthorized',
+  'unknown',
+] as const
+
+/**
+ * Type guard to check if a string is a valid ApiErrorCode
+ */
+function isApiErrorCode(value: string): value is ApiErrorCode {
+  return API_ERROR_CODES.includes(value as ApiErrorCode)
+}
 
 export function getErrorCodeFromStatus(status: number): ApiErrorCode {
   if (status === 401 || status === 403) return 'unauthorized'
@@ -221,14 +242,7 @@ export async function sendStreamingChatCompletion(
       if (error.name === 'AbortError') {
         return
       }
-      const knownCodes: ApiErrorCode[] = [
-        'unauthorized',
-        'rateLimited',
-        'serverError',
-        'networkError',
-        'unknown',
-      ]
-      if (knownCodes.includes(error.message as ApiErrorCode)) {
+      if (isApiErrorCode(error.message)) {
         onError(error.message)
       } else {
         onError(getErrorCode(error))

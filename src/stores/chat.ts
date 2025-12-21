@@ -1,5 +1,12 @@
-import type { Chat, ChatListItem, CreateChatPayload, UpdateChatPayload } from '@/types/chat'
-import type { CreateMessagePayload, Message, MessageStatus } from '@/types/message'
+import type {
+  Chat,
+  ChatListItem,
+  CreateChatPayload,
+  CreateMessagePayload,
+  Message,
+  MessageStatus,
+  UpdateChatPayload,
+} from '@/types'
 
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'
@@ -221,19 +228,19 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   return {
-    // Getters
+    // Getters (computed)
     activeChat,
-    // State
+    // State (refs)
     activeChatId,
-    // Actions
+    // Actions (alphabetically sorted)
     addMessage,
-
     appendToMessage,
+
     chatList,
     chats,
-
     clearAllChats,
     convertToRegularChat,
+
     createChat,
     deleteChat,
     deleteMessage,

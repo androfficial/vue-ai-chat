@@ -15,7 +15,7 @@ export interface UseAutoScrollReturn {
 }
 
 export function useAutoScroll(options: UseAutoScrollOptions = {}): UseAutoScrollReturn {
-  const { smooth: _smooth = true, threshold = 100 } = options
+  const { threshold = 100 } = options
 
   const containerRef = ref<HTMLElement>()
   const isAtBottom = ref(true)

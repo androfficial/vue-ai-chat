@@ -5,7 +5,7 @@
  * Code blocks are rendered with syntax highlighting and copy functionality
  */
 
-import type { MessageStatus } from '@/types/message'
+import type { MessageStatus } from '@/types'
 import type { Tokens } from 'marked'
 
 import hljs from 'highlight.js'

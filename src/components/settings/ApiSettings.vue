@@ -10,7 +10,7 @@ import { useI18n } from 'vue-i18n'
 import { useToast } from '@/composables'
 import { testApiConnection } from '@/services/api/cerebras'
 import { useApiStore } from '@/stores/api'
-import { CEREBRAS_MODELS } from '@/types/api'
+import { CEREBRAS_MODELS } from '@/types'
 
 import SettingsCard from './SettingsCard.vue'
 

@@ -4,7 +4,7 @@
  * Renders individual chat messages with actions
  */
 
-import type { Message } from '@/types/message'
+import type { Message } from '@/types'
 
 import { computed, ref } from 'vue'
 

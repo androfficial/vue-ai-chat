@@ -1,5 +1,4 @@
-import type { SupportedLocale, ThemeMode } from '@/types'
-import type { UserPreferences } from '@/types/user'
+import type { SupportedLocale, ThemeMode, UserPreferences } from '@/types'
 
 import { defineStore } from 'pinia'
 import { computed, ref, watch } from 'vue'

@@ -4,7 +4,7 @@
  * Displays chat messages with auto-scroll functionality
  */
 
-import type { Message } from '@/types/message'
+import type { Message } from '@/types'
 
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'

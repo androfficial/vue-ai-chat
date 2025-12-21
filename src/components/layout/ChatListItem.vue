@@ -4,10 +4,17 @@
  * Displays individual chat entry in sidebar
  */
 
-import type { ChatListItem } from '@/types/chat'
+import type { ChatListItem } from '@/types'
 
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+
+// Props
+interface Props {
+  chat: ChatListItem
+  isActive: boolean
+  timestamp: string
+}
 
 const props = defineProps<Props>()
 
@@ -19,12 +26,6 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
-
-interface Props {
-  chat: ChatListItem
-  isActive: boolean
-  timestamp: string
-}
 
 const showMenu = ref(false)
 const showDeleteDialog = ref(false)
