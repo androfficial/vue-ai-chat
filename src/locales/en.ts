@@ -97,6 +97,7 @@ export default {
   },
 
   errors: {
+    globalError: 'An unexpected error occurred. Please refresh the page if the problem persists.',
     networkError: 'Connection error. Please check your internet connection and try again.',
     rateLimited: 'Too many requests. Please wait a moment and try again.',
     serverError: 'Server is temporarily unavailable. Please try again later.',

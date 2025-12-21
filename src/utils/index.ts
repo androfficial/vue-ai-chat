@@ -3,7 +3,8 @@
  * Centralizes all utility exports
  */
 
-export * from './id'
 export * from './date'
+export * from './errorHandler'
+export * from './id'
 export * from './storage'
 export * from './validation'
