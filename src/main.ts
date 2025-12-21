@@ -6,15 +6,16 @@
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
 
+import i18n from '@/plugins/i18n'
+import router from '@/plugins/router'
+import vuetify from '@/plugins/vuetify'
+import { setupGlobalErrorHandler, setupWindowErrorHandlers } from '@/utils'
+
 import App from './App.vue'
-import i18n from './plugins/i18n'
-import router from './plugins/router'
-import vuetify from './plugins/vuetify'
-import { setupGlobalErrorHandler, setupWindowErrorHandlers } from './utils/errorHandler'
 // Global styles
-import './assets/styles/global.css'
+import '@/assets/styles/global.css'
 // Highlight.js theme for code blocks
-import './assets/styles/hljs-theme.css'
+import '@/assets/styles/hljs-theme.css'
 
 // Create Vue application instance
 const app = createApp(App)
