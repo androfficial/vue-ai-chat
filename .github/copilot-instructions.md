@@ -9,10 +9,20 @@ Vue 3 + TypeScript chat app with Cerebras AI integration. Uses Composition API w
 ## Project Structure
 
 - **`src/stores/`** - Pinia stores with localStorage sync (`chat.ts`, `api.ts`, `user.ts`)
-- **`src/composables/`** - Reusable logic (e.g., `useChatMessages`, `useAutoScroll`, `useToast`)
+- **`src/composables/`** - Reusable logic:
+  - `useChatMessages` - Chat messaging with streaming
+  - `useAutoScroll` - Auto-scroll to bottom
+  - `useStreamBuffer` - Smooth word-by-word animation
+  - `useMarkdownRenderer` - Markdown to HTML with syntax highlighting
+  - `useAutoResizeTextarea` - Dynamic textarea height
+  - `useClipboard` - Copy to clipboard
+  - `useToast` - Toast notifications
+  - `useDateFormatter` - Date formatting
+  - `useHead` - Document head management
 - **`src/services/api/`** - API clients with streaming support
 - **`src/types/`** - TypeScript interfaces, barrel-exported via `index.ts`
 - **`src/locales/`** - i18n translations (EN/UK)
+- **`src/utils/`** - Utility functions (`storage.ts`, `validation.ts`, `date.ts`, `id.ts`, `errorHandler.ts`)
 
 ## Code Conventions
 
@@ -74,6 +84,8 @@ await sendStreamingChatCompletion(messages, { signal: abortController.value?.sig
 npm run dev        # Start dev server (port 5173)
 npm run build      # Type-check + build
 npm run lint       # ESLint with auto-fix
+npm run lint:css   # Stylelint with auto-fix
+npm run format     # Prettier formatting
 npm run type-check # TypeScript validation only
 ```
 
