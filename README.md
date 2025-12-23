@@ -1,4 +1,4 @@
-# AI Chat
+# AI Chat 🤖
 
 A modern chat application powered by Cerebras AI, built with Vue 3, TypeScript, and Vuetify 3.
 
