@@ -32,8 +32,8 @@ A modern chat application powered by Cerebras AI, built with Vue 3, TypeScript, 
 | Routing              | Vue Router 4.x                                  |
 | UI Framework         | Vuetify 3.11                                    |
 | Internationalization | Vue I18n 9.x                                    |
-| HTTP Client          | Axios                                           |
 | Markdown             | Marked                                          |
+| Syntax Highlighting  | Highlight.js                                    |
 | Linting              | ESLint 9.x with Perfectionist plugin            |
 | Formatting           | Prettier                                        |
 | Git Hooks            | Husky                                           |
@@ -90,6 +90,7 @@ src/
 ├── components/
 │   ├── chat/           # Chat components
 │   │   ├── ChatInput.vue       # Message input with auto-resize
+│   │   ├── CodeBlock.vue       # Code syntax highlighting
 │   │   ├── MessageList.vue     # Messages container with auto-scroll
 │   │   ├── MessageBubble.vue   # Individual message display
 │   │   ├── MessageContent.vue  # Markdown rendering
