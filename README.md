@@ -2,6 +2,7 @@
 
 A modern chat application powered by Cerebras AI, built with Vue 3, TypeScript, and Vuetify 3.
 
+![CI](https://github.com/androfficial/vue-ai-chat-test-task/actions/workflows/ci.yml/badge.svg)
 ![Vue.js](https://img.shields.io/badge/Vue.js-3.5-4FC08D?logo=vue.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)
 ![Vuetify](https://img.shields.io/badge/Vuetify-3.11-1867C0?logo=vuetify)
@@ -37,6 +38,7 @@ A modern chat application powered by Cerebras AI, built with Vue 3, TypeScript, 
 | Linting              | ESLint 9.x with Perfectionist plugin            |
 | Formatting           | Prettier                                        |
 | Git Hooks            | Husky                                           |
+| CI/CD                | GitHub Actions + Vercel                         |
 
 ## 🚀 Getting Started
 
@@ -173,7 +175,35 @@ localStorage persistence
 - **Barrel exports** - Types, composables, stores via index files
 - **ESLint Perfectionist** - Enforced import/property sorting
 
-## 📄 License
+## � CI/CD Pipeline
+
+The project uses GitHub Actions for continuous integration and deployment to Vercel.
+
+### Workflow
+
+1. **On Push/PR** → Runs lint, type-check, and build
+2. **On Success** → Deploys to Vercel (preview for PRs, production for main)
+
+### Pipeline Steps
+
+| Step           | Description                          |
+| -------------- | ------------------------------------ |
+| ESLint         | JavaScript/TypeScript/Vue linting    |
+| Stylelint      | CSS linting                          |
+| Type Check     | TypeScript validation                |
+| Build          | Production build verification        |
+| Deploy Preview | PR preview deployment to Vercel      |
+| Deploy Prod    | Production deployment on main branch |
+
+### Required Secrets
+
+Configure in GitHub repository settings (Settings → Secrets → Actions):
+
+- `VERCEL_TOKEN` - Vercel API token
+- `VERCEL_ORG_ID` - Vercel organization ID
+- `VERCEL_PROJECT_ID` - Vercel project ID
+
+## �📄 License
 
 MIT
 
