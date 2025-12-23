@@ -2,15 +2,16 @@
 /**
  * Message content component
  * Renders message content with markdown support for assistant messages
- * Code blocks are rendered with syntax highlighting and copy functionality
+ * Code blocks are rendered as separate Vue components with proper event handling
  */
 
 import type { MessageStatus } from '@/types'
-import type { Tokens } from 'marked'
 
-import hljs from 'highlight.js'
-import { marked } from 'marked'
-import { computed } from 'vue'
+import { computed, toRef } from 'vue'
+
+import { useMarkdownRenderer } from '@/composables'
+
+import CodeBlock from './CodeBlock.vue'
 
 // Props
 interface Props {
@@ -27,119 +28,12 @@ defineEmits<{
   retry: []
 }>()
 
-/**
- * Escape HTML to prevent XSS
- */
-function escapeHtml(text: string): string {
-  const div = document.createElement('div')
-  div.textContent = text
-  return div.innerHTML
-}
+// Use markdown renderer composable for assistant messages
+const contentRef = toRef(props, 'content')
+const { parsedBlocks } = useMarkdownRenderer(contentRef)
 
-/**
- * Generate unique ID for code block copy functionality
- */
-function generateCodeBlockId(): string {
-  return `code-block-${Math.random().toString(36).substring(2, 11)}`
-}
-
-/**
- * Custom renderer for code blocks with syntax highlighting and copy button
- */
-const renderer = {
-  code({ lang, text }: Tokens.Code): string {
-    const language = lang || ''
-    const codeBlockId = generateCodeBlockId()
-
-    // Normalize language name for display
-    const languageMap: Record<string, string> = {
-      js: 'javascript',
-      jsx: 'javascript',
-      md: 'markdown',
-      py: 'python',
-      rb: 'ruby',
-      sh: 'bash',
-      shell: 'bash',
-      ts: 'typescript',
-      tsx: 'typescript',
-      yml: 'yaml',
-    }
-    const displayLanguage = languageMap[language.toLowerCase()] || language.toLowerCase() || 'text'
-
-    // Highlight code
-    let highlightedCode: string
-    if (language && hljs.getLanguage(language)) {
-      try {
-        highlightedCode = hljs.highlight(text, { language }).value
-      } catch {
-        highlightedCode = escapeHtml(text)
-      }
-    } else {
-      try {
-        highlightedCode = hljs.highlightAuto(text).value
-      } catch {
-        highlightedCode = escapeHtml(text)
-      }
-    }
-
-    return `<div class="code-block" data-code-block-id="${codeBlockId}">
-      <div class="code-block__header">
-        <span class="code-block__language">${displayLanguage}</span>
-        <button class="code-block__copy-btn" data-copy-code="${codeBlockId}" onclick="window.__copyCodeBlock('${codeBlockId}')">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-          <span class="code-block__copy-text">Copy code</span>
-        </button>
-      </div>
-      <div class="code-block__content">
-        <pre class="code-block__pre"><code class="code-block__code hljs" data-code-content="${codeBlockId}">${highlightedCode}</code></pre>
-      </div>
-      <textarea class="code-block__hidden-textarea" data-code-raw="${codeBlockId}" aria-hidden="true">${escapeHtml(text)}</textarea>
-    </div>`
-  },
-}
-
-// Configure marked with custom renderer
-marked.use({
-  breaks: true,
-  gfm: true,
-  renderer,
-})
-
-// Global function for copy button click handler
-if (typeof window !== 'undefined') {
-  ;(window as Window & { __copyCodeBlock?: (id: string) => void }).__copyCodeBlock = (
-    id: string,
-  ) => {
-    const textarea = document.querySelector(
-      `textarea[data-code-raw="${id}"]`,
-    ) as HTMLTextAreaElement
-    const button = document.querySelector(`button[data-copy-code="${id}"]`) as HTMLButtonElement
-
-    if (textarea && button) {
-      navigator.clipboard.writeText(textarea.value).then(() => {
-        const textSpan = button.querySelector('.code-block__copy-text')
-        if (textSpan) {
-          const originalText = textSpan.textContent
-          textSpan.textContent = 'Copied!'
-          button.classList.add('code-block__copy-btn--copied')
-
-          setTimeout(() => {
-            textSpan.textContent = originalText
-            button.classList.remove('code-block__copy-btn--copied')
-          }, 2000)
-        }
-      })
-    }
-  }
-}
-
-// Render markdown for assistant messages
-const renderedContent = computed(() => {
-  if (props.isUser) {
-    return props.content
-  }
-  return marked.parse(props.content) as string
-})
+// Check if content has any actual text
+const hasContent = computed(() => props.content.length > 0)
 </script>
 
 <template>
@@ -164,7 +58,7 @@ const renderedContent = computed(() => {
   >
     <!-- Show thinking indicator when no content yet -->
     <div
-      v-if="!content"
+      v-if="!hasContent"
       class="message-content__thinking"
     >
       <div class="thinking-dots">
@@ -176,10 +70,23 @@ const renderedContent = computed(() => {
     </div>
     <!-- Show content with blinking cursor -->
     <template v-else>
-      <div
-        class="message-content__text message-content__markdown"
-        v-html="renderedContent"
-      />
+      <div class="message-content__text message-content__markdown">
+        <template
+          v-for="(block, index) in parsedBlocks"
+          :key="index"
+        >
+          <CodeBlock
+            v-if="block.type === 'code'"
+            :code="block.code"
+            :language="block.language"
+          />
+          <div
+            v-else
+            class="markdown-content"
+            v-html="block.html"
+          />
+        </template>
+      </div>
       <span class="streaming-cursor">▌</span>
     </template>
   </div>
@@ -198,7 +105,7 @@ const renderedContent = computed(() => {
     <span class="text-error">{{ error || $t('chat.error.failed') }}</span>
   </div>
 
-  <!-- Normal content -->
+  <!-- Normal content for user messages -->
   <div
     v-else-if="isUser"
     class="message-content__text message-content__text--user"
@@ -206,12 +113,27 @@ const renderedContent = computed(() => {
     {{ content }}
   </div>
 
-  <!-- Markdown content for assistant with code blocks -->
+  <!-- Markdown content for assistant with code blocks as Vue components -->
   <div
     v-else
     class="message-content__text message-content__markdown"
-    v-html="renderedContent"
-  />
+  >
+    <template
+      v-for="(block, index) in parsedBlocks"
+      :key="index"
+    >
+      <CodeBlock
+        v-if="block.type === 'code'"
+        :code="block.code"
+        :language="block.language"
+      />
+      <div
+        v-else
+        class="markdown-content"
+        v-html="block.html"
+      />
+    </template>
+  </div>
 </template>
 
 <style scoped>
@@ -224,25 +146,33 @@ const renderedContent = computed(() => {
   white-space: pre-wrap;
 }
 
-.message-content__markdown :deep(p) {
+/* Markdown content styles */
+.message-content__markdown :deep(p),
+.message-content__markdown .markdown-content :deep(p) {
   margin: 0 0 1em;
 }
 
-.message-content__markdown :deep(p:last-child) {
+.message-content__markdown :deep(p:last-child),
+.message-content__markdown .markdown-content :deep(p:last-child) {
   margin-bottom: 0;
 }
 
 .message-content__markdown :deep(ul),
-.message-content__markdown :deep(ol) {
+.message-content__markdown :deep(ol),
+.message-content__markdown .markdown-content :deep(ul),
+.message-content__markdown .markdown-content :deep(ol) {
   padding-left: 1.5em;
   margin: 0 0 1em;
 }
 
-.message-content__markdown :deep(li) {
+.message-content__markdown :deep(li),
+.message-content__markdown .markdown-content :deep(li) {
   margin-bottom: 0.25em;
 }
 
-.message-content__markdown :deep(code) {
+/* Inline code styling */
+.message-content__markdown :deep(code),
+.message-content__markdown .markdown-content :deep(code) {
   padding: 0.2em 0.4em;
   font-family: 'Fira Code', Consolas, monospace;
   font-size: 0.9em;
@@ -250,92 +180,9 @@ const renderedContent = computed(() => {
   border-radius: 4px;
 }
 
-/* Code block container */
-.message-content__markdown :deep(.code-block) {
-  margin: 1em 0;
-  overflow: hidden;
-  border-radius: var(--radius-md);
-}
-
-.message-content__markdown :deep(.code-block__header) {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  background-color: rgb(var(--v-theme-surface-variant));
-  border-bottom: 1px solid var(--border-subtle);
-}
-
-.message-content__markdown :deep(.code-block__language) {
-  font-family: 'Fira Code', Consolas, monospace;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: rgb(var(--v-theme-text-secondary));
-  text-transform: lowercase;
-}
-
-.message-content__markdown :deep(.code-block__copy-btn) {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  padding: 4px 10px;
-  font-family: inherit;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: rgb(var(--v-theme-text-secondary));
-  cursor: pointer;
-  background: transparent;
-  border: none;
-  border-radius: var(--radius-sm);
-  transition: all var(--transition-fast);
-}
-
-.message-content__markdown :deep(.code-block__copy-btn:hover) {
-  color: rgb(var(--v-theme-on-surface));
-  background-color: var(--border-subtle);
-}
-
-.message-content__markdown :deep(.code-block__copy-btn:active) {
-  transform: scale(0.95);
-}
-
-.message-content__markdown :deep(.code-block__copy-btn--copied) {
-  color: rgb(var(--v-theme-primary));
-}
-
-.message-content__markdown :deep(.code-block__copy-text) {
-  line-height: 1;
-}
-
-.message-content__markdown :deep(.code-block__content) {
-  overflow-x: auto;
-  background-color: rgb(var(--v-theme-surface-variant));
-}
-
-.message-content__markdown :deep(.code-block__pre) {
-  padding: 1em;
-  margin: 0;
-  overflow-x: auto;
-  background: transparent !important;
-}
-
-.message-content__markdown :deep(.code-block__code) {
-  font-family: 'Fira Code', Consolas, monospace;
-  font-size: 0.875rem;
-  line-height: 1.5;
-  background: transparent !important;
-}
-
-.message-content__markdown :deep(.code-block__hidden-textarea) {
-  position: absolute;
-  width: 0;
-  height: 0;
-  pointer-events: none;
-  opacity: 0;
-}
-
 /* Legacy pre styles for non-code-block pre elements */
-.message-content__markdown :deep(pre:not(.code-block__pre)) {
+.message-content__markdown :deep(pre:not(.code-block__pre)),
+.message-content__markdown .markdown-content :deep(pre:not(.code-block__pre)) {
   padding: 1em;
   margin: 0 0 1em;
   overflow-x: auto;
@@ -343,36 +190,45 @@ const renderedContent = computed(() => {
   border-radius: var(--radius-md);
 }
 
-.message-content__markdown :deep(pre:not(.code-block__pre) code) {
+.message-content__markdown :deep(pre:not(.code-block__pre) code),
+.message-content__markdown .markdown-content :deep(pre:not(.code-block__pre) code) {
   padding: 0;
   font-size: 0.875em;
   background: none;
 }
 
-.message-content__markdown :deep(blockquote) {
+.message-content__markdown :deep(blockquote),
+.message-content__markdown .markdown-content :deep(blockquote) {
   padding-left: 1em;
   margin: 0 0 1em;
   color: rgb(var(--v-theme-text-secondary));
   border-left: 3px solid rgb(var(--v-theme-primary));
 }
 
-.message-content__markdown :deep(strong) {
+.message-content__markdown :deep(strong),
+.message-content__markdown .markdown-content :deep(strong) {
   font-weight: 600;
 }
 
-.message-content__markdown :deep(a) {
+.message-content__markdown :deep(a),
+.message-content__markdown .markdown-content :deep(a) {
   color: rgb(var(--v-theme-primary));
   text-decoration: none;
 }
 
-.message-content__markdown :deep(a:hover) {
+.message-content__markdown :deep(a:hover),
+.message-content__markdown .markdown-content :deep(a:hover) {
   text-decoration: underline;
 }
 
 .message-content__markdown :deep(h1),
 .message-content__markdown :deep(h2),
 .message-content__markdown :deep(h3),
-.message-content__markdown :deep(h4) {
+.message-content__markdown :deep(h4),
+.message-content__markdown .markdown-content :deep(h1),
+.message-content__markdown .markdown-content :deep(h2),
+.message-content__markdown .markdown-content :deep(h3),
+.message-content__markdown .markdown-content :deep(h4) {
   margin: 1em 0 0.5em;
   font-weight: 600;
 }
@@ -380,10 +236,15 @@ const renderedContent = computed(() => {
 .message-content__markdown :deep(h1:first-child),
 .message-content__markdown :deep(h2:first-child),
 .message-content__markdown :deep(h3:first-child),
-.message-content__markdown :deep(h4:first-child) {
+.message-content__markdown :deep(h4:first-child),
+.message-content__markdown .markdown-content :deep(h1:first-child),
+.message-content__markdown .markdown-content :deep(h2:first-child),
+.message-content__markdown .markdown-content :deep(h3:first-child),
+.message-content__markdown .markdown-content :deep(h4:first-child) {
   margin-top: 0;
 }
 
+/* Error state */
 .message-content__error {
   display: flex;
   align-items: flex-start;
@@ -397,6 +258,7 @@ const renderedContent = computed(() => {
   word-break: break-word;
 }
 
+/* Streaming state */
 .message-content__streaming {
   display: flex;
   flex-wrap: wrap;

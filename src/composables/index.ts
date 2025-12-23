@@ -18,6 +18,14 @@ export { useHead } from './useHead'
 export { useDateFormatter } from './useDateFormatter'
 export type { UseDateFormatterReturn } from './useDateFormatter'
 
+export { useMarkdownRenderer } from './useMarkdownRenderer'
+export type {
+  CodeBlockData,
+  HtmlBlockData,
+  MarkdownRendererReturn,
+  ParsedBlock,
+} from './useMarkdownRenderer'
+
 export { useStreamBuffer } from './useStreamBuffer'
 export type { UseStreamBufferOptions, UseStreamBufferReturn } from './useStreamBuffer'
 

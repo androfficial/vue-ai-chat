@@ -5,9 +5,6 @@ import type {
   ChatCompletionResponse,
   StreamingChunk,
 } from '@/types'
-import type { AxiosInstance } from 'axios'
-
-import axios from 'axios'
 
 import { useApiStore } from '@/stores/api'
 
@@ -39,6 +36,9 @@ function isApiErrorCode(value: string): value is ApiErrorCode {
   return API_ERROR_CODES.includes(value as ApiErrorCode)
 }
 
+/**
+ * Map HTTP status code to API error code
+ */
 export function getErrorCodeFromStatus(status: number): ApiErrorCode {
   if (status === 401 || status === 403) return 'unauthorized'
   if (status === 429) return 'rateLimited'
@@ -46,6 +46,9 @@ export function getErrorCodeFromStatus(status: number): ApiErrorCode {
   return 'unknown'
 }
 
+/**
+ * Determine error code from error object
+ */
 export function getErrorCode(error: unknown, status?: number): ApiErrorCode {
   if (status) {
     return getErrorCodeFromStatus(status)
@@ -75,77 +78,164 @@ export function getErrorCode(error: unknown, status?: number): ApiErrorCode {
   return 'unknown'
 }
 
-function createApiInstance(): AxiosInstance {
-  const apiStore = useApiStore()
-
-  const instance = axios.create({
-    baseURL: apiStore.config.baseUrl,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    timeout: 60000,
-  })
-
-  instance.interceptors.request.use(config => {
-    const apiStore = useApiStore()
-    if (apiStore.apiKey) {
-      config.headers.Authorization = `Bearer ${apiStore.apiKey}`
-    }
-    return config
-  })
-
-  instance.interceptors.response.use(
-    response => response,
-    error => {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          const errorData = error.response.data as { error?: { message?: string } }
-          const message = errorData?.error?.message || error.message
-          console.error('Cerebras API Error:', message)
-          return Promise.reject(new Error(message))
-        } else if (error.request) {
-          console.error('Network Error:', error.message)
-          return Promise.reject(new Error('Network error - please check your connection'))
-        }
-      }
-      return Promise.reject(error)
-    },
-  )
-
-  return instance
+/**
+ * API client configuration
+ */
+interface ApiClientConfig {
+  apiKey: string
+  baseUrl: string
 }
 
+/**
+ * Get current API configuration from store
+ */
+function getApiConfig(): ApiClientConfig {
+  const apiStore = useApiStore()
+  return {
+    apiKey: apiStore.apiKey,
+    baseUrl: apiStore.config.baseUrl,
+  }
+}
+
+/**
+ * Build request headers for API calls
+ */
+function buildHeaders(apiKey: string): HeadersInit {
+  return {
+    Authorization: `Bearer ${apiKey}`,
+    'Content-Type': 'application/json',
+  }
+}
+
+/**
+ * Build chat completion request body
+ */
+function buildRequestBody(messages: ApiMessage[], stream: boolean): ChatCompletionRequest {
+  const apiStore = useApiStore()
+  return {
+    max_tokens: apiStore.config.maxTokens,
+    messages,
+    model: apiStore.config.model,
+    stream,
+    temperature: apiStore.config.temperature,
+    top_p: apiStore.config.topP,
+  }
+}
+
+/**
+ * Unified fetch wrapper for API requests
+ */
+async function apiRequest(
+  endpoint: string,
+  body: unknown,
+  signal?: AbortSignal,
+): Promise<Response> {
+  const { apiKey, baseUrl } = getApiConfig()
+
+  const response = await fetch(`${baseUrl}${endpoint}`, {
+    body: JSON.stringify(body),
+    headers: buildHeaders(apiKey),
+    method: 'POST',
+    signal,
+  })
+
+  if (!response.ok) {
+    const errorCode = getErrorCodeFromStatus(response.status)
+    throw new Error(errorCode)
+  }
+
+  return response
+}
+
+/**
+ * Send non-streaming chat completion request
+ */
 export async function sendChatCompletion(
   messages: ApiMessage[],
 ): Promise<ApiResponse<ChatCompletionResponse>> {
   try {
-    const apiStore = useApiStore()
-    const api = createApiInstance()
-
-    const requestBody: ChatCompletionRequest = {
-      max_tokens: apiStore.config.maxTokens,
-      messages,
-      model: apiStore.config.model,
-      stream: false,
-      temperature: apiStore.config.temperature,
-      top_p: apiStore.config.topP,
-    }
-
-    const response = await api.post<ChatCompletionResponse>('/chat/completions', requestBody)
+    const requestBody = buildRequestBody(messages, false)
+    const response = await apiRequest('/chat/completions', requestBody)
+    const data = (await response.json()) as ChatCompletionResponse
 
     return {
-      data: response.data,
+      data,
       success: true,
     }
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error occurred'
+    const errorCode =
+      error instanceof Error && isApiErrorCode(error.message) ? error.message : getErrorCode(error)
     return {
-      error: message,
+      error: errorCode,
       success: false,
     }
   }
 }
 
+/**
+ * Process SSE stream and extract content chunks
+ */
+async function processStream(
+  reader: ReadableStreamDefaultReader<Uint8Array>,
+  onChunk: (content: string) => void,
+  onComplete: () => void,
+): Promise<void> {
+  const decoder = new TextDecoder()
+  let buffer = ''
+
+  while (true) {
+    const { done, value } = await reader.read()
+
+    if (done) {
+      break
+    }
+
+    const chunk = decoder.decode(value, { stream: true })
+    buffer += chunk
+
+    // Process complete SSE events
+    const lines = buffer.split('\n')
+    buffer = lines.pop() || '' // Keep incomplete line in buffer
+
+    for (const line of lines) {
+      const trimmedLine = line.trim()
+
+      if (trimmedLine === '' || trimmedLine === 'data: [DONE]') {
+        if (trimmedLine === 'data: [DONE]') {
+          onComplete()
+          return
+        }
+        continue
+      }
+
+      if (trimmedLine.startsWith('data: ')) {
+        try {
+          const jsonData = trimmedLine.slice(6)
+          const streamChunk: StreamingChunk = JSON.parse(jsonData)
+
+          const delta = streamChunk.choices[0]?.delta
+          if (delta?.content) {
+            onChunk(delta.content)
+          }
+
+          // Check for finish reason
+          if (streamChunk.choices[0]?.finish_reason) {
+            onComplete()
+            return
+          }
+        } catch {
+          console.warn('Failed to parse streaming chunk:', trimmedLine)
+        }
+      }
+    }
+  }
+
+  onComplete()
+}
+
+/**
+ * Send streaming chat completion request
+ */
 export async function sendStreamingChatCompletion(
   messages: ApiMessage[],
   onChunk: (content: string) => void,
@@ -153,90 +243,16 @@ export async function sendStreamingChatCompletion(
   onError: (error: string) => void,
   signal?: AbortSignal,
 ): Promise<void> {
-  const apiStore = useApiStore()
-
-  const requestBody: ChatCompletionRequest = {
-    max_tokens: apiStore.config.maxTokens,
-    messages,
-    model: apiStore.config.model,
-    stream: true,
-    temperature: apiStore.config.temperature,
-    top_p: apiStore.config.topP,
-  }
-
   try {
-    const response = await fetch(`${apiStore.config.baseUrl}/chat/completions`, {
-      body: JSON.stringify(requestBody),
-      headers: {
-        Authorization: `Bearer ${apiStore.apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-      signal,
-    })
-
-    if (!response.ok) {
-      const errorCode = getErrorCodeFromStatus(response.status)
-      throw new Error(errorCode)
-    }
+    const requestBody = buildRequestBody(messages, true)
+    const response = await apiRequest('/chat/completions', requestBody, signal)
 
     const reader = response.body?.getReader()
     if (!reader) {
       throw new Error('Response body is not readable')
     }
 
-    const decoder = new TextDecoder()
-    let buffer = ''
-
-    while (true) {
-      const { done, value } = await reader.read()
-
-      if (done) {
-        break
-      }
-
-      const chunk = decoder.decode(value, { stream: true })
-      buffer += chunk
-
-      // Process complete SSE events
-      const lines = buffer.split('\n')
-      buffer = lines.pop() || '' // Keep incomplete line in buffer
-
-      for (const line of lines) {
-        const trimmedLine = line.trim()
-
-        if (trimmedLine === '') {
-          continue
-        }
-
-        if (trimmedLine === 'data: [DONE]') {
-          onComplete()
-          return
-        }
-
-        if (trimmedLine.startsWith('data: ')) {
-          try {
-            const jsonData = trimmedLine.slice(6)
-            const chunk: StreamingChunk = JSON.parse(jsonData)
-
-            const delta = chunk.choices[0]?.delta
-            if (delta?.content) {
-              onChunk(delta.content)
-            }
-
-            // Check for finish reason
-            if (chunk.choices[0]?.finish_reason) {
-              onComplete()
-              return
-            }
-          } catch {
-            console.warn('Failed to parse streaming chunk:', trimmedLine)
-          }
-        }
-      }
-    }
-
-    onComplete()
+    await processStream(reader, onChunk, onComplete)
   } catch (error) {
     if (error instanceof Error) {
       if (error.name === 'AbortError') {
