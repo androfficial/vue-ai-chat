@@ -69,8 +69,7 @@ export function useChatMessages(): UseChatMessagesReturn {
    */
   function handleStreamError(chatId: string, messageId: string, errorCode: string) {
     chatStore.updateMessageStatus(chatId, messageId, 'error')
-    const currentChat = chatStore.getChatById(chatId)
-    const msg = currentChat?.messages.find(m => m.id === messageId)
+    const msg = chatStore.getMessageById(chatId, messageId)
     if (msg) {
       msg.error = getLocalizedErrorMessage(errorCode)
     }

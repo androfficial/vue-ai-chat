@@ -1,4 +1,27 @@
-import { ref, type Ref } from 'vue'
+import { onScopeDispose, ref, type Ref } from 'vue'
+
+// Timing constants for stream buffer processing
+const BUFFER_CHECK_INTERVAL_MS = 20
+const FLUSH_WAIT_MS = 100
+const PUNCTUATION_DELAY_MULTIPLIER = 1.5
+const COMMA_DELAY_MULTIPLIER = 1.2
+const SHORT_WORD_DELAY_MULTIPLIER = 0.7
+const SHORT_WORD_LENGTH = 3
+
+// Buffer size thresholds for speed adjustments
+const BUFFER_THRESHOLD_HIGH = 500
+const BUFFER_THRESHOLD_MEDIUM = 200
+const BUFFER_THRESHOLD_LOW = 100
+
+// Speed multipliers when buffer is filling up
+const SPEED_MULTIPLIER_HIGH = 0.3
+const SPEED_MULTIPLIER_MEDIUM = 0.5
+const SPEED_MULTIPLIER_LOW = 0.7
+
+// Minimum delays to prevent too-fast processing
+const MIN_DELAY_HIGH = 10
+const MIN_DELAY_MEDIUM = 20
+const MIN_DELAY_LOW = 30
 
 export interface UseStreamBufferOptions {
   onFlush?: (text: string) => void
@@ -22,6 +45,14 @@ export function useStreamBuffer(options: UseStreamBufferOptions = {}): UseStream
   const flushedLength = ref(0)
   let timeoutId: ReturnType<typeof setTimeout> | null = null
 
+  // Cleanup timeout on scope dispose to prevent memory leaks
+  onScopeDispose(() => {
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+      timeoutId = null
+    }
+  })
+
   function processNext(): void {
     if (!isStreaming.value) return
 
@@ -29,7 +60,7 @@ export function useStreamBuffer(options: UseStreamBufferOptions = {}): UseStream
 
     if (!remaining) {
       // Buffer is empty, check again soon
-      timeoutId = setTimeout(processNext, 20)
+      timeoutId = setTimeout(processNext, BUFFER_CHECK_INTERVAL_MS)
       return
     }
 
@@ -58,7 +89,7 @@ export function useStreamBuffer(options: UseStreamBufferOptions = {}): UseStream
           flushedLength.value = buffer.value.length
         }
         processNext()
-      }, 100)
+      }, FLUSH_WAIT_MS)
       return
     }
 
@@ -70,21 +101,21 @@ export function useStreamBuffer(options: UseStreamBufferOptions = {}): UseStream
     // Calculate delay - shorter for small words, longer for punctuation
     let delay = wordDelay
     if (chunk.includes('.') || chunk.includes('!') || chunk.includes('?')) {
-      delay = wordDelay * 1.5
+      delay = wordDelay * PUNCTUATION_DELAY_MULTIPLIER
     } else if (chunk.includes(',') || chunk.includes(':') || chunk.includes(';')) {
-      delay = wordDelay * 1.2
-    } else if (chunk.length <= 3) {
-      delay = wordDelay * 0.7
+      delay = wordDelay * COMMA_DELAY_MULTIPLIER
+    } else if (chunk.length <= SHORT_WORD_LENGTH) {
+      delay = wordDelay * SHORT_WORD_DELAY_MULTIPLIER
     }
 
     // Speed up if buffer is getting too full
     const bufferSize = buffer.value.length - flushedLength.value
-    if (bufferSize > 500) {
-      delay = Math.max(delay * 0.3, 10)
-    } else if (bufferSize > 200) {
-      delay = Math.max(delay * 0.5, 20)
-    } else if (bufferSize > 100) {
-      delay = Math.max(delay * 0.7, 30)
+    if (bufferSize > BUFFER_THRESHOLD_HIGH) {
+      delay = Math.max(delay * SPEED_MULTIPLIER_HIGH, MIN_DELAY_HIGH)
+    } else if (bufferSize > BUFFER_THRESHOLD_MEDIUM) {
+      delay = Math.max(delay * SPEED_MULTIPLIER_MEDIUM, MIN_DELAY_MEDIUM)
+    } else if (bufferSize > BUFFER_THRESHOLD_LOW) {
+      delay = Math.max(delay * SPEED_MULTIPLIER_LOW, MIN_DELAY_LOW)
     }
 
     timeoutId = setTimeout(processNext, delay)

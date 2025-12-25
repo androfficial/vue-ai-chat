@@ -46,13 +46,21 @@ export interface UseMarkdownRendererReturn {
 const CODE_BLOCK_PLACEHOLDER = '___CODE_BLOCK_PLACEHOLDER___'
 
 /**
+ * Configure marked globally with base options (runs once on module load)
+ */
+marked.use({
+  breaks: true,
+  gfm: true,
+})
+
+/**
  * Parse markdown content and extract code blocks separately
  */
 function parseMarkdownWithCodeBlocks(content: string): ParsedBlock[] {
   const codeBlocks: CodeBlockData[] = []
   let placeholderIndex = 0
 
-  // Custom renderer that extracts code blocks
+  // Create a custom renderer for this parse call
   const renderer = {
     code({ lang, text }: Tokens.Code): string {
       codeBlocks.push({
@@ -64,15 +72,8 @@ function parseMarkdownWithCodeBlocks(content: string): ParsedBlock[] {
     },
   }
 
-  // Configure marked with custom renderer
-  marked.use({
-    breaks: true,
-    gfm: true,
-    renderer,
-  })
-
-  // Parse markdown
-  const html = marked.parse(content) as string
+  // Parse markdown with custom renderer for this call
+  const html = marked.use({ renderer }).parse(content) as string
 
   // Split by placeholders and reconstruct blocks
   const parts = html.split(new RegExp(`${CODE_BLOCK_PLACEHOLDER}(\\d+)${CODE_BLOCK_PLACEHOLDER}`))

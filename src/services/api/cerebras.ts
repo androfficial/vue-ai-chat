@@ -9,25 +9,20 @@ import type {
 import { useApiStore } from '@/stores/api'
 
 /**
- * API error codes for handling different error scenarios
+ * Array of all valid API error codes (single source of truth)
  */
-export type ApiErrorCode =
-  | 'networkError'
-  | 'rateLimited'
-  | 'serverError'
-  | 'unauthorized'
-  | 'unknown'
-
-/**
- * Array of all valid API error codes for type checking
- */
-const API_ERROR_CODES: readonly ApiErrorCode[] = [
+const API_ERROR_CODES = [
   'networkError',
   'rateLimited',
   'serverError',
   'unauthorized',
   'unknown',
 ] as const
+
+/**
+ * API error codes for handling different error scenarios
+ */
+export type ApiErrorCode = (typeof API_ERROR_CODES)[number]
 
 /**
  * Type guard to check if a string is a valid ApiErrorCode

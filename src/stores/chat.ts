@@ -69,6 +69,11 @@ export const useChatStore = defineStore('chat', () => {
     return chats.value.find(chat => chat.id === id)
   }
 
+  function getMessageById(chatId: string, messageId: string): Message | undefined {
+    const chat = getChatById(chatId)
+    return chat?.messages.find(msg => msg.id === messageId)
+  }
+
   function setActiveChat(chatId: string | null) {
     activeChatId.value = chatId
   }
@@ -160,11 +165,11 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   function updateMessageContent(chatId: string, messageId: string, content: string) {
+    const message = getMessageById(chatId, messageId)
+    if (!message) return
+
     const chat = getChatById(chatId)
     if (!chat) return
-
-    const message = chat.messages.find(msg => msg.id === messageId)
-    if (!message) return
 
     if (!message.isEdited) {
       message.originalContent = message.content
@@ -175,20 +180,14 @@ export const useChatStore = defineStore('chat', () => {
   }
 
   function updateMessageStatus(chatId: string, messageId: string, status: MessageStatus) {
-    const chat = getChatById(chatId)
-    if (!chat) return
-
-    const message = chat.messages.find(msg => msg.id === messageId)
+    const message = getMessageById(chatId, messageId)
     if (message) {
       message.status = status
     }
   }
 
   function appendToMessage(chatId: string, messageId: string, content: string) {
-    const chat = getChatById(chatId)
-    if (!chat) return
-
-    const message = chat.messages.find(msg => msg.id === messageId)
+    const message = getMessageById(chatId, messageId)
     if (message) {
       message.content += content
     }
@@ -247,6 +246,7 @@ export const useChatStore = defineStore('chat', () => {
     deleteMessagesAfter,
     getChatById,
     getLastUserMessage,
+    getMessageById,
     hasChats,
     isLoading,
     persistentChatList,

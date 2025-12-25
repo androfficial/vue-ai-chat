@@ -146,33 +146,26 @@ const hasContent = computed(() => props.content.length > 0)
   white-space: pre-wrap;
 }
 
-/* Markdown content styles */
-.message-content__markdown :deep(p),
-.message-content__markdown .markdown-content :deep(p) {
+/* Markdown content styles - using :where() to reduce specificity duplication */
+.message-content__markdown :deep(:where(p)) {
   margin: 0 0 1em;
 }
 
-.message-content__markdown :deep(p:last-child),
-.message-content__markdown .markdown-content :deep(p:last-child) {
+.message-content__markdown :deep(:where(p:last-child)) {
   margin-bottom: 0;
 }
 
-.message-content__markdown :deep(ul),
-.message-content__markdown :deep(ol),
-.message-content__markdown .markdown-content :deep(ul),
-.message-content__markdown .markdown-content :deep(ol) {
+.message-content__markdown :deep(:where(ul, ol)) {
   padding-left: 1.5em;
   margin: 0 0 1em;
 }
 
-.message-content__markdown :deep(li),
-.message-content__markdown .markdown-content :deep(li) {
+.message-content__markdown :deep(:where(li)) {
   margin-bottom: 0.25em;
 }
 
 /* Inline code styling */
-.message-content__markdown :deep(code),
-.message-content__markdown .markdown-content :deep(code) {
+.message-content__markdown :deep(:where(code)) {
   padding: 0.2em 0.4em;
   font-family: 'Fira Code', Consolas, monospace;
   font-size: 0.9em;
@@ -181,8 +174,7 @@ const hasContent = computed(() => props.content.length > 0)
 }
 
 /* Legacy pre styles for non-code-block pre elements */
-.message-content__markdown :deep(pre:not(.code-block__pre)),
-.message-content__markdown .markdown-content :deep(pre:not(.code-block__pre)) {
+.message-content__markdown :deep(:where(pre:not(.code-block__pre))) {
   padding: 1em;
   margin: 0 0 1em;
   overflow-x: auto;
@@ -190,57 +182,38 @@ const hasContent = computed(() => props.content.length > 0)
   border-radius: var(--radius-md);
 }
 
-.message-content__markdown :deep(pre:not(.code-block__pre) code),
-.message-content__markdown .markdown-content :deep(pre:not(.code-block__pre) code) {
+.message-content__markdown :deep(:where(pre:not(.code-block__pre) code)) {
   padding: 0;
   font-size: 0.875em;
   background: none;
 }
 
-.message-content__markdown :deep(blockquote),
-.message-content__markdown .markdown-content :deep(blockquote) {
+.message-content__markdown :deep(:where(blockquote)) {
   padding-left: 1em;
   margin: 0 0 1em;
   color: rgb(var(--v-theme-text-secondary));
   border-left: 3px solid rgb(var(--v-theme-primary));
 }
 
-.message-content__markdown :deep(strong),
-.message-content__markdown .markdown-content :deep(strong) {
+.message-content__markdown :deep(:where(strong)) {
   font-weight: 600;
 }
 
-.message-content__markdown :deep(a),
-.message-content__markdown .markdown-content :deep(a) {
+.message-content__markdown :deep(:where(a)) {
   color: rgb(var(--v-theme-primary));
   text-decoration: none;
 }
 
-.message-content__markdown :deep(a:hover),
-.message-content__markdown .markdown-content :deep(a:hover) {
+.message-content__markdown :deep(:where(a:hover)) {
   text-decoration: underline;
 }
 
-.message-content__markdown :deep(h1),
-.message-content__markdown :deep(h2),
-.message-content__markdown :deep(h3),
-.message-content__markdown :deep(h4),
-.message-content__markdown .markdown-content :deep(h1),
-.message-content__markdown .markdown-content :deep(h2),
-.message-content__markdown .markdown-content :deep(h3),
-.message-content__markdown .markdown-content :deep(h4) {
+.message-content__markdown :deep(:where(h1, h2, h3, h4)) {
   margin: 1em 0 0.5em;
   font-weight: 600;
 }
 
-.message-content__markdown :deep(h1:first-child),
-.message-content__markdown :deep(h2:first-child),
-.message-content__markdown :deep(h3:first-child),
-.message-content__markdown :deep(h4:first-child),
-.message-content__markdown .markdown-content :deep(h1:first-child),
-.message-content__markdown .markdown-content :deep(h2:first-child),
-.message-content__markdown .markdown-content :deep(h3:first-child),
-.message-content__markdown .markdown-content :deep(h4:first-child) {
+.message-content__markdown :deep(:where(h1, h2, h3, h4):first-child) {
   margin-top: 0;
 }
 
