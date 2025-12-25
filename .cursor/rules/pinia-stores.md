@@ -62,15 +62,19 @@ export const useChatStore = defineStore('chat', () => {
 Use localStorage for state persistence:
 
 ```typescript
-import { loadFromStorage, saveToStorage } from '@/utils/storage'
+import { getStorageItem, setStorageItem, STORAGE_KEYS } from '@/utils/storage'
 
 export const useUserStore = defineStore('user', () => {
-  const preferences = ref(loadFromStorage('preferences', defaultPreferences))
+  const preferences = ref(loadPreferences())
+
+  function loadPreferences() {
+    return getStorageItem<UserPreferences>(STORAGE_KEYS.USER_PREFERENCES) ?? defaultPreferences
+  }
 
   watch(
     preferences,
     newVal => {
-      saveToStorage('preferences', newVal)
+      setStorageItem(STORAGE_KEYS.USER_PREFERENCES, newVal)
     },
     { deep: true },
   )
