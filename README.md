@@ -35,6 +35,7 @@ A modern chat application powered by Cerebras AI, built with Vue 3, TypeScript, 
 | Internationalization | Vue I18n 9.x                                    |
 | Markdown             | Marked                                          |
 | Syntax Highlighting  | Highlight.js                                    |
+| Testing              | Vitest + Vue Test Utils                         |
 | Linting              | ESLint 9.x with Perfectionist plugin            |
 | Formatting           | Prettier                                        |
 | Git Hooks            | Husky                                           |
@@ -75,14 +76,17 @@ npm run dev
 
 ## 📜 Available Scripts
 
-| Command              | Description                         |
-| -------------------- | ----------------------------------- |
-| `npm run dev`        | Start development server            |
-| `npm run build`      | Type-check and build for production |
-| `npm run preview`    | Preview production build            |
-| `npm run type-check` | TypeScript type checking only       |
-| `npm run lint`       | Run ESLint with auto-fix            |
-| `npm run format`     | Format code with Prettier           |
+| Command                 | Description                         |
+| ----------------------- | ----------------------------------- |
+| `npm run dev`           | Start development server            |
+| `npm run build`         | Type-check and build for production |
+| `npm run preview`       | Preview production build            |
+| `npm run type-check`    | TypeScript type checking only       |
+| `npm run lint`          | Run ESLint with auto-fix            |
+| `npm run format`        | Format code with Prettier           |
+| `npm run test`          | Run unit tests                      |
+| `npm run test:watch`    | Run tests in watch mode             |
+| `npm run test:coverage` | Run tests with coverage report      |
 
 ## 📁 Project Structure
 
@@ -107,6 +111,7 @@ src/
 │       ├── LanguageSettings.vue
 │       └── DangerZoneSettings.vue
 ├── composables/        # Reusable composition functions
+│   ├── __tests__/              # Composable unit tests
 │   ├── useChatMessages.ts      # Chat messaging logic
 │   ├── useAutoScroll.ts        # Auto-scroll functionality
 │   ├── useStreamBuffer.ts      # Streaming animation buffer
@@ -123,8 +128,11 @@ src/
 │   ├── chat.ts         # Chat state management
 │   ├── api.ts          # API configuration
 │   └── user.ts         # User preferences
+├── test/               # Test setup and utilities
+│   └── setup.ts        # Global test configuration
 ├── types/              # TypeScript interfaces
 └── utils/              # Utility functions
+    ├── __tests__/      # Utility unit tests
     ├── storage.ts      # localStorage helpers
     ├── validation.ts   # Input validation
     └── date.ts         # Date formatting
@@ -175,13 +183,59 @@ localStorage persistence
 - **Barrel exports** - Types, composables, stores via index files
 - **ESLint Perfectionist** - Enforced import/property sorting
 
-## � CI/CD Pipeline
+## 🧪 Testing
+
+The project uses **Vitest** for unit testing with **Vue Test Utils** for component testing.
+
+### Test Stack
+
+| Tool             | Purpose                           |
+| ---------------- | --------------------------------- |
+| Vitest           | Test runner and assertion library |
+| @vue/test-utils  | Vue component testing utilities   |
+| happy-dom        | DOM environment for tests         |
+| @vitest/coverage | Code coverage reporting           |
+
+### Running Tests
+
+```bash
+# Run all tests once
+npm run test
+
+# Run tests in watch mode (development)
+npm run test:watch
+
+# Run tests with coverage report
+npm run test:coverage
+```
+
+### Test Structure
+
+Tests are co-located with source files in `__tests__` directories:
+
+```
+src/
+├── utils/__tests__/
+│   ├── validation.test.ts
+│   ├── date.test.ts
+│   ├── id.test.ts
+│   └── storage.test.ts
+└── composables/__tests__/
+    ├── useClipboard.test.ts
+    └── useToast.test.ts
+```
+
+### Pre-commit Hook
+
+Tests run automatically before each commit via Husky to ensure code quality.
+
+## 🚀 CI/CD Pipeline
 
 The project uses GitHub Actions for continuous integration and deployment to Vercel.
 
 ### Workflow
 
-1. **On Push/PR** → Runs lint, type-check, and build
+1. **On Push/PR** → Runs lint, type-check, tests, and build
 2. **On Success** → Deploys to Vercel (preview for PRs, production for main)
 
 ### Pipeline Steps
@@ -191,6 +245,7 @@ The project uses GitHub Actions for continuous integration and deployment to Ver
 | ESLint         | JavaScript/TypeScript/Vue linting    |
 | Stylelint      | CSS linting                          |
 | Type Check     | TypeScript validation                |
+| Unit Tests     | Vitest unit test suite               |
 | Build          | Production build verification        |
 | Deploy Preview | PR preview deployment to Vercel      |
 | Deploy Prod    | Production deployment on main branch |
