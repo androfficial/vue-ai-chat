@@ -84,9 +84,9 @@ export function getTimeDiff(timestamp: number, locale: string = 'en'): TimeDiffR
  */
 export function formatMessageTime(timestamp: number): string {
   const date = new Date(timestamp)
-  return date.toLocaleTimeString('en-US', {
+  return date.toLocaleTimeString('en-GB', {
     hour: '2-digit',
-    hour12: false,
+    hourCycle: 'h23',
     minute: '2-digit',
   })
 }
