@@ -12,13 +12,14 @@ import MessageList from '@/components/chat/MessageList.vue'
 import { useChatMessages, useClipboard } from '@/composables'
 import { useApiStore } from '@/stores/api'
 import { useChatStore } from '@/stores/chat'
+import { TOGGLE_SIDEBAR_KEY } from '@/types'
 
 const route = useRoute()
 const router = useRouter()
 const chatStore = useChatStore()
 const apiStore = useApiStore()
 
-const toggleSidebar = inject<() => void>('toggleSidebar')
+const toggleSidebar = inject(TOGGLE_SIDEBAR_KEY)
 
 // Use composables
 const { isLoading, regenerateMessage, sendMessage, stopGeneration } = useChatMessages()

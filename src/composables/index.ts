@@ -29,5 +29,8 @@ export type {
 export { useStreamBuffer } from './useStreamBuffer'
 export type { UseStreamBufferOptions, UseStreamBufferReturn } from './useStreamBuffer'
 
+export { useThemeManager } from './useThemeManager'
+export type { UseThemeManagerReturn } from './useThemeManager'
+
 export { useToast } from './useToast'
 export type { ToastOptions, UseToastReturn } from './useToast'

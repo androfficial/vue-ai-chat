@@ -4,59 +4,26 @@
  * Main layout with sidebar and router view
  */
 
-import { onMounted, provide, ref, watch } from 'vue'
-import { useDisplay, useTheme } from 'vuetify'
+import { provide, ref } from 'vue'
+import { useDisplay } from 'vuetify'
 
 import AppSidebar from '@/components/layout/AppSidebar.vue'
-import { useHead, useToast } from '@/composables'
-import { useUserStore } from '@/stores/user'
+import AppToast from '@/components/layout/AppToast.vue'
+import { useHead, useThemeManager } from '@/composables'
+import { IS_MOBILE_KEY, TOGGLE_SIDEBAR_KEY } from '@/types'
 
-// Toast notifications
-const toast = useToast()
-
-const theme = useTheme()
-const userStore = useUserStore()
-const display = useDisplay()
-
-const sidebarRef = ref<InstanceType<typeof AppSidebar> | null>(null)
-
-provide('toggleSidebar', () => sidebarRef.value?.toggleDrawer())
-provide('isMobile', () => display.smAndDown.value)
+// Initialize theme manager (handles theme switching and system preference)
+useThemeManager()
 
 // Manage document head (title, description, lang)
 useHead()
 
-/**
- * Apply theme based on user preference
- * Uses Vuetify 3.9+ theme.change() API for proper theme switching
- */
-function applyTheme(themeMode: string) {
-  if (themeMode === 'system') {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    theme.change(prefersDark ? 'dark' : 'light')
-  } else {
-    theme.change(themeMode)
-  }
-}
+const display = useDisplay()
+const sidebarRef = ref<InstanceType<typeof AppSidebar> | null>(null)
 
-// Apply initial theme immediately (before mount to prevent flash)
-applyTheme(userStore.preferences.theme)
-
-// Listen to system theme changes when in 'system' mode
-onMounted(() => {
-  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-  mediaQuery.addEventListener('change', () => {
-    if (userStore.preferences.theme === 'system') {
-      applyTheme('system')
-    }
-  })
-})
-
-// Watch for theme preference changes
-watch(
-  () => userStore.preferences.theme,
-  newTheme => applyTheme(newTheme),
-)
+// Provide typed functions to descendants via injection keys
+provide(TOGGLE_SIDEBAR_KEY, () => sidebarRef.value?.toggleDrawer())
+provide(IS_MOBILE_KEY, () => display.smAndDown.value)
 </script>
 
 <template>
@@ -74,44 +41,20 @@ watch(
       </main>
     </v-main>
 
-    <!-- Global toast notifications (Vuetify Snackbar) -->
-    <v-snackbar
-      v-model="toast.isVisible.value"
-      :timeout="toast.timeout.value"
-      :color="toast.type.value"
-      location="top right"
-      rounded="lg"
-      variant="flat"
-      class="app-snackbar"
-    >
-      <div class="d-flex align-center ga-2">
-        <v-icon
-          :icon="
-            toast.type.value === 'success'
-              ? 'mdi-check-circle'
-              : toast.type.value === 'error'
-                ? 'mdi-alert-circle'
-                : toast.type.value === 'warning'
-                  ? 'mdi-alert'
-                  : 'mdi-information'
-          "
-          size="20"
-        />
-        <span>{{ toast.message.value }}</span>
-      </div>
-    </v-snackbar>
+    <!-- Global toast notifications -->
+    <AppToast />
   </v-app>
 </template>
 
 <style>
-/* Global styles */
+/* App Layout Styles */
 html,
 body {
   height: 100%;
   overflow: hidden;
 }
 
-/* Allow scrolling in main content */
+/* Main content area */
 .v-main {
   height: 100vh;
   height: 100dvh; /* Dynamic viewport height for mobile */
@@ -122,7 +65,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow: hidden; /* Changed from overflow-y: auto */
+  overflow: hidden;
 }
 
 /* Disable v-main padding animation when sidebar toggles */
@@ -142,55 +85,5 @@ body {
     --v-layout-left: 0 !important;
     padding-left: 0 !important;
   }
-}
-
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-thumb-hover);
-}
-
-/* Snackbar Toast Styles */
-.app-snackbar {
-  margin-top: 16px !important;
-  margin-right: 16px !important;
-}
-
-.app-snackbar .v-snackbar__wrapper {
-  min-width: auto !important;
-}
-
-.app-snackbar .v-snackbar__content {
-  font-weight: 500;
-}
-
-/* Bright snackbar colors for both themes */
-.app-snackbar .v-snackbar__wrapper[class*='bg-success'] {
-  background-color: var(--color-success) !important;
-}
-
-.app-snackbar .v-snackbar__wrapper[class*='bg-error'] {
-  background-color: var(--color-error) !important;
-}
-
-.app-snackbar .v-snackbar__wrapper[class*='bg-warning'] {
-  background-color: var(--color-warning) !important;
-}
-
-.app-snackbar .v-snackbar__wrapper[class*='bg-info'] {
-  background-color: var(--color-info) !important;
 }
 </style>
