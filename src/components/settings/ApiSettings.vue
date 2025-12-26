@@ -7,8 +7,8 @@
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { testApiConnection } from '@/api'
 import { useToast } from '@/composables'
-import { testApiConnection } from '@/services/api'
 import { useApiStore } from '@/stores/api'
 import { CEREBRAS_MODELS } from '@/types'
 

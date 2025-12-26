@@ -4,8 +4,8 @@ import type { Ref } from 'vue'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+import { type ApiErrorCode, sendStreamingChatCompletion } from '@/api'
 import { useStreamBuffer } from '@/composables/useStreamBuffer'
-import { type ApiErrorCode, sendStreamingChatCompletion } from '@/services/api'
 import { useApiStore } from '@/stores/api'
 import { useChatStore } from '@/stores/chat'
 

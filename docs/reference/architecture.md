@@ -18,8 +18,7 @@ ai-chat/
 │   ├── locales/            # i18n translations
 │   ├── pages/              # Page components
 │   ├── plugins/            # Vue plugins (router, vuetify, i18n)
-│   ├── services/
-│   │   └── api/            # API integration
+│   ├── api/                # API integration
 │   ├── stores/             # Pinia stores
 │   ├── types/              # TypeScript types
 │   ├── utils/              # Utility functions
@@ -67,9 +66,9 @@ Pinia stores for global state:
 
 **Pattern**: Composition API style with persistence
 
-### 4. Service Layer (API)
+### 4. API Layer
 
-**Location**: `src/services/api/`
+**Location**: `src/api/`
 
 API integration:
 
@@ -224,7 +223,7 @@ Pages (ChatPage, SettingsPage)
     ↓
 Components
     ↓
-Composables ← Stores ← Services
+Composables ← Stores ← API
     ↓
 Utils
 ```
@@ -295,7 +294,7 @@ Initialization order:
 
 ### API Error Handling
 
-**Location**: `src/services/api/cerebras.ts`
+**Location**: `src/api/cerebras.ts`
 
 - Network errors
 - HTTP status codes
