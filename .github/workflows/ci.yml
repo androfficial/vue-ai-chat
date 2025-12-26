@@ -83,7 +83,19 @@ jobs:
         with:
           script: |
             const previewUrl = '${{ steps.deploy.outputs.preview_url }}';
-            const body = `## 🚀 Preview Deployment Ready!\n\n**Preview URL:** ${previewUrl}\n\n*This preview was automatically deployed by GitHub Actions.*`;
+            const sha = context.payload.pull_request.head.sha.substring(0, 7);
+            const now = new Date().toUTCString();
+
+            const body = `### 🚀 Preview Deployment Ready!
+
+            | Item | Details |
+            | :--- | :--- |
+            | **📦 Status** | Success |
+            | **🔗 Preview URL** | [Visit Preview](${previewUrl}) |
+            | **📝 Latest Commit** | ${sha} |
+            | **🕒 Updated** | ${now} |
+
+            *This preview was automatically deployed by GitHub Actions.*`;
 
             // Find existing comment
             const { data: comments } = await github.rest.issues.listComments({
