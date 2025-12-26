@@ -4,67 +4,67 @@
  * Handles user message input with auto-resize textarea
  */
 
-import { computed, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import { useAutoResizeTextarea } from '@/composables'
-import { useUserStore } from '@/stores/user'
+import { useAutoResizeTextarea } from '@/composables';
+import { useUserStore } from '@/stores/user';
 
 // Props
 interface Props {
-  disabled?: boolean
-  loading?: boolean
-  placeholder?: string
+  disabled?: boolean;
+  loading?: boolean;
+  placeholder?: string;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   disabled: false,
   loading: false,
   placeholder: undefined,
-})
+});
 
 // Emits
 const emit = defineEmits<{
-  send: [message: string]
-  stop: []
-}>()
+  send: [message: string];
+  stop: [];
+}>();
 
-const { t } = useI18n()
-const userStore = useUserStore()
+const { t } = useI18n();
+const userStore = useUserStore();
 
 // State
-const message = ref('')
-const textareaRef = ref<HTMLTextAreaElement>()
-const textareaWrapperRef = ref<HTMLDivElement>()
+const message = ref('');
+const textareaRef = ref<HTMLTextAreaElement>();
+const textareaWrapperRef = ref<HTMLDivElement>();
 
 // Use composable for auto-resize
 const { resetHeight } = useAutoResizeTextarea(message, textareaRef, textareaWrapperRef, {
   maxHeight: 200,
   minHeight: 40,
-})
+});
 
 // Computed
-const canSend = computed(() => message.value.trim().length > 0 && !props.loading)
-const sendOnEnter = computed(() => userStore.preferences.sendOnEnter)
-const placeholderText = computed(() => props.placeholder ?? t('chat.typeMessage'))
+const canSend = computed(() => message.value.trim().length > 0 && !props.loading);
+const sendOnEnter = computed(() => userStore.preferences.sendOnEnter);
+const placeholderText = computed(() => props.placeholder ?? t('chat.typeMessage'));
 
 // Methods
 function handleSend() {
-  if (!canSend.value) return
+  if (!canSend.value) return;
 
-  emit('send', message.value.trim())
-  message.value = ''
-  resetHeight()
+  emit('send', message.value.trim());
+  message.value = '';
+  resetHeight();
 }
 
 function handleStop() {
-  emit('stop')
+  emit('stop');
 }
 
 function handleKeydown(event: KeyboardEvent) {
   if (event.key === 'Enter' && !event.shiftKey && sendOnEnter.value) {
-    event.preventDefault()
-    handleSend()
+    event.preventDefault();
+    handleSend();
   }
 }
 </script>

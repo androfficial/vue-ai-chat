@@ -4,28 +4,28 @@
  * Toggle switches for chat preferences
  */
 
-import { computed } from 'vue'
+import { computed } from 'vue';
 
-import { useUserStore } from '@/stores/user'
+import { useUserStore } from '@/stores/user';
 
-import SettingsCard from './SettingsCard.vue'
+import SettingsCard from './SettingsCard.vue';
 
-const userStore = useUserStore()
+const userStore = useUserStore();
 
 // Writable computed for two-way binding (silent auto-save)
 const sendOnEnter = computed({
   get: () => userStore.preferences.sendOnEnter,
   set: value => {
-    userStore.updatePreferences({ sendOnEnter: value })
+    userStore.updatePreferences({ sendOnEnter: value });
   },
-})
+});
 
 const showTimestamps = computed({
   get: () => userStore.preferences.showTimestamps,
   set: value => {
-    userStore.updatePreferences({ showTimestamps: value })
+    userStore.updatePreferences({ showTimestamps: value });
   },
-})
+});
 </script>
 
 <template>

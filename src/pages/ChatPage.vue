@@ -4,154 +4,154 @@
  * Displays chat messages and handles user interactions
  */
 
-import { computed, inject, nextTick, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, inject, nextTick, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
-import ApiKeyDialog from '@/components/chat/ApiKeyDialog.vue'
-import ChatHeader from '@/components/chat/ChatHeader.vue'
-import ChatInput from '@/components/chat/ChatInput.vue'
-import MessageList from '@/components/chat/MessageList.vue'
-import { useChatMessages, useClipboard } from '@/composables'
-import { useApiStore } from '@/stores/api'
-import { useChatStore } from '@/stores/chat'
-import { TOGGLE_SIDEBAR_KEY } from '@/types'
+import ApiKeyDialog from '@/components/chat/ApiKeyDialog.vue';
+import ChatHeader from '@/components/chat/ChatHeader.vue';
+import ChatInput from '@/components/chat/ChatInput.vue';
+import MessageList from '@/components/chat/MessageList.vue';
+import { useChatMessages, useClipboard } from '@/composables';
+import { useApiStore } from '@/stores/api';
+import { useChatStore } from '@/stores/chat';
+import { TOGGLE_SIDEBAR_KEY } from '@/types';
 
-const route = useRoute()
-const router = useRouter()
-const chatStore = useChatStore()
-const apiStore = useApiStore()
+const route = useRoute();
+const router = useRouter();
+const chatStore = useChatStore();
+const apiStore = useApiStore();
 
-const toggleSidebar = inject(TOGGLE_SIDEBAR_KEY)
+const toggleSidebar = inject(TOGGLE_SIDEBAR_KEY);
 
 // Use composables
-const { isLoading, regenerateMessage, sendMessage, stopGeneration } = useChatMessages()
-const { copy } = useClipboard()
+const { isLoading, regenerateMessage, sendMessage, stopGeneration } = useChatMessages();
+const { copy } = useClipboard();
 
 // State
-const showApiKeyDialog = ref(false)
-const messageList = ref<InstanceType<typeof MessageList> | null>(null)
+const showApiKeyDialog = ref(false);
+const messageList = ref<InstanceType<typeof MessageList> | null>(null);
 
 // Get current chat ID from route
-const chatId = computed(() => route.params.id as string)
-const isNewChat = computed(() => chatId.value === 'new')
+const chatId = computed(() => route.params.id as string);
+const isNewChat = computed(() => chatId.value === 'new');
 
 // Get current chat and messages
 const currentChat = computed(() => {
-  if (isNewChat.value) return null
-  return chatStore.getChatById(chatId.value)
-})
+  if (isNewChat.value) return null;
+  return chatStore.getChatById(chatId.value);
+});
 
-const messages = computed(() => currentChat.value?.messages ?? [])
+const messages = computed(() => currentChat.value?.messages ?? []);
 
 // Check if API key is configured
-const hasApiKey = computed(() => apiStore.hasApiKey)
+const hasApiKey = computed(() => apiStore.hasApiKey);
 
 // Temporary chat mode
-const isTemporaryChatMode = computed(() => chatStore.temporaryChatMode)
-const isCurrentChatTemporary = computed(() => currentChat.value?.isTemporary ?? false)
+const isTemporaryChatMode = computed(() => chatStore.temporaryChatMode);
+const isCurrentChatTemporary = computed(() => currentChat.value?.isTemporary ?? false);
 
 // Can only toggle temporary mode for new chats without messages
 const canToggleTemporaryMode = computed(() => {
-  if (isNewChat.value) return true
-  if (isCurrentChatTemporary.value) return true
-  return false
-})
+  if (isNewChat.value) return true;
+  if (isCurrentChatTemporary.value) return true;
+  return false;
+});
 
 // Handle new chat or existing chat
 watch(
   chatId,
   async id => {
     if (id === 'new') {
-      chatStore.setActiveChat(null)
-      chatStore.setTemporaryChatMode(false)
+      chatStore.setActiveChat(null);
+      chatStore.setTemporaryChatMode(false);
     } else if (id) {
-      const chat = chatStore.getChatById(id)
+      const chat = chatStore.getChatById(id);
       if (chat) {
-        chatStore.setActiveChat(id)
-        await nextTick()
-        messageList.value?.scrollToBottomInstant()
+        chatStore.setActiveChat(id);
+        await nextTick();
+        messageList.value?.scrollToBottomInstant();
       } else {
-        router.replace('/chat/new')
+        router.replace('/chat/new');
       }
     }
   },
   { immediate: true },
-)
+);
 
 // Show API key dialog if not configured
 watch(
   hasApiKey,
   has => {
     if (!has) {
-      showApiKeyDialog.value = true
+      showApiKeyDialog.value = true;
     }
   },
   { immediate: true },
-)
+);
 
 // Methods
 async function handleSendMessage(content: string) {
   if (!hasApiKey.value) {
-    showApiKeyDialog.value = true
-    return
+    showApiKeyDialog.value = true;
+    return;
   }
 
-  let targetChatId = chatId.value
+  let targetChatId = chatId.value;
 
   if (isNewChat.value) {
-    const newChat = chatStore.createChat()
-    targetChatId = newChat.id
-    router.replace(`/chat/${targetChatId}`)
+    const newChat = chatStore.createChat();
+    targetChatId = newChat.id;
+    router.replace(`/chat/${targetChatId}`);
   }
 
-  await sendMessage(targetChatId, content)
+  await sendMessage(targetChatId, content);
 }
 
 function handleStopGeneration() {
-  stopGeneration()
+  stopGeneration();
 }
 
 function toggleTemporaryMode() {
-  chatStore.setTemporaryChatMode(!isTemporaryChatMode.value)
+  chatStore.setTemporaryChatMode(!isTemporaryChatMode.value);
 }
 
 function saveCurrentChat() {
   if (currentChat.value && currentChat.value.isTemporary) {
-    chatStore.convertToRegularChat(currentChat.value.id)
+    chatStore.convertToRegularChat(currentChat.value.id);
   }
 }
 
 function handleCopyMessage(content: string) {
-  copy(content)
+  copy(content);
 }
 
 function handleDeleteMessage(messageId: string) {
   if (currentChat.value) {
-    chatStore.deleteMessage(currentChat.value.id, messageId)
+    chatStore.deleteMessage(currentChat.value.id, messageId);
   }
 }
 
 async function handleEditMessage(messageId: string, content: string) {
-  if (!currentChat.value || !hasApiKey.value) return
+  if (!currentChat.value || !hasApiKey.value) return;
 
-  const chatId = currentChat.value.id
-  chatStore.updateMessageContent(chatId, messageId, content)
-  chatStore.deleteMessagesAfter(chatId, messageId)
-  await sendMessage(chatId, content, true)
+  const chatId = currentChat.value.id;
+  chatStore.updateMessageContent(chatId, messageId, content);
+  chatStore.deleteMessagesAfter(chatId, messageId);
+  await sendMessage(chatId, content, true);
 }
 
 async function handleRegenerateMessage(messageId: string) {
-  if (!currentChat.value || !hasApiKey.value) return
-  await regenerateMessage(currentChat.value.id, messageId)
+  if (!currentChat.value || !hasApiKey.value) return;
+  await regenerateMessage(currentChat.value.id, messageId);
 }
 
 function handleSaveApiKey(apiKey: string) {
-  apiStore.setApiKey(apiKey)
-  showApiKeyDialog.value = false
+  apiStore.setApiKey(apiKey);
+  showApiKeyDialog.value = false;
 }
 
 function handleNewChat() {
-  router.push('/chat/new')
+  router.push('/chat/new');
 }
 </script>
 

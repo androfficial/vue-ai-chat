@@ -4,25 +4,25 @@
  * Manages application locale
  */
 
-import { computed } from 'vue'
+import { computed } from 'vue';
 
-import { useUserStore } from '@/stores/user'
+import { useUserStore } from '@/stores/user';
 
-import SettingsCard from './SettingsCard.vue'
+import SettingsCard from './SettingsCard.vue';
 
-const userStore = useUserStore()
+const userStore = useUserStore();
 
 const locale = computed({
   get: () => userStore.preferences.locale,
   set: value => {
-    userStore.setLocale(value)
+    userStore.setLocale(value);
   },
-})
+});
 
 const localeOptions = [
   { flag: '🇬🇧', title: 'English', value: 'en' },
   { flag: '🇺🇦', title: 'Українська', value: 'uk' },
-]
+];
 </script>
 
 <template>

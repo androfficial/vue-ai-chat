@@ -4,12 +4,12 @@
  * Inspired by Claude, ChatGPT, and contemporary design systems
  */
 
-import '@mdi/font/css/materialdesignicons.css'
-import 'vuetify/styles'
+import '@mdi/font/css/materialdesignicons.css';
+import 'vuetify/styles';
 
-import type { ThemeDefinition } from 'vuetify'
+import type { ThemeDefinition } from 'vuetify';
 
-import { createVuetify } from 'vuetify'
+import { createVuetify } from 'vuetify';
 
 /**
  * Light theme - Clean, airy, and professional
@@ -67,7 +67,7 @@ const lightTheme: ThemeDefinition = {
     'pressed-opacity': 0.1,
     'selected-opacity': 0.08,
   },
-}
+};
 
 /**
  * Dark theme - Deep, sophisticated, and easy on the eyes
@@ -125,7 +125,7 @@ const darkTheme: ThemeDefinition = {
     'pressed-opacity': 0.12,
     'selected-opacity': 0.12,
   },
-}
+};
 
 /**
  * Create and export Vuetify instance
@@ -176,4 +176,4 @@ export default createVuetify({
       lighten: 2,
     },
   },
-})
+});

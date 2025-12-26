@@ -4,100 +4,100 @@
  * Contains navigation, chat list, and theme controls
  */
 
-import { computed, onMounted, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useDisplay, useTheme } from 'vuetify'
+import { computed, onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useDisplay, useTheme } from 'vuetify';
 
-import { useChatStore } from '@/stores/chat'
-import { useUserStore } from '@/stores/user'
+import { useChatStore } from '@/stores/chat';
+import { useUserStore } from '@/stores/user';
 
-import SidebarChatList from './SidebarChatList.vue'
-import SidebarFooter from './SidebarFooter.vue'
-import SidebarHeader from './SidebarHeader.vue'
+import SidebarChatList from './SidebarChatList.vue';
+import SidebarFooter from './SidebarFooter.vue';
+import SidebarHeader from './SidebarHeader.vue';
 
-const route = useRoute()
-const router = useRouter()
-const theme = useTheme()
-const chatStore = useChatStore()
-const userStore = useUserStore()
-const display = useDisplay()
+const route = useRoute();
+const router = useRouter();
+const theme = useTheme();
+const chatStore = useChatStore();
+const userStore = useUserStore();
+const display = useDisplay();
 
-const drawer = ref(true)
-const rail = ref(userStore.preferences.sidebarCollapsed)
+const drawer = ref(true);
+const rail = ref(userStore.preferences.sidebarCollapsed);
 
-const isMobile = computed(() => display.smAndDown.value)
-const chatList = computed(() => chatStore.persistentChatList)
-const currentChatId = computed(() => route.params.id as string)
+const isMobile = computed(() => display.smAndDown.value);
+const chatList = computed(() => chatStore.persistentChatList);
+const currentChatId = computed(() => route.params.id as string);
 
 watch(rail, newValue => {
   if (!isMobile.value) {
-    userStore.updatePreferences({ sidebarCollapsed: newValue })
+    userStore.updatePreferences({ sidebarCollapsed: newValue });
   }
-})
+});
 
 watch(isMobile, mobile => {
   if (mobile) {
-    drawer.value = false
-    rail.value = false
+    drawer.value = false;
+    rail.value = false;
   } else {
-    drawer.value = true
-    rail.value = userStore.preferences.sidebarCollapsed
+    drawer.value = true;
+    rail.value = userStore.preferences.sidebarCollapsed;
   }
-})
+});
 
 onMounted(() => {
   if (isMobile.value) {
-    drawer.value = false
-    rail.value = false
+    drawer.value = false;
+    rail.value = false;
   }
-})
+});
 
 function toggleDrawer() {
-  drawer.value = !drawer.value
+  drawer.value = !drawer.value;
 }
 
-defineExpose({ drawer, toggleDrawer })
+defineExpose({ drawer, toggleDrawer });
 
 function toggleRail() {
-  rail.value = !rail.value
+  rail.value = !rail.value;
 }
 
 function closeDrawer() {
-  drawer.value = false
+  drawer.value = false;
 }
 
 function createNewChat() {
-  if (isMobile.value) drawer.value = false
-  router.push('/chat/new')
+  if (isMobile.value) drawer.value = false;
+  router.push('/chat/new');
 }
 
 function openChat(chatId: string) {
-  if (isMobile.value) drawer.value = false
-  router.push(`/chat/${chatId}`)
+  if (isMobile.value) drawer.value = false;
+  router.push(`/chat/${chatId}`);
 }
 
 function openSettings() {
-  if (isMobile.value) drawer.value = false
-  router.push('/settings')
+  if (isMobile.value) drawer.value = false;
+  router.push('/settings');
 }
 
 function deleteChat(chatId: string, event: Event) {
-  event.stopPropagation()
-  const isCurrentChat = currentChatId.value === chatId
-  chatStore.deleteChat(chatId)
+  event.stopPropagation();
+  const isCurrentChat = currentChatId.value === chatId;
+  chatStore.deleteChat(chatId);
 
   if (isCurrentChat) {
-    const nextChat = chatStore.chatList[0]
+    const nextChat = chatStore.chatList[0];
     if (nextChat) {
-      router.push(`/chat/${nextChat.id}`)
+      router.push(`/chat/${nextChat.id}`);
     } else {
-      router.push('/chat/new')
+      router.push('/chat/new');
     }
   }
 }
 
 function renameChat(chatId: string, newTitle: string) {
-  chatStore.updateChat(chatId, { title: newTitle })
+  chatStore.updateChat(chatId, { title: newTitle });
 }
 </script>
 

@@ -5,19 +5,19 @@
  */
 
 interface Props {
-  isUser: boolean
-  visible: boolean
+  isUser: boolean;
+  visible: boolean;
 }
 
-defineProps<Props>()
+defineProps<Props>();
 
 // Emits
 const emit = defineEmits<{
-  copy: []
-  delete: []
-  edit: []
-  regenerate: []
-}>()
+  copy: [];
+  delete: [];
+  edit: [];
+  regenerate: [];
+}>();
 </script>
 
 <template>

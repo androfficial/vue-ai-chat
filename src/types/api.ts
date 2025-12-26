@@ -1,12 +1,12 @@
-import type { MessageRole } from './message'
+import type { MessageRole } from './message';
 
 export interface ApiConfig {
-  apiKey: string
-  baseUrl: string
-  maxTokens: number
-  model: string
-  temperature: number
-  topP: number
+  apiKey: string;
+  baseUrl: string;
+  maxTokens: number;
+  model: string;
+  temperature: number;
+  topP: number;
 }
 
 export const CEREBRAS_MODELS = [
@@ -14,7 +14,7 @@ export const CEREBRAS_MODELS = [
   { description: 'Fast and efficient', id: 'llama3.1-8b', name: 'Llama 3.1 8B' },
   { description: 'Great multilingual support', id: 'qwen-3-32b', name: 'Qwen 3 32B' },
   { description: 'Reasoning model', id: 'gpt-oss-120b', name: 'GPT OSS 120B' },
-] as const
+] as const;
 
 export const DEFAULT_API_CONFIG: Omit<ApiConfig, 'apiKey'> = {
   baseUrl: 'https://api.cerebras.ai/v1',
@@ -22,35 +22,35 @@ export const DEFAULT_API_CONFIG: Omit<ApiConfig, 'apiKey'> = {
   model: 'llama-3.3-70b',
   temperature: 0.7,
   topP: 1,
-}
+};
 
 export interface ApiMessage {
-  content: string
-  role: MessageRole
+  content: string;
+  role: MessageRole;
 }
 
 export interface ChatCompletionRequest {
-  max_tokens: number
-  messages: ApiMessage[]
-  model: string
-  stream: boolean
-  temperature: number
-  top_p: number
+  max_tokens: number;
+  messages: ApiMessage[];
+  model: string;
+  stream: boolean;
+  temperature: number;
+  top_p: number;
 }
 
 export interface ChatCompletionResponse {
-  choices: ChatCompletionChoice[]
-  created: number
-  id: string
-  model: string
-  object: string
-  usage: ApiTokenUsage
+  choices: ChatCompletionChoice[];
+  created: number;
+  id: string;
+  model: string;
+  object: string;
+  usage: ApiTokenUsage;
 }
 
 export interface ChatCompletionChoice {
-  finish_reason: 'stop' | 'length' | 'content_filter' | null
-  index: number
-  message: ApiMessage
+  finish_reason: 'stop' | 'length' | 'content_filter' | null;
+  index: number;
+  message: ApiMessage;
 }
 
 /**
@@ -58,11 +58,11 @@ export interface ChatCompletionChoice {
  */
 export interface ApiTokenUsage {
   /** Tokens in the completion */
-  completion_tokens: number
+  completion_tokens: number;
   /** Tokens in the prompt */
-  prompt_tokens: number
+  prompt_tokens: number;
   /** Total tokens used */
-  total_tokens: number
+  total_tokens: number;
 }
 
 /**
@@ -70,15 +70,15 @@ export interface ApiTokenUsage {
  */
 export interface StreamingChunk {
   /** Array of delta choices */
-  choices: StreamingChoice[]
+  choices: StreamingChoice[];
   /** Timestamp of creation */
-  created: number
+  created: number;
   /** Chunk identifier */
-  id: string
+  id: string;
   /** Model used */
-  model: string
+  model: string;
   /** Object type */
-  object: string
+  object: string;
 }
 
 /**
@@ -86,11 +86,11 @@ export interface StreamingChunk {
  */
 export interface StreamingChoice {
   /** Delta content */
-  delta: StreamingDelta
+  delta: StreamingDelta;
   /** Reason for completion (present on last chunk) */
-  finish_reason: 'stop' | 'length' | 'content_filter' | null
+  finish_reason: 'stop' | 'length' | 'content_filter' | null;
   /** Index of the choice */
-  index: number
+  index: number;
 }
 
 /**
@@ -98,9 +98,9 @@ export interface StreamingChoice {
  */
 export interface StreamingDelta {
   /** Content delta */
-  content?: string
+  content?: string;
   /** Role of the message (present in first chunk) */
-  role?: MessageRole
+  role?: MessageRole;
 }
 
 /**
@@ -110,15 +110,15 @@ export interface ApiError {
   /** Error object */
   error: {
     /** Error message */
-    message: string
+    message: string;
     /** Error type */
-    type: string
+    type: string;
     /** Error code */
-    code: string
-  }
+    code: string;
+  };
 }
 
 /**
  * Generic API response wrapper
  */
-export type ApiResponse<T> = { success: true; data: T } | { success: false; error: string }
+export type ApiResponse<T> = { success: true; data: T } | { success: false; error: string };

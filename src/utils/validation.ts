@@ -5,11 +5,11 @@
 /**
  * Validation constraints
  */
-const MIN_API_KEY_LENGTH = 32
-const API_KEY_PATTERN = /^[a-zA-Z0-9_-]+$/
-const MAX_TEMPERATURE = 2
-const MIN_TEMPERATURE = 0
-const MAX_TOKENS_LIMIT = 32768
+const MIN_API_KEY_LENGTH = 32;
+const API_KEY_PATTERN = /^[a-zA-Z0-9_-]+$/;
+const MAX_TEMPERATURE = 2;
+const MIN_TEMPERATURE = 0;
+const MAX_TOKENS_LIMIT = 32768;
 
 /**
  * Checks if a string is not empty (after trimming whitespace)
@@ -18,7 +18,7 @@ const MAX_TOKENS_LIMIT = 32768
  * @returns true if string contains non-whitespace characters
  */
 export function isNotEmpty(value: string): boolean {
-  return value.trim().length > 0
+  return value.trim().length > 0;
 }
 
 /**
@@ -29,7 +29,7 @@ export function isNotEmpty(value: string): boolean {
  * @returns true if API key is valid
  */
 export function isValidApiKey(apiKey: string): boolean {
-  return apiKey.length >= MIN_API_KEY_LENGTH && API_KEY_PATTERN.test(apiKey)
+  return apiKey.length >= MIN_API_KEY_LENGTH && API_KEY_PATTERN.test(apiKey);
 }
 
 /**
@@ -41,7 +41,7 @@ export function isValidApiKey(apiKey: string): boolean {
  * @returns true if value is within range
  */
 export function isInRange(value: number, min: number, max: number): boolean {
-  return value >= min && value <= max
+  return value >= min && value <= max;
 }
 
 /**
@@ -52,7 +52,7 @@ export function isInRange(value: number, min: number, max: number): boolean {
  * @returns true if temperature is valid
  */
 export function isValidTemperature(temperature: number): boolean {
-  return isInRange(temperature, MIN_TEMPERATURE, MAX_TEMPERATURE)
+  return isInRange(temperature, MIN_TEMPERATURE, MAX_TEMPERATURE);
 }
 
 /**
@@ -63,7 +63,7 @@ export function isValidTemperature(temperature: number): boolean {
  * @returns true if max tokens is valid
  */
 export function isValidMaxTokens(maxTokens: number): boolean {
-  return Number.isInteger(maxTokens) && maxTokens > 0 && maxTokens <= MAX_TOKENS_LIMIT
+  return Number.isInteger(maxTokens) && maxTokens > 0 && maxTokens <= MAX_TOKENS_LIMIT;
 }
 
 /**
@@ -74,10 +74,10 @@ export function isValidMaxTokens(maxTokens: number): boolean {
  */
 export function isValidUrl(url: string): boolean {
   try {
-    new URL(url)
-    return true
+    new URL(url);
+    return true;
   } catch {
-    return false
+    return false;
   }
 }
 
@@ -93,7 +93,7 @@ export function sanitizeString(input: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;')
+    .replace(/'/g, '&#x27;');
 }
 
 /**
@@ -106,9 +106,9 @@ export function sanitizeString(input: string): string {
  */
 export function truncateString(str: string, maxLength: number, suffix: string = '...'): string {
   if (str.length <= maxLength) {
-    return str
+    return str;
   }
-  return str.substring(0, maxLength - suffix.length) + suffix
+  return str.substring(0, maxLength - suffix.length) + suffix;
 }
 
 /**
@@ -120,9 +120,9 @@ export function truncateString(str: string, maxLength: number, suffix: string = 
  * @returns Truncated first line of content
  */
 export function extractMessagePreview(content: string, maxLength: number = 50): string {
-  const lines = content.split('\n')
-  const firstLine = lines[0]?.trim() ?? ''
-  return truncateString(firstLine, maxLength)
+  const lines = content.split('\n');
+  const firstLine = lines[0]?.trim() ?? '';
+  return truncateString(firstLine, maxLength);
 }
 
 /**
@@ -137,7 +137,7 @@ export function generateChatTitle(message: string, maxLength: number = 30): stri
   const cleaned = message
     .replace(/[#*`~_[\]()]/g, '')
     .replace(/\n+/g, ' ')
-    .trim()
+    .trim();
 
-  return truncateString(cleaned, maxLength)
+  return truncateString(cleaned, maxLength);
 }

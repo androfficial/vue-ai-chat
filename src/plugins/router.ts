@@ -3,9 +3,9 @@
  * Routes for AI Chat application
  */
 
-import type { RouteRecordRaw } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router';
 
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router';
 
 /**
  * Application route definitions
@@ -41,7 +41,7 @@ const routes: RouteRecordRaw[] = [
     path: '/:pathMatch(.*)*',
     redirect: '/',
   },
-]
+];
 
 /**
  * Create and configure router instance
@@ -49,16 +49,16 @@ const routes: RouteRecordRaw[] = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
-})
+});
 
 /**
  * Global navigation guard for page titles
  */
 router.beforeEach((to, _from, next) => {
   // Update document title based on route meta
-  const title = to.meta.title as string | undefined
-  document.title = title ? `${title} | AI Chat` : 'AI Chat'
-  next()
-})
+  const title = to.meta.title as string | undefined;
+  document.title = title ? `${title} | AI Chat` : 'AI Chat';
+  next();
+});
 
-export default router
+export default router;

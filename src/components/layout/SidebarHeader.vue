@@ -5,17 +5,17 @@
  */
 
 interface Props {
-  isMobile: boolean
-  rail: boolean
+  isMobile: boolean;
+  rail: boolean;
 }
 
-defineProps<Props>()
+defineProps<Props>();
 
 const emit = defineEmits<{
-  'close-drawer': []
-  'new-chat': []
-  'toggle-rail': []
-}>()
+  'close-drawer': [];
+  'new-chat': [];
+  'toggle-rail': [];
+}>();
 </script>
 
 <template>

@@ -4,17 +4,17 @@
  * Provides access to all application settings
  */
 
-import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router';
 
-import ApiSettings from '@/components/settings/ApiSettings.vue'
-import AppearanceSettings from '@/components/settings/AppearanceSettings.vue'
-import DangerZoneSettings from '@/components/settings/DangerZoneSettings.vue'
-import LanguageSettings from '@/components/settings/LanguageSettings.vue'
+import ApiSettings from '@/components/settings/ApiSettings.vue';
+import AppearanceSettings from '@/components/settings/AppearanceSettings.vue';
+import DangerZoneSettings from '@/components/settings/DangerZoneSettings.vue';
+import LanguageSettings from '@/components/settings/LanguageSettings.vue';
 
-const router = useRouter()
+const router = useRouter();
 
 function goBack() {
-  router.back()
+  router.back();
 }
 </script>
 

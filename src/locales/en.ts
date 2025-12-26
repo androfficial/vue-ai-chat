@@ -199,4 +199,4 @@ export default {
     justNow: 'Just now',
     minutesAgo: '{n} min ago | {n} mins ago',
   },
-}
+};

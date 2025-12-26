@@ -5,35 +5,35 @@
  * Code blocks are rendered as separate Vue components with proper event handling
  */
 
-import type { MessageStatus } from '@/types'
+import type { MessageStatus } from '@/types';
 
-import { computed, toRef } from 'vue'
+import { computed, toRef } from 'vue';
 
-import { useMarkdownRenderer } from '@/composables'
+import { useMarkdownRenderer } from '@/composables';
 
-import CodeBlock from './CodeBlock.vue'
+import CodeBlock from './CodeBlock.vue';
 
 // Props
 interface Props {
-  content: string
-  error?: string
-  isUser?: boolean
-  messageStatus: MessageStatus
+  content: string;
+  error?: string;
+  isUser?: boolean;
+  messageStatus: MessageStatus;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 // Emits
 defineEmits<{
-  retry: []
-}>()
+  retry: [];
+}>();
 
 // Use markdown renderer composable for assistant messages
-const contentRef = toRef(props, 'content')
-const { parsedBlocks } = useMarkdownRenderer(contentRef)
+const contentRef = toRef(props, 'content');
+const { parsedBlocks } = useMarkdownRenderer(contentRef);
 
 // Check if content has any actual text
-const hasContent = computed(() => props.content.length > 0)
+const hasContent = computed(() => props.content.length > 0);
 </script>
 
 <template>

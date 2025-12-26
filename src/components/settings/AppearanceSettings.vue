@@ -4,22 +4,22 @@
  * Manages theme preferences
  */
 
-import { computed } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import { useUserStore } from '@/stores/user'
+import { useUserStore } from '@/stores/user';
 
-import SettingsCard from './SettingsCard.vue'
+import SettingsCard from './SettingsCard.vue';
 
-const { t } = useI18n()
-const userStore = useUserStore()
+const { t } = useI18n();
+const userStore = useUserStore();
 
 const theme = computed({
   get: () => userStore.preferences.theme,
   set: value => {
-    userStore.setTheme(value)
+    userStore.setTheme(value);
   },
-})
+});
 
 const themeOptions = computed(() => [
   {
@@ -37,7 +37,7 @@ const themeOptions = computed(() => [
     title: t('settings.appearance.themeSystem'),
     value: 'system',
   },
-])
+]);
 </script>
 
 <template>

@@ -4,81 +4,81 @@
  * Renders individual chat messages with actions
  */
 
-import type { Message } from '@/types'
+import type { Message } from '@/types';
 
-import { computed, ref } from 'vue'
+import { computed, ref } from 'vue';
 
-import { useUserStore } from '@/stores/user'
-import { formatMessageTime } from '@/utils/date'
+import { useUserStore } from '@/stores/user';
+import { formatMessageTime } from '@/utils/date';
 
-import MessageActions from './MessageActions.vue'
-import MessageContent from './MessageContent.vue'
+import MessageActions from './MessageActions.vue';
+import MessageContent from './MessageContent.vue';
 
 // Props
 interface Props {
-  message: Message
+  message: Message;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 // Emits
 const emit = defineEmits<{
-  copy: [content: string]
-  delete: [messageId: string]
-  edit: [messageId: string, content: string]
-  regenerate: [messageId: string]
-}>()
+  copy: [content: string];
+  delete: [messageId: string];
+  edit: [messageId: string, content: string];
+  regenerate: [messageId: string];
+}>();
 
 // State
-const userStore = useUserStore()
-const isEditing = ref(false)
-const editContent = ref('')
-const showActions = ref(false)
+const userStore = useUserStore();
+const isEditing = ref(false);
+const editContent = ref('');
+const showActions = ref(false);
 
 // Computed
-const isUser = computed(() => props.message.role === 'user')
-const isAssistant = computed(() => props.message.role === 'assistant')
-const showTimestamps = computed(() => userStore.preferences.showTimestamps)
-const formattedTime = computed(() => formatMessageTime(props.message.createdAt))
-const isStreaming = computed(() => props.message.status === 'streaming')
-const isError = computed(() => props.message.status === 'error')
-const isPending = computed(() => props.message.status === 'pending')
+const isUser = computed(() => props.message.role === 'user');
+const isAssistant = computed(() => props.message.role === 'assistant');
+const showTimestamps = computed(() => userStore.preferences.showTimestamps);
+const formattedTime = computed(() => formatMessageTime(props.message.createdAt));
+const isStreaming = computed(() => props.message.status === 'streaming');
+const isError = computed(() => props.message.status === 'error');
+const isPending = computed(() => props.message.status === 'pending');
 const canShowActions = computed(
   () =>
     !isEditing.value &&
     !isStreaming.value &&
     !isPending.value &&
     (showActions.value || isAssistant.value),
-)
+);
 
 // Methods
 function startEdit() {
-  editContent.value = props.message.content
-  isEditing.value = true
+  editContent.value = props.message.content;
+  isEditing.value = true;
 }
 
 function cancelEdit() {
-  isEditing.value = false
-  editContent.value = ''
+  isEditing.value = false;
+  editContent.value = '';
 }
 
 function saveEdit() {
   if (editContent.value.trim()) {
-    emit('edit', props.message.id, editContent.value.trim())
+    emit('edit', props.message.id, editContent.value.trim());
   }
-  isEditing.value = false
+  isEditing.value = false;
 }
 
 function copyContent() {
-  emit('copy', props.message.content)
+  emit('copy', props.message.content);
 }
 
 function deleteMessage() {
-  emit('delete', props.message.id)
+  emit('delete', props.message.id);
 }
 
 function regenerate() {
-  emit('regenerate', props.message.id)
+  emit('regenerate', props.message.id);
 }
 </script>
 

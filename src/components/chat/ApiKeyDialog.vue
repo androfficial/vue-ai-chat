@@ -4,30 +4,30 @@
  * Modal for entering Cerebras API key
  */
 
-import { ref } from 'vue'
+import { ref } from 'vue';
 
 interface Props {
-  modelValue: boolean
+  modelValue: boolean;
 }
 
-defineProps<Props>()
+defineProps<Props>();
 
 const emit = defineEmits<{
-  save: [apiKey: string]
-  'update:modelValue': [value: boolean]
-}>()
+  save: [apiKey: string];
+  'update:modelValue': [value: boolean];
+}>();
 
-const tempApiKey = ref('')
+const tempApiKey = ref('');
 
 function handleSave() {
   if (tempApiKey.value.trim()) {
-    emit('save', tempApiKey.value.trim())
-    tempApiKey.value = ''
+    emit('save', tempApiKey.value.trim());
+    tempApiKey.value = '';
   }
 }
 
 function handleClose() {
-  emit('update:modelValue', false)
+  emit('update:modelValue', false);
 }
 </script>
 

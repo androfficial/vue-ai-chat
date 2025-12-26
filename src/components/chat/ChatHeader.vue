@@ -5,20 +5,20 @@
  */
 
 interface Props {
-  canToggleTemporaryMode: boolean
-  hasMessages: boolean
-  isCurrentChatTemporary: boolean
-  isTemporaryChatMode: boolean
+  canToggleTemporaryMode: boolean;
+  hasMessages: boolean;
+  isCurrentChatTemporary: boolean;
+  isTemporaryChatMode: boolean;
 }
 
-defineProps<Props>()
+defineProps<Props>();
 
 const emit = defineEmits<{
-  'new-chat': []
-  'save-chat': []
-  'toggle-sidebar': []
-  'toggle-temporary-mode': []
-}>()
+  'new-chat': [];
+  'save-chat': [];
+  'toggle-sidebar': [];
+  'toggle-temporary-mode': [];
+}>();
 </script>
 
 <template>

@@ -4,26 +4,26 @@
  * Main layout with sidebar and router view
  */
 
-import { provide, ref } from 'vue'
-import { useDisplay } from 'vuetify'
+import { provide, ref } from 'vue';
+import { useDisplay } from 'vuetify';
 
-import AppSidebar from '@/components/layout/AppSidebar.vue'
-import AppToast from '@/components/layout/AppToast.vue'
-import { useHead, useThemeManager } from '@/composables'
-import { IS_MOBILE_KEY, TOGGLE_SIDEBAR_KEY } from '@/types'
+import AppSidebar from '@/components/layout/AppSidebar.vue';
+import AppToast from '@/components/layout/AppToast.vue';
+import { useHead, useThemeManager } from '@/composables';
+import { IS_MOBILE_KEY, TOGGLE_SIDEBAR_KEY } from '@/types';
 
 // Initialize theme manager (handles theme switching and system preference)
-useThemeManager()
+useThemeManager();
 
 // Manage document head (title, description, lang)
-useHead()
+useHead();
 
-const display = useDisplay()
-const sidebarRef = ref<InstanceType<typeof AppSidebar> | null>(null)
+const display = useDisplay();
+const sidebarRef = ref<InstanceType<typeof AppSidebar> | null>(null);
 
 // Provide typed functions to descendants via injection keys
-provide(TOGGLE_SIDEBAR_KEY, () => sidebarRef.value?.toggleDrawer())
-provide(IS_MOBILE_KEY, () => display.smAndDown.value)
+provide(TOGGLE_SIDEBAR_KEY, () => sidebarRef.value?.toggleDrawer());
+provide(IS_MOBILE_KEY, () => display.smAndDown.value);
 </script>
 
 <template>

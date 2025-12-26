@@ -4,78 +4,78 @@
  * Displays individual chat entry in sidebar
  */
 
-import type { ChatListItem } from '@/types'
+import type { ChatListItem } from '@/types';
 
-import { computed, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 // Props
 interface Props {
-  chat: ChatListItem
-  isActive: boolean
-  timestamp: string
+  chat: ChatListItem;
+  isActive: boolean;
+  timestamp: string;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 // Emits
 const emit = defineEmits<{
-  click: []
-  delete: [event: Event]
-  rename: [newTitle: string]
-}>()
+  click: [];
+  delete: [event: Event];
+  rename: [newTitle: string];
+}>();
 
-const { t } = useI18n()
+const { t } = useI18n();
 
-const showMenu = ref(false)
-const showDeleteDialog = ref(false)
-const showRenameDialog = ref(false)
-const deleteEvent = ref<Event | null>(null)
-const newChatTitle = ref('')
+const showMenu = ref(false);
+const showDeleteDialog = ref(false);
+const showRenameDialog = ref(false);
+const deleteEvent = ref<Event | null>(null);
+const newChatTitle = ref('');
 
-const chatTitle = computed(() => props.chat.title)
+const chatTitle = computed(() => props.chat.title);
 
 // Methods
 function handleClick() {
-  emit('click')
+  emit('click');
 }
 
 function openDeleteDialog(event: Event) {
-  deleteEvent.value = event
-  showMenu.value = false
-  showDeleteDialog.value = true
+  deleteEvent.value = event;
+  showMenu.value = false;
+  showDeleteDialog.value = true;
 }
 
 function confirmDelete() {
   if (deleteEvent.value) {
-    emit('delete', deleteEvent.value)
+    emit('delete', deleteEvent.value);
   }
-  showDeleteDialog.value = false
-  deleteEvent.value = null
+  showDeleteDialog.value = false;
+  deleteEvent.value = null;
 }
 
 function cancelDelete() {
-  showDeleteDialog.value = false
-  deleteEvent.value = null
+  showDeleteDialog.value = false;
+  deleteEvent.value = null;
 }
 
 function openRenameDialog() {
-  newChatTitle.value = props.chat.title
-  showMenu.value = false
-  showRenameDialog.value = true
+  newChatTitle.value = props.chat.title;
+  showMenu.value = false;
+  showRenameDialog.value = true;
 }
 
 function confirmRename() {
-  const trimmedTitle = newChatTitle.value.trim()
+  const trimmedTitle = newChatTitle.value.trim();
   if (trimmedTitle && trimmedTitle !== props.chat.title) {
-    emit('rename', trimmedTitle)
+    emit('rename', trimmedTitle);
   }
-  showRenameDialog.value = false
+  showRenameDialog.value = false;
 }
 
 function cancelRename() {
-  showRenameDialog.value = false
-  newChatTitle.value = ''
+  showRenameDialog.value = false;
+  newChatTitle.value = '';
 }
 </script>
 

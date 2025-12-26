@@ -4,52 +4,52 @@
  * Manages Cerebras API configuration
  */
 
-import { computed, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import { testApiConnection } from '@/api'
-import { useToast } from '@/composables'
-import { useApiStore } from '@/stores/api'
-import { CEREBRAS_MODELS } from '@/types'
+import { testApiConnection } from '@/api';
+import { useToast } from '@/composables';
+import { useApiStore } from '@/stores/api';
+import { CEREBRAS_MODELS } from '@/types';
 
-import SettingsCard from './SettingsCard.vue'
+import SettingsCard from './SettingsCard.vue';
 
-const { t } = useI18n()
-const apiStore = useApiStore()
-const toast = useToast()
+const { t } = useI18n();
+const apiStore = useApiStore();
+const toast = useToast();
 
 const apiKey = computed({
   get: () => apiStore.apiKey,
   set: value => {
-    apiStore.setApiKey(value)
+    apiStore.setApiKey(value);
   },
-})
+});
 
 const selectedModel = computed({
   get: () => apiStore.model,
   set: value => {
-    apiStore.setModel(value)
+    apiStore.setModel(value);
   },
-})
+});
 
-const testingConnection = ref(false)
+const testingConnection = ref(false);
 
 async function handleTestConnection() {
   if (!apiKey.value.trim()) {
-    toast.error(t('settings.api.apiKeyPlaceholder'))
-    return
+    toast.error(t('settings.api.apiKeyPlaceholder'));
+    return;
   }
 
-  testingConnection.value = true
+  testingConnection.value = true;
 
-  const result = await testApiConnection()
+  const result = await testApiConnection();
 
-  testingConnection.value = false
+  testingConnection.value = false;
 
   if (result.success) {
-    toast.success(t('settings.api.connectionSuccess'))
+    toast.success(t('settings.api.connectionSuccess'));
   } else {
-    toast.error(result.error ?? t('settings.api.connectionFailed'))
+    toast.error(result.error ?? t('settings.api.connectionFailed'));
   }
 }
 </script>

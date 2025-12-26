@@ -1,27 +1,27 @@
-import type { SupportedLocale } from './theme'
+import type { SupportedLocale } from './theme';
 
 /**
  * User preferences and settings
  */
 export interface UserPreferences {
   /** Font size preference */
-  fontSize: 'small' | 'medium' | 'large'
+  fontSize: 'small' | 'medium' | 'large';
   /** Current language/locale */
-  locale: SupportedLocale
+  locale: SupportedLocale;
   /** Whether to enable markdown rendering */
-  markdownEnabled: boolean
+  markdownEnabled: boolean;
   /** Whether to send message on Enter key */
-  sendOnEnter: boolean
+  sendOnEnter: boolean;
   /** Whether to show code line numbers */
-  showLineNumbers: boolean
+  showLineNumbers: boolean;
   /** Whether to show timestamps on messages */
-  showTimestamps: boolean
+  showTimestamps: boolean;
   /** Whether sidebar is collapsed */
-  sidebarCollapsed: boolean
+  sidebarCollapsed: boolean;
   /** Whether to enable sound notifications */
-  soundEnabled: boolean
+  soundEnabled: boolean;
   /** Current theme mode */
-  theme: 'light' | 'dark' | 'system'
+  theme: 'light' | 'dark' | 'system';
 }
 
 /**
@@ -37,16 +37,16 @@ export const DEFAULT_USER_PREFERENCES: UserPreferences = {
   sidebarCollapsed: false,
   soundEnabled: false,
   theme: 'dark',
-}
+};
 
 /**
  * User session information
  */
 export interface UserSession {
   /** Current active chat ID */
-  activeChatId: string | null
+  activeChatId: string | null;
   /** Timestamp of last activity */
-  lastActivity: number
+  lastActivity: number;
   /** User preferences */
-  preferences: UserPreferences
+  preferences: UserPreferences;
 }

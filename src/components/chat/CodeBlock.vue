@@ -4,23 +4,23 @@
  * Renders code with proper highlighting and provides copy button
  */
 
-import hljs from 'highlight.js'
-import { computed, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
+import hljs from 'highlight.js';
+import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import { useClipboard } from '@/composables'
+import { useClipboard } from '@/composables';
 
 interface Props {
-  code: string
-  language?: string
+  code: string;
+  language?: string;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
-const { t } = useI18n()
-const { copy } = useClipboard()
+const { t } = useI18n();
+const { copy } = useClipboard();
 
-const isCopied = ref(false)
+const isCopied = ref(false);
 
 /**
  * Language name mapping for display
@@ -36,55 +36,55 @@ const LANGUAGE_MAP: Record<string, string> = {
   ts: 'typescript',
   tsx: 'typescript',
   yml: 'yaml',
-}
+};
 
 /**
  * Normalized language name for display
  */
 const displayLanguage = computed(() => {
-  const lang = props.language?.toLowerCase() || ''
-  return LANGUAGE_MAP[lang] || lang || 'text'
-})
+  const lang = props.language?.toLowerCase() || '';
+  return LANGUAGE_MAP[lang] || lang || 'text';
+});
 
 /**
  * Syntax highlighted code HTML
  */
 const highlightedCode = computed(() => {
-  const lang = props.language || ''
+  const lang = props.language || '';
 
   if (lang && hljs.getLanguage(lang)) {
     try {
-      return hljs.highlight(props.code, { language: lang }).value
+      return hljs.highlight(props.code, { language: lang }).value;
     } catch {
-      return escapeHtml(props.code)
+      return escapeHtml(props.code);
     }
   }
 
   try {
-    return hljs.highlightAuto(props.code).value
+    return hljs.highlightAuto(props.code).value;
   } catch {
-    return escapeHtml(props.code)
+    return escapeHtml(props.code);
   }
-})
+});
 
 /**
  * Escape HTML to prevent XSS
  */
 function escapeHtml(text: string): string {
-  const div = document.createElement('div')
-  div.textContent = text
-  return div.innerHTML
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 /**
  * Copy code to clipboard
  */
 async function copyCode() {
-  await copy(props.code)
-  isCopied.value = true
+  await copy(props.code);
+  isCopied.value = true;
   setTimeout(() => {
-    isCopied.value = false
-  }, 2000)
+    isCopied.value = false;
+  }, 2000);
 }
 </script>
 

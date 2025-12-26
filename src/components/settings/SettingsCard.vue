@@ -5,15 +5,15 @@
  */
 
 interface Props {
-  icon?: string
-  title: string
-  variant?: 'default' | 'danger'
+  icon?: string;
+  title: string;
+  variant?: 'default' | 'danger';
 }
 
 withDefaults(defineProps<Props>(), {
   icon: undefined,
   variant: 'default',
-})
+});
 </script>
 
 <template>

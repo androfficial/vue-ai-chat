@@ -3,19 +3,19 @@ import type {
   ApiResponse,
   ChatCompletionRequest,
   ChatCompletionResponse,
-} from '@/types'
+} from '@/types';
 
-import { useApiStore } from '@/stores/api'
+import { useApiStore } from '@/stores/api';
 
-import { apiRequest } from './client'
-import { getErrorCode, isApiErrorCode } from './errors'
-import { processStream } from './stream'
+import { apiRequest } from './client';
+import { getErrorCode, isApiErrorCode } from './errors';
+import { processStream } from './stream';
 
 /**
  * Build chat completion request body for Cerebras
  */
 function buildRequestBody(messages: ApiMessage[], stream: boolean): ChatCompletionRequest {
-  const apiStore = useApiStore()
+  const apiStore = useApiStore();
   return {
     max_tokens: apiStore.config.maxTokens,
     messages,
@@ -23,7 +23,7 @@ function buildRequestBody(messages: ApiMessage[], stream: boolean): ChatCompleti
     stream,
     temperature: apiStore.config.temperature,
     top_p: apiStore.config.topP,
-  }
+  };
 }
 
 /**
@@ -33,21 +33,21 @@ export async function sendChatCompletion(
   messages: ApiMessage[],
 ): Promise<ApiResponse<ChatCompletionResponse>> {
   try {
-    const requestBody = buildRequestBody(messages, false)
-    const response = await apiRequest('/chat/completions', requestBody)
-    const data = (await response.json()) as ChatCompletionResponse
+    const requestBody = buildRequestBody(messages, false);
+    const response = await apiRequest('/chat/completions', requestBody);
+    const data = (await response.json()) as ChatCompletionResponse;
 
     return {
       data,
       success: true,
-    }
+    };
   } catch (error) {
     const errorCode =
-      error instanceof Error && isApiErrorCode(error.message) ? error.message : getErrorCode(error)
+      error instanceof Error && isApiErrorCode(error.message) ? error.message : getErrorCode(error);
     return {
       error: errorCode,
       success: false,
-    }
+    };
   }
 }
 
@@ -62,27 +62,27 @@ export async function sendStreamingChatCompletion(
   signal?: AbortSignal,
 ): Promise<void> {
   try {
-    const requestBody = buildRequestBody(messages, true)
-    const response = await apiRequest('/chat/completions', requestBody, signal)
+    const requestBody = buildRequestBody(messages, true);
+    const response = await apiRequest('/chat/completions', requestBody, signal);
 
-    const reader = response.body?.getReader()
+    const reader = response.body?.getReader();
     if (!reader) {
-      throw new Error('Response body is not readable')
+      throw new Error('Response body is not readable');
     }
 
-    await processStream(reader, onChunk, onComplete)
+    await processStream(reader, onChunk, onComplete);
   } catch (error) {
     if (error instanceof Error) {
       if (error.name === 'AbortError') {
-        return
+        return;
       }
       if (isApiErrorCode(error.message)) {
-        onError(error.message)
+        onError(error.message);
       } else {
-        onError(getErrorCode(error))
+        onError(getErrorCode(error));
       }
     } else {
-      onError('unknown')
+      onError('unknown');
     }
   }
 }
@@ -92,15 +92,15 @@ export async function sendStreamingChatCompletion(
  */
 export async function testApiConnection(): Promise<ApiResponse<boolean>> {
   try {
-    const result = await sendChatCompletion([{ content: 'Hello', role: 'user' }])
+    const result = await sendChatCompletion([{ content: 'Hello', role: 'user' }]);
 
     if (result.success) {
-      return { data: true, success: true }
+      return { data: true, success: true };
     }
 
-    return { error: result.error, success: false }
+    return { error: result.error, success: false };
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Connection test failed'
-    return { error: message, success: false }
+    const message = error instanceof Error ? error.message : 'Connection test failed';
+    return { error: message, success: false };
   }
 }

@@ -4,26 +4,26 @@
  * Destructive actions like clearing all chats
  */
 
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
-import { useChatStore } from '@/stores/chat'
+import { useChatStore } from '@/stores/chat';
 
-import SettingsCard from './SettingsCard.vue'
+import SettingsCard from './SettingsCard.vue';
 
-const router = useRouter()
-const chatStore = useChatStore()
+const router = useRouter();
+const chatStore = useChatStore();
 
-const showDeleteDialog = ref(false)
+const showDeleteDialog = ref(false);
 
 function confirmDeleteChats() {
-  showDeleteDialog.value = true
+  showDeleteDialog.value = true;
 }
 
 function deleteAllChats() {
-  chatStore.clearAllChats()
-  showDeleteDialog.value = false
-  router.push('/chat/new')
+  chatStore.clearAllChats();
+  showDeleteDialog.value = false;
+  router.push('/chat/new');
 }
 </script>
 

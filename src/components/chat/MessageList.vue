@@ -4,174 +4,174 @@
  * Displays chat messages with auto-scroll functionality
  */
 
-import type { Message } from '@/types'
+import type { Message } from '@/types';
 
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
-import { useAutoScroll } from '@/composables'
+import { useAutoScroll } from '@/composables';
 
-import MessageBubble from './MessageBubble.vue'
+import MessageBubble from './MessageBubble.vue';
 
 interface Props {
-  messages: Message[]
+  messages: Message[];
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 const emit = defineEmits<{
-  copy: [content: string]
-  delete: [messageId: string]
-  edit: [messageId: string, content: string]
-  regenerate: [messageId: string]
-  suggestion: [text: string]
-}>()
+  copy: [content: string];
+  delete: [messageId: string];
+  edit: [messageId: string, content: string];
+  regenerate: [messageId: string];
+  suggestion: [text: string];
+}>();
 
-const { t, tm } = useI18n()
+const { t, tm } = useI18n();
 
 const { containerRef, handleScroll, isAtBottom, scrollToBottom } = useAutoScroll({
   smooth: false,
   threshold: 150,
-})
+});
 
-const isInitialLoad = ref(true)
-const isSmoothScrolling = ref(false)
+const isInitialLoad = ref(true);
+const isSmoothScrolling = ref(false);
 
 // Rotating titles animation
-const currentTitleIndex = ref(0)
-const isAnimating = ref(false)
-let titleInterval: ReturnType<typeof setInterval> | null = null
+const currentTitleIndex = ref(0);
+const isAnimating = ref(false);
+let titleInterval: ReturnType<typeof setInterval> | null = null;
 
 const titles = computed(() => {
-  const rawTitles = tm('chat.emptyState.titles') as string[] | undefined
-  return Array.isArray(rawTitles) ? rawTitles : [t('chat.emptyState.title')]
-})
+  const rawTitles = tm('chat.emptyState.titles') as string[] | undefined;
+  return Array.isArray(rawTitles) ? rawTitles : [t('chat.emptyState.title')];
+});
 
 interface Suggestion {
-  icon: string
-  text: string
+  icon: string;
+  text: string;
 }
 
 const suggestions = computed(() => {
-  const rawSuggestions = tm('chat.emptyState.suggestions') as Suggestion[] | undefined
-  return Array.isArray(rawSuggestions) ? rawSuggestions : []
-})
+  const rawSuggestions = tm('chat.emptyState.suggestions') as Suggestion[] | undefined;
+  return Array.isArray(rawSuggestions) ? rawSuggestions : [];
+});
 
 function handleSuggestionClick(text: string) {
-  emit('suggestion', text)
+  emit('suggestion', text);
 }
 
-const currentTitle = computed(() => titles.value[currentTitleIndex.value] || titles.value[0])
+const currentTitle = computed(() => titles.value[currentTitleIndex.value] || titles.value[0]);
 
 function startTitleRotation() {
-  if (titleInterval) return
+  if (titleInterval) return;
   titleInterval = setInterval(() => {
-    isAnimating.value = true
+    isAnimating.value = true;
     setTimeout(() => {
-      currentTitleIndex.value = (currentTitleIndex.value + 1) % titles.value.length
+      currentTitleIndex.value = (currentTitleIndex.value + 1) % titles.value.length;
       setTimeout(() => {
-        isAnimating.value = false
-      }, 50)
-    }, 300)
-  }, 4000)
+        isAnimating.value = false;
+      }, 50);
+    }, 300);
+  }, 4000);
 }
 
 function stopTitleRotation() {
   if (titleInterval) {
-    clearInterval(titleInterval)
-    titleInterval = null
+    clearInterval(titleInterval);
+    titleInterval = null;
   }
 }
 
 function onScroll() {
-  if (isSmoothScrolling.value) return
-  handleScroll()
+  if (isSmoothScrolling.value) return;
+  handleScroll();
 }
 
 onMounted(async () => {
-  await nextTick()
+  await nextTick();
   if (containerRef.value && props.messages.length > 0) {
-    containerRef.value.scrollTop = containerRef.value.scrollHeight
-    isAtBottom.value = true
+    containerRef.value.scrollTop = containerRef.value.scrollHeight;
+    isAtBottom.value = true;
   } else {
-    startTitleRotation()
+    startTitleRotation();
   }
   setTimeout(() => {
-    isInitialLoad.value = false
-  }, 100)
-})
+    isInitialLoad.value = false;
+  }, 100);
+});
 
 onUnmounted(() => {
-  stopTitleRotation()
-})
+  stopTitleRotation();
+});
 
 watch(
   () => props.messages.length,
   async (newLen, oldLen) => {
-    if (isInitialLoad.value) return
+    if (isInitialLoad.value) return;
 
     if (newLen === 0) {
-      currentTitleIndex.value = 0
-      startTitleRotation()
+      currentTitleIndex.value = 0;
+      startTitleRotation();
     } else {
-      stopTitleRotation()
+      stopTitleRotation();
     }
 
     if (newLen > (oldLen ?? 0)) {
-      await nextTick()
-      scrollToBottom()
+      await nextTick();
+      scrollToBottom();
     }
   },
-)
+);
 
 watch(
   () => props.messages[props.messages.length - 1]?.content,
   async (newContent, oldContent) => {
     if (newContent !== oldContent && isAtBottom.value) {
-      await nextTick()
-      scrollToBottom()
+      await nextTick();
+      scrollToBottom();
     }
   },
-)
+);
 
 async function scrollToBottomInstant() {
-  await nextTick()
+  await nextTick();
   if (containerRef.value) {
-    containerRef.value.scrollTop = containerRef.value.scrollHeight
-    isAtBottom.value = true
+    containerRef.value.scrollTop = containerRef.value.scrollHeight;
+    isAtBottom.value = true;
   }
 }
 
 function scrollToBottomSmooth() {
   if (containerRef.value) {
-    isSmoothScrolling.value = true
-    isAtBottom.value = true
+    isSmoothScrolling.value = true;
+    isAtBottom.value = true;
 
     containerRef.value.scrollTo({
       behavior: 'smooth',
       top: containerRef.value.scrollHeight,
-    })
+    });
 
     setTimeout(() => {
-      isSmoothScrolling.value = false
-    }, 500)
+      isSmoothScrolling.value = false;
+    }, 500);
   }
 }
 
 function handleCopy(content: string) {
-  emit('copy', content)
+  emit('copy', content);
 }
 
 function handleDelete(messageId: string) {
-  emit('delete', messageId)
+  emit('delete', messageId);
 }
 
 function handleEdit(messageId: string, content: string) {
-  emit('edit', messageId, content)
+  emit('edit', messageId, content);
 }
 
 function handleRegenerate(messageId: string) {
-  emit('regenerate', messageId)
+  emit('regenerate', messageId);
 }
 
 defineExpose({
@@ -179,7 +179,7 @@ defineExpose({
   scrollToBottom,
   scrollToBottomInstant,
   scrollToBottomSmooth,
-})
+});
 </script>
 
 <template>

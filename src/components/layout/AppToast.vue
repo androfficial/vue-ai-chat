@@ -4,11 +4,11 @@
  * Uses Vuetify v-snackbar for consistent styling
  */
 
-import { computed } from 'vue'
+import { computed } from 'vue';
 
-import { useToast } from '@/composables'
+import { useToast } from '@/composables';
 
-const toast = useToast()
+const toast = useToast();
 
 /**
  * Get icon based on toast type
@@ -19,9 +19,9 @@ const toastIcon = computed(() => {
     info: 'mdi-information',
     success: 'mdi-check-circle',
     warning: 'mdi-alert',
-  }
-  return icons[toast.type.value] ?? 'mdi-information'
-})
+  };
+  return icons[toast.type.value] ?? 'mdi-information';
+});
 </script>
 
 <template>

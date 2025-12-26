@@ -1,37 +1,37 @@
 /**
  * Supported theme modes
  */
-export type ThemeMode = 'light' | 'dark' | 'system'
+export type ThemeMode = 'light' | 'dark' | 'system';
 
 /**
  * Supported locales/languages
  */
-export type SupportedLocale = 'en' | 'uk'
+export type SupportedLocale = 'en' | 'uk';
 
 /**
  * Theme color palette
  */
 export interface ThemeColors {
   /** Background color */
-  background: string
+  background: string;
   /** Error color */
-  error: string
+  error: string;
   /** Info color */
-  info: string
+  info: string;
   /** Primary brand color */
-  primary: string
+  primary: string;
   /** Secondary accent color */
-  secondary: string
+  secondary: string;
   /** Success color */
-  success: string
+  success: string;
   /** Surface/card background color */
-  surface: string
+  surface: string;
   /** Primary text color */
-  textPrimary: string
+  textPrimary: string;
   /** Secondary text color */
-  textSecondary: string
+  textSecondary: string;
   /** Warning color */
-  warning: string
+  warning: string;
 }
 
 /**
@@ -48,7 +48,7 @@ export const LIGHT_THEME_COLORS: ThemeColors = {
   textPrimary: '#1A1A1A',
   textSecondary: '#6B7280',
   warning: '#F59E0B',
-}
+};
 
 /**
  * Dark theme colors (ChatGPT-inspired but original)
@@ -64,22 +64,22 @@ export const DARK_THEME_COLORS: ThemeColors = {
   textPrimary: '#ECECEC',
   textSecondary: '#9CA3AF',
   warning: '#FBBF24',
-}
+};
 
 /**
  * Sidebar colors
  */
 export interface SidebarColors {
   /** Sidebar item active/selected background */
-  activeBackground: string
+  activeBackground: string;
   /** Sidebar background */
-  background: string
+  background: string;
   /** Sidebar item hover background */
-  hoverBackground: string
+  hoverBackground: string;
   /** Sidebar icon color */
-  icon: string
+  icon: string;
   /** Sidebar text color */
-  text: string
+  text: string;
 }
 
 /**
@@ -91,7 +91,7 @@ export const LIGHT_SIDEBAR_COLORS: SidebarColors = {
   hoverBackground: '#F0F0F0',
   icon: '#6B7280',
   text: '#1A1A1A',
-}
+};
 
 /**
  * Dark theme sidebar colors
@@ -102,4 +102,4 @@ export const DARK_SIDEBAR_COLORS: SidebarColors = {
   hoverBackground: '#2A2A2A',
   icon: '#9CA3AF',
   text: '#ECECEC',
-}
+};

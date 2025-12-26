@@ -4,59 +4,59 @@
  * Displays grouped chat list with collapse functionality
  */
 
-import type { ChatListItem as ChatListItemType } from '@/types'
+import type { ChatListItem as ChatListItemType } from '@/types';
 
-import { computed, ref } from 'vue'
+import { computed, ref } from 'vue';
 
-import { useDateFormatter } from '@/composables'
-import { getDateGroup } from '@/utils/date'
+import { useDateFormatter } from '@/composables';
+import { getDateGroup } from '@/utils/date';
 
-import ChatListItem from './ChatListItem.vue'
+import ChatListItem from './ChatListItem.vue';
 
 interface Props {
-  chatList: ChatListItemType[]
-  currentChatId: string
-  isMobile: boolean
-  rail: boolean
+  chatList: ChatListItemType[];
+  currentChatId: string;
+  isMobile: boolean;
+  rail: boolean;
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
 const emit = defineEmits<{
-  'delete-chat': [chatId: string, event: Event]
-  'open-chat': [chatId: string]
-  'rename-chat': [chatId: string, newTitle: string]
-}>()
+  'delete-chat': [chatId: string, event: Event];
+  'open-chat': [chatId: string];
+  'rename-chat': [chatId: string, newTitle: string];
+}>();
 
-const { formatDateGroup, getTimeDiffFormatted, locale } = useDateFormatter()
+const { formatDateGroup, getTimeDiffFormatted, locale } = useDateFormatter();
 
-const collapsedGroups = ref<Set<string>>(new Set())
+const collapsedGroups = ref<Set<string>>(new Set());
 
 const groupedChats = computed(() => {
-  const groups: Record<string, typeof props.chatList> = {}
+  const groups: Record<string, typeof props.chatList> = {};
 
   props.chatList.forEach(chat => {
-    const group = getDateGroup(chat.updatedAt, locale.value)
-    const groupKey = formatDateGroup(group)
+    const group = getDateGroup(chat.updatedAt, locale.value);
+    const groupKey = formatDateGroup(group);
     if (!groups[groupKey]) {
-      groups[groupKey] = []
+      groups[groupKey] = [];
     }
-    groups[groupKey].push(chat)
-  })
+    groups[groupKey].push(chat);
+  });
 
-  return groups
-})
+  return groups;
+});
 
 function toggleGroup(group: string) {
   if (collapsedGroups.value.has(group)) {
-    collapsedGroups.value.delete(group)
+    collapsedGroups.value.delete(group);
   } else {
-    collapsedGroups.value.add(group)
+    collapsedGroups.value.add(group);
   }
 }
 
 function isGroupCollapsed(group: string): boolean {
-  return collapsedGroups.value.has(group)
+  return collapsedGroups.value.has(group);
 }
 </script>
 

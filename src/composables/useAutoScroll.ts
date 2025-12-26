@@ -1,30 +1,30 @@
-import type { Ref } from 'vue'
+import type { Ref } from 'vue';
 
-import { nextTick, onMounted, ref, watch } from 'vue'
+import { nextTick, onMounted, ref, watch } from 'vue';
 
 export interface UseAutoScrollOptions {
-  smooth?: boolean
-  threshold?: number
+  smooth?: boolean;
+  threshold?: number;
 }
 
 export interface UseAutoScrollReturn {
-  containerRef: Ref<HTMLElement | undefined>
-  handleScroll: () => void
-  isAtBottom: Ref<boolean>
-  scrollToBottom: () => void
+  containerRef: Ref<HTMLElement | undefined>;
+  handleScroll: () => void;
+  isAtBottom: Ref<boolean>;
+  scrollToBottom: () => void;
 }
 
 export function useAutoScroll(options: UseAutoScrollOptions = {}): UseAutoScrollReturn {
-  const { threshold = 100 } = options
+  const { threshold = 100 } = options;
 
-  const containerRef = ref<HTMLElement>()
-  const isAtBottom = ref(true)
+  const containerRef = ref<HTMLElement>();
+  const isAtBottom = ref(true);
 
   function handleScroll() {
-    if (!containerRef.value) return
+    if (!containerRef.value) return;
 
-    const { clientHeight, scrollHeight, scrollTop } = containerRef.value
-    isAtBottom.value = scrollHeight - scrollTop - clientHeight < threshold
+    const { clientHeight, scrollHeight, scrollTop } = containerRef.value;
+    isAtBottom.value = scrollHeight - scrollTop - clientHeight < threshold;
   }
 
   function scrollToBottom() {
@@ -32,24 +32,24 @@ export function useAutoScroll(options: UseAutoScrollOptions = {}): UseAutoScroll
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           if (containerRef.value) {
-            containerRef.value.scrollTop = containerRef.value.scrollHeight
-            isAtBottom.value = true
+            containerRef.value.scrollTop = containerRef.value.scrollHeight;
+            isAtBottom.value = true;
           }
-        })
-      })
+        });
+      });
     }
   }
 
   onMounted(() => {
-    scrollToBottom()
-  })
+    scrollToBottom();
+  });
 
   return {
     containerRef,
     handleScroll,
     isAtBottom,
     scrollToBottom,
-  }
+  };
 }
 
 export function useAutoScrollOnChange<T>(
@@ -59,8 +59,8 @@ export function useAutoScrollOnChange<T>(
 ): void {
   watch(dependency, async () => {
     if (isAtBottom.value) {
-      await nextTick()
-      scrollToBottom()
+      await nextTick();
+      scrollToBottom();
     }
-  })
+  });
 }

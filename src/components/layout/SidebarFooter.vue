@@ -4,20 +4,20 @@
  * Contains theme toggle and settings link
  */
 
-import { useUserStore } from '@/stores/user'
+import { useUserStore } from '@/stores/user';
 
 interface Props {
-  isMobile: boolean
-  rail: boolean
+  isMobile: boolean;
+  rail: boolean;
 }
 
-defineProps<Props>()
+defineProps<Props>();
 
 const emit = defineEmits<{
-  'open-settings': []
-}>()
+  'open-settings': [];
+}>();
 
-const userStore = useUserStore()
+const userStore = useUserStore();
 </script>
 
 <template>

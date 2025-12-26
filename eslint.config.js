@@ -1,9 +1,9 @@
-import js from '@eslint/js'
-import perfectionist from 'eslint-plugin-perfectionist'
-import prettier from 'eslint-plugin-prettier/recommended'
-import pluginVue from 'eslint-plugin-vue'
-import globals from 'globals'
-import tseslint from 'typescript-eslint'
+import js from '@eslint/js';
+import perfectionist from 'eslint-plugin-perfectionist';
+import prettier from 'eslint-plugin-prettier/recommended';
+import pluginVue from 'eslint-plugin-vue';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
@@ -166,4 +166,4 @@ export default [
       'vue/require-default-prop': 'off',
     },
   },
-]
+];
