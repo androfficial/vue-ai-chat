@@ -13,7 +13,6 @@ export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
   ...pluginVue.configs['flat/recommended'],
-  prettier,
   {
     languageOptions: {
       globals: {
@@ -50,9 +49,11 @@ export default [
           varsIgnorePattern: '^_',
         },
       ],
+      '@typescript-eslint/semi': 'off',
       // General rules
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'no-debugger': 'warn',
+
       // Sorting enums
       'perfectionist/sort-enums': [
         'error',
@@ -61,7 +62,6 @@ export default [
           type: 'natural',
         },
       ],
-
       // Perfectionist - sorting imports
       'perfectionist/sort-imports': [
         'error',
@@ -109,6 +109,19 @@ export default [
           type: 'natural',
         },
       ],
+      // Explicitly set Prettier rules to resolve persistent editor conflicts
+      'prettier/prettier': [
+        'error',
+        {
+          printWidth: 100,
+          semi: true,
+          singleQuote: true,
+          tabWidth: 2,
+          trailingComma: 'all',
+        },
+      ],
+      // Explicitly disable stylistic rules that conflict with Prettier
+      semi: 'off',
       // Vue rules
       'vue/attributes-order': [
         'error',
@@ -144,6 +157,7 @@ export default [
         },
       ],
       'vue/define-props-declaration': ['error', 'type-based'],
+
       'vue/html-self-closing': [
         'error',
         {
@@ -157,13 +171,13 @@ export default [
         },
       ],
       'vue/multi-word-component-names': 'off',
-
       'vue/no-unused-refs': 'error',
+
       'vue/no-v-html': 'off',
       'vue/padding-line-between-blocks': ['error', 'always'],
-
       'vue/prefer-true-attribute-shorthand': 'error',
       'vue/require-default-prop': 'off',
     },
   },
+  prettier,
 ];
