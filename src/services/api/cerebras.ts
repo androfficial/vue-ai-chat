@@ -3,107 +3,16 @@ import type {
   ApiResponse,
   ChatCompletionRequest,
   ChatCompletionResponse,
-  StreamingChunk,
 } from '@/types'
 
 import { useApiStore } from '@/stores/api'
 
-/**
- * Array of all valid API error codes (single source of truth)
- */
-const API_ERROR_CODES = [
-  'networkError',
-  'rateLimited',
-  'serverError',
-  'unauthorized',
-  'unknown',
-] as const
+import { apiRequest } from './client'
+import { getErrorCode, isApiErrorCode } from './errors'
+import { processStream } from './stream'
 
 /**
- * API error codes for handling different error scenarios
- */
-export type ApiErrorCode = (typeof API_ERROR_CODES)[number]
-
-/**
- * Type guard to check if a string is a valid ApiErrorCode
- */
-function isApiErrorCode(value: string): value is ApiErrorCode {
-  return API_ERROR_CODES.includes(value as ApiErrorCode)
-}
-
-/**
- * Map HTTP status code to API error code
- */
-export function getErrorCodeFromStatus(status: number): ApiErrorCode {
-  if (status === 401 || status === 403) return 'unauthorized'
-  if (status === 429) return 'rateLimited'
-  if (status >= 500) return 'serverError'
-  return 'unknown'
-}
-
-/**
- * Determine error code from error object
- */
-export function getErrorCode(error: unknown, status?: number): ApiErrorCode {
-  if (status) {
-    return getErrorCodeFromStatus(status)
-  }
-
-  if (error instanceof Error) {
-    const msg = error.message.toLowerCase()
-    if (msg.includes('network') || msg.includes('fetch') || msg.includes('connection')) {
-      return 'networkError'
-    }
-    if (msg.includes('401') || msg.includes('unauthorized') || msg.includes('invalid api key')) {
-      return 'unauthorized'
-    }
-    if (msg.includes('429') || msg.includes('rate limit') || msg.includes('too many')) {
-      return 'rateLimited'
-    }
-    if (
-      msg.includes('500') ||
-      msg.includes('502') ||
-      msg.includes('503') ||
-      msg.includes('server')
-    ) {
-      return 'serverError'
-    }
-  }
-
-  return 'unknown'
-}
-
-/**
- * API client configuration
- */
-interface ApiClientConfig {
-  apiKey: string
-  baseUrl: string
-}
-
-/**
- * Get current API configuration from store
- */
-function getApiConfig(): ApiClientConfig {
-  const apiStore = useApiStore()
-  return {
-    apiKey: apiStore.apiKey,
-    baseUrl: apiStore.config.baseUrl,
-  }
-}
-
-/**
- * Build request headers for API calls
- */
-function buildHeaders(apiKey: string): HeadersInit {
-  return {
-    Authorization: `Bearer ${apiKey}`,
-    'Content-Type': 'application/json',
-  }
-}
-
-/**
- * Build chat completion request body
+ * Build chat completion request body for Cerebras
  */
 function buildRequestBody(messages: ApiMessage[], stream: boolean): ChatCompletionRequest {
   const apiStore = useApiStore()
@@ -118,42 +27,7 @@ function buildRequestBody(messages: ApiMessage[], stream: boolean): ChatCompleti
 }
 
 /**
- * Unified fetch wrapper for API requests
- */
-async function apiRequest(
-  endpoint: string,
-  body: unknown,
-  signal?: AbortSignal,
-): Promise<Response> {
-  const { apiKey, baseUrl } = getApiConfig()
-
-  const response = await fetch(`${baseUrl}${endpoint}`, {
-    body: JSON.stringify(body),
-    headers: buildHeaders(apiKey),
-    method: 'POST',
-    signal,
-  })
-
-  if (!response.ok) {
-    const errorCode = getErrorCodeFromStatus(response.status)
-    throw new Error(errorCode)
-  }
-
-  return response
-}
-
-/**
  * Send non-streaming chat completion request to Cerebras API
- *
- * @param messages - Array of messages to send to the API
- * @returns Promise resolving to API response with completion data or error
- * @example
- * ```typescript
- * const result = await sendChatCompletion([{ role: 'user', content: 'Hello' }])
- * if (result.success) {
- *   console.log(result.data.choices[0].message.content)
- * }
- * ```
  */
 export async function sendChatCompletion(
   messages: ApiMessage[],
@@ -178,86 +52,7 @@ export async function sendChatCompletion(
 }
 
 /**
- * Process SSE stream and extract content chunks
- */
-async function processStream(
-  reader: ReadableStreamDefaultReader<Uint8Array>,
-  onChunk: (content: string) => void,
-  onComplete: () => void,
-): Promise<void> {
-  const decoder = new TextDecoder()
-  let buffer = ''
-
-  while (true) {
-    const { done, value } = await reader.read()
-
-    if (done) {
-      break
-    }
-
-    const chunk = decoder.decode(value, { stream: true })
-    buffer += chunk
-
-    // Process complete SSE events
-    const lines = buffer.split('\n')
-    buffer = lines.pop() || '' // Keep incomplete line in buffer
-
-    for (const line of lines) {
-      const trimmedLine = line.trim()
-
-      if (trimmedLine === '' || trimmedLine === 'data: [DONE]') {
-        if (trimmedLine === 'data: [DONE]') {
-          onComplete()
-          return
-        }
-        continue
-      }
-
-      if (trimmedLine.startsWith('data: ')) {
-        try {
-          const jsonData = trimmedLine.slice(6)
-          const streamChunk: StreamingChunk = JSON.parse(jsonData)
-
-          const delta = streamChunk.choices[0]?.delta
-          if (delta?.content) {
-            onChunk(delta.content)
-          }
-
-          // Check for finish reason
-          if (streamChunk.choices[0]?.finish_reason) {
-            onComplete()
-            return
-          }
-        } catch {
-          console.warn('Failed to parse streaming chunk:', trimmedLine)
-        }
-      }
-    }
-  }
-
-  onComplete()
-}
-
-/**
  * Send streaming chat completion request to Cerebras API
- * Streams response content in real-time via callbacks
- *
- * @param messages - Array of messages to send to the API
- * @param onChunk - Callback invoked for each content chunk received
- * @param onComplete - Callback invoked when streaming completes
- * @param onError - Callback invoked when an error occurs
- * @param signal - Optional AbortSignal for cancellation
- * @example
- * ```typescript
- * const controller = new AbortController()
- * await sendStreamingChatCompletion(
- *   messages,
- *   chunk => console.log(chunk),
- *   () => console.log('Done'),
- *   error => console.error(error),
- *   controller.signal
- * )
- * ```
  */
 export async function sendStreamingChatCompletion(
   messages: ApiMessage[],
@@ -294,8 +89,6 @@ export async function sendStreamingChatCompletion(
 
 /**
  * Test API connection by sending a minimal request
- *
- * @returns Promise resolving to success status or error
  */
 export async function testApiConnection(): Promise<ApiResponse<boolean>> {
   try {
