@@ -7,6 +7,8 @@
 import { computed, inject, nextTick, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
+import ApiKeyDialog from '@/components/chat/ApiKeyDialog.vue'
+import ChatHeader from '@/components/chat/ChatHeader.vue'
 import ChatInput from '@/components/chat/ChatInput.vue'
 import MessageList from '@/components/chat/MessageList.vue'
 import { useChatMessages, useClipboard } from '@/composables'
@@ -27,7 +29,6 @@ const { copy } = useClipboard()
 
 // State
 const showApiKeyDialog = ref(false)
-const tempApiKey = ref('')
 const messageList = ref<InstanceType<typeof MessageList> | null>(null)
 
 // Get current chat ID from route
@@ -51,11 +52,8 @@ const isCurrentChatTemporary = computed(() => currentChat.value?.isTemporary ?? 
 
 // Can only toggle temporary mode for new chats without messages
 const canToggleTemporaryMode = computed(() => {
-  // Always show for new chat page
   if (isNewChat.value) return true
-  // Show for temporary chats (to allow saving)
   if (isCurrentChatTemporary.value) return true
-  // Don't show for regular chats with messages
   return false
 })
 
@@ -65,13 +63,11 @@ watch(
   async id => {
     if (id === 'new') {
       chatStore.setActiveChat(null)
-      // Reset temporary chat mode when going to new chat
       chatStore.setTemporaryChatMode(false)
     } else if (id) {
       const chat = chatStore.getChatById(id)
       if (chat) {
         chatStore.setActiveChat(id)
-        // Instant scroll to bottom when switching chats
         await nextTick()
         messageList.value?.scrollToBottomInstant()
       } else {
@@ -102,14 +98,12 @@ async function handleSendMessage(content: string) {
 
   let targetChatId = chatId.value
 
-  // Create new chat if needed
   if (isNewChat.value) {
     const newChat = chatStore.createChat()
     targetChatId = newChat.id
     router.replace(`/chat/${targetChatId}`)
   }
 
-  // Send message using composable
   await sendMessage(targetChatId, content)
 }
 
@@ -141,99 +135,39 @@ async function handleEditMessage(messageId: string, content: string) {
   if (!currentChat.value || !hasApiKey.value) return
 
   const chatId = currentChat.value.id
-
-  // Update the message content
   chatStore.updateMessageContent(chatId, messageId, content)
-
-  // Delete all messages after the edited message
   chatStore.deleteMessagesAfter(chatId, messageId)
-
-  // Send new request to AI
   await sendMessage(chatId, content, true)
 }
 
 async function handleRegenerateMessage(messageId: string) {
   if (!currentChat.value || !hasApiKey.value) return
-
-  // Use the regenerateMessage function from composable
   await regenerateMessage(currentChat.value.id, messageId)
 }
 
-function saveApiKey() {
-  if (tempApiKey.value.trim()) {
-    apiStore.setApiKey(tempApiKey.value.trim())
-    showApiKeyDialog.value = false
-    tempApiKey.value = ''
-  }
+function handleSaveApiKey(apiKey: string) {
+  apiStore.setApiKey(apiKey)
+  showApiKeyDialog.value = false
+}
+
+function handleNewChat() {
+  router.push('/chat/new')
 }
 </script>
 
 <template>
   <div class="chat-page d-flex flex-column">
-    <!-- Mobile header with menu button -->
-    <div class="chat-page__mobile-header">
-      <v-btn
-        icon="mdi-menu"
-        variant="text"
-        size="40"
-        :aria-label="$t('sidebar.expandSidebar')"
-        @click="toggleSidebar?.()"
-      />
-      <span class="chat-page__mobile-title">AI Chat</span>
-      <v-btn
-        icon="mdi-square-edit-outline"
-        variant="text"
-        size="40"
-        :aria-label="$t('sidebar.newChat')"
-        @click="router.push('/chat/new')"
-      />
-    </div>
-
-    <!-- Top right temporary chat toggle -->
-    <div
-      v-if="canToggleTemporaryMode"
-      class="chat-page__header"
-    >
-      <v-btn
-        variant="text"
-        size="small"
-        class="chat-page__temp-toggle"
-        :class="{ 'chat-page__temp-toggle--active': isTemporaryChatMode || isCurrentChatTemporary }"
-        @click="toggleTemporaryMode"
-      >
-        <v-icon
-          :icon="
-            isTemporaryChatMode || isCurrentChatTemporary ? 'mdi-incognito' : 'mdi-incognito-off'
-          "
-          size="18"
-          class="mr-2"
-        />
-        <span class="chat-page__temp-toggle-text">
-          {{
-            isTemporaryChatMode || isCurrentChatTemporary
-              ? $t('chat.temporaryChat.disable')
-              : $t('chat.temporaryChat.enable')
-          }}
-        </span>
-      </v-btn>
-
-      <!-- Save button for temporary chats -->
-      <v-btn
-        v-if="isCurrentChatTemporary && messages.length > 0"
-        variant="tonal"
-        size="small"
-        color="primary"
-        class="chat-page__save-btn ml-2"
-        @click="saveCurrentChat"
-      >
-        <v-icon
-          icon="mdi-content-save-outline"
-          size="18"
-          class="mr-1"
-        />
-        {{ $t('chat.temporaryChat.save') }}
-      </v-btn>
-    </div>
+    <!-- Header -->
+    <ChatHeader
+      :can-toggle-temporary-mode="canToggleTemporaryMode"
+      :has-messages="messages.length > 0"
+      :is-current-chat-temporary="isCurrentChatTemporary"
+      :is-temporary-chat-mode="isTemporaryChatMode"
+      @toggle-sidebar="toggleSidebar?.()"
+      @new-chat="handleNewChat"
+      @toggle-temporary-mode="toggleTemporaryMode"
+      @save-chat="saveCurrentChat"
+    />
 
     <!-- Message list -->
     <div class="chat-page__messages">
@@ -272,60 +206,10 @@ function saveApiKey() {
     </div>
 
     <!-- API Key Dialog -->
-    <v-dialog
+    <ApiKeyDialog
       v-model="showApiKeyDialog"
-      max-width="500"
-      persistent
-    >
-      <v-card>
-        <v-card-title class="text-h5 pa-6 pb-2">
-          <v-icon
-            icon="mdi-key"
-            class="mr-2"
-          />
-          {{ $t('dialog.apiKey.title') }}
-        </v-card-title>
-
-        <v-card-text class="pa-6">
-          <p class="text-body-1 mb-4">
-            {{ $t('dialog.apiKey.description') }}
-            <a
-              href="https://cloud.cerebras.ai"
-              target="_blank"
-              class="text-primary"
-            >
-              {{ $t('dialog.apiKey.link') }}
-            </a>
-          </p>
-
-          <v-text-field
-            v-model="tempApiKey"
-            :label="$t('settings.api.apiKey')"
-            type="password"
-            variant="outlined"
-            :placeholder="$t('settings.api.apiKeyPlaceholder')"
-            hide-details
-          />
-        </v-card-text>
-
-        <v-card-actions class="pa-6 pt-0">
-          <v-spacer />
-          <v-btn
-            variant="text"
-            @click="showApiKeyDialog = false"
-          >
-            {{ $t('common.cancel') }}
-          </v-btn>
-          <v-btn
-            color="primary"
-            :disabled="!tempApiKey.trim()"
-            @click="saveApiKey"
-          >
-            {{ $t('common.save') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+      @save="handleSaveApiKey"
+    />
   </div>
 </template>
 
@@ -333,84 +217,9 @@ function saveApiKey() {
 .chat-page {
   position: relative;
   height: 100%;
-  min-height: 0; /* Important for flex children */
+  min-height: 0;
   overflow: hidden;
   background-color: rgb(var(--v-theme-background));
-}
-
-/* Mobile header */
-.chat-page__mobile-header {
-  display: none;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px;
-  background-color: rgb(var(--v-theme-background));
-  border-bottom: 1px solid var(--border-subtle);
-}
-
-.chat-page__mobile-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-@media (width <= 960px) {
-  .chat-page__mobile-header {
-    display: flex;
-  }
-}
-
-/* Header with temporary chat toggle */
-.chat-page__header {
-  position: absolute;
-  top: 12px;
-  right: 16px;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-}
-
-@media (width <= 960px) {
-  .chat-page__header {
-    position: relative;
-    top: 0;
-    right: 0;
-    justify-content: center;
-    padding: 8px 12px;
-  }
-}
-
-.chat-page__temp-toggle {
-  padding: 0 12px !important;
-  font-weight: 400;
-  text-transform: none !important;
-  letter-spacing: normal;
-  border-radius: 20px !important;
-  opacity: 0.6;
-  transition:
-    opacity 0.2s ease,
-    background-color 0.2s ease;
-}
-
-.chat-page__temp-toggle:hover {
-  background-color: var(--border-subtle) !important;
-  opacity: 1;
-}
-
-.chat-page__temp-toggle--active {
-  color: rgb(var(--v-theme-primary)) !important;
-  background-color: rgb(var(--v-theme-primary), 0.1) !important;
-  opacity: 1;
-}
-
-.chat-page__temp-toggle-text {
-  font-size: 0.85rem;
-}
-
-.chat-page__save-btn {
-  font-weight: 500;
-  text-transform: none !important;
-  border-radius: 20px !important;
 }
 
 .chat-page__messages {

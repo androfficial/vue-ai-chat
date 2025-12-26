@@ -8,12 +8,12 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDisplay, useTheme } from 'vuetify'
 
-import { useDateFormatter } from '@/composables'
 import { useChatStore } from '@/stores/chat'
 import { useUserStore } from '@/stores/user'
-import { getDateGroup } from '@/utils/date'
 
-import ChatListItem from './ChatListItem.vue'
+import SidebarChatList from './SidebarChatList.vue'
+import SidebarFooter from './SidebarFooter.vue'
+import SidebarHeader from './SidebarHeader.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -22,13 +22,12 @@ const chatStore = useChatStore()
 const userStore = useUserStore()
 const display = useDisplay()
 
-const { formatDateGroup, getTimeDiffFormatted, locale } = useDateFormatter()
-
 const drawer = ref(true)
 const rail = ref(userStore.preferences.sidebarCollapsed)
-const collapsedGroups = ref<Set<string>>(new Set())
 
 const isMobile = computed(() => display.smAndDown.value)
+const chatList = computed(() => chatStore.persistentChatList)
+const currentChatId = computed(() => route.params.id as string)
 
 watch(rail, newValue => {
   if (!isMobile.value) {
@@ -59,35 +58,13 @@ function toggleDrawer() {
 
 defineExpose({ drawer, toggleDrawer })
 
-function toggleGroup(group: string) {
-  if (collapsedGroups.value.has(group)) {
-    collapsedGroups.value.delete(group)
-  } else {
-    collapsedGroups.value.add(group)
-  }
+function toggleRail() {
+  rail.value = !rail.value
 }
 
-function isGroupCollapsed(group: string): boolean {
-  return collapsedGroups.value.has(group)
+function closeDrawer() {
+  drawer.value = false
 }
-
-const chatList = computed(() => chatStore.persistentChatList)
-const currentChatId = computed(() => route.params.id as string)
-
-const groupedChats = computed(() => {
-  const groups: Record<string, typeof chatList.value> = {}
-
-  chatList.value.forEach(chat => {
-    const group = getDateGroup(chat.updatedAt, locale.value)
-    const groupKey = formatDateGroup(group)
-    if (!groups[groupKey]) {
-      groups[groupKey] = []
-    }
-    groups[groupKey].push(chat)
-  })
-
-  return groups
-})
 
 function createNewChat() {
   if (isMobile.value) drawer.value = false
@@ -109,7 +86,6 @@ function deleteChat(chatId: string, event: Event) {
   const isCurrentChat = currentChatId.value === chatId
   chatStore.deleteChat(chatId)
 
-  // Navigate only if deleting the current chat
   if (isCurrentChat) {
     const nextChat = chatStore.chatList[0]
     if (nextChat) {
@@ -139,44 +115,13 @@ function renameChat(chatId: string, newTitle: string) {
   >
     <div class="sidebar-content">
       <!-- Header -->
-      <div :class="['sidebar-header', { 'sidebar-header-railed': !isMobile && rail }]">
-        <!-- Desktop: Rail toggle button -->
-        <v-btn
-          v-if="!isMobile"
-          :icon="rail ? 'mdi-menu' : 'mdi-menu-open'"
-          variant="text"
-          density="comfortable"
-          :aria-label="rail ? $t('sidebar.expandSidebar') : $t('sidebar.collapseSidebar')"
-          :aria-expanded="!rail"
-          @click="rail = !rail"
-        />
-        <!-- Mobile: Close button -->
-        <v-btn
-          v-else
-          icon="mdi-close"
-          variant="text"
-          density="comfortable"
-          :aria-label="$t('common.close')"
-          @click="drawer = false"
-        />
-        <span
-          class="sidebar-title text-h6 font-weight-bold flex-grow-1 ml-2"
-          :class="{ 'sidebar-title-hidden': !isMobile && rail }"
-          style="cursor: pointer"
-          @click="createNewChat"
-        >
-          AI Chat
-        </span>
-        <v-btn
-          icon="mdi-square-edit-outline"
-          variant="text"
-          density="comfortable"
-          :aria-label="$t('sidebar.newChat')"
-          class="sidebar-new-chat-btn"
-          :class="{ 'sidebar-new-chat-btn-hidden': !isMobile && rail }"
-          @click="createNewChat"
-        />
-      </div>
+      <SidebarHeader
+        :is-mobile="isMobile"
+        :rail="rail"
+        @toggle-rail="toggleRail"
+        @close-drawer="closeDrawer"
+        @new-chat="createNewChat"
+      />
 
       <v-divider />
 
@@ -197,86 +142,26 @@ function renameChat(chatId: string, newTitle: string) {
       </div>
 
       <!-- Chat List -->
-      <v-list
-        density="compact"
-        nav
-        class="pa-2 sidebar-list sidebar-chat-list"
-        :class="{ 'sidebar-list-hidden': !isMobile && rail }"
-      >
-        <template
-          v-for="(chats, group) in groupedChats"
-          :key="group"
-        >
-          <div
-            class="sidebar-group-header"
-            :class="{ 'is-collapsed': isGroupCollapsed(group as string) }"
-            @click="toggleGroup(group as string)"
-          >
-            <span class="sidebar-group-title">
-              {{ group }}
-            </span>
-            <v-icon
-              :icon="isGroupCollapsed(group as string) ? 'mdi-chevron-right' : 'mdi-chevron-down'"
-              size="16"
-              class="sidebar-group-icon"
-            />
-          </div>
-
-          <template v-if="!isGroupCollapsed(group as string)">
-            <ChatListItem
-              v-for="chat in chats"
-              :key="chat.id"
-              :chat="chat"
-              :is-active="currentChatId === chat.id"
-              :timestamp="getTimeDiffFormatted(chat.updatedAt)"
-              @click="openChat(chat.id)"
-              @delete="deleteChat(chat.id, $event)"
-              @rename="renameChat(chat.id, $event)"
-            />
-          </template>
-        </template>
-
-        <!-- Empty state -->
-        <v-list-item v-if="chatList.length === 0">
-          <v-list-item-title class="text-body-2 text-medium-emphasis text-center">
-            {{ $t('sidebar.noChats') }}
-          </v-list-item-title>
-        </v-list-item>
-      </v-list>
+      <SidebarChatList
+        :chat-list="chatList"
+        :current-chat-id="currentChatId"
+        :is-mobile="isMobile"
+        :rail="rail"
+        @open-chat="openChat"
+        @delete-chat="deleteChat"
+        @rename-chat="renameChat"
+      />
     </div>
 
     <template #append>
       <v-divider />
 
-      <!-- Bottom actions -->
-      <v-list
-        density="compact"
-        nav
-        :class="['pa-2 sidebar-bottom', { 'sidebar-railed': !isMobile && rail }]"
-      >
-        <v-list-item
-          :prepend-icon="userStore.isDarkMode ? 'mdi-weather-night' : 'mdi-white-balance-sunny'"
-          @click="userStore.toggleTheme()"
-        >
-          <v-list-item-title
-            class="sidebar-item-title"
-            :class="{ 'sidebar-item-title-hidden': !isMobile && rail }"
-          >
-            {{ userStore.isDarkMode ? $t('sidebar.lightMode') : $t('sidebar.darkMode') }}
-          </v-list-item-title>
-        </v-list-item>
-        <v-list-item
-          prepend-icon="mdi-cog-outline"
-          @click="openSettings"
-        >
-          <v-list-item-title
-            class="sidebar-item-title"
-            :class="{ 'sidebar-item-title-hidden': !isMobile && rail }"
-          >
-            {{ $t('common.settings') }}
-          </v-list-item-title>
-        </v-list-item>
-      </v-list>
+      <!-- Footer -->
+      <SidebarFooter
+        :is-mobile="isMobile"
+        :rail="rail"
+        @open-settings="openSettings"
+      />
     </template>
   </v-navigation-drawer>
 </template>
@@ -288,7 +173,6 @@ function renameChat(chatId: string, newTitle: string) {
   transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-/* Make dividers less contrasting */
 .sidebar-drawer :deep(.v-divider) {
   opacity: 0.4;
 }
@@ -300,47 +184,6 @@ function renameChat(chatId: string, newTitle: string) {
   overflow: hidden;
 }
 
-.sidebar-chat-list {
-  flex: 1;
-  min-height: 0;
-  overflow-x: hidden;
-  overflow-y: auto !important;
-}
-
-/* Smooth transitions for the title */
-.sidebar-title {
-  overflow: hidden;
-  white-space: nowrap;
-  transition:
-    opacity 0.15s ease,
-    transform 0.15s ease,
-    width 0.15s ease;
-}
-
-.sidebar-title-hidden {
-  width: 0;
-  pointer-events: none;
-  opacity: 0;
-  transform: translateX(-10px);
-}
-
-/* New chat button in the header */
-.sidebar-new-chat-btn {
-  flex-shrink: 0;
-  transition:
-    opacity 0.15s ease,
-    transform 0.15s ease;
-}
-
-.sidebar-new-chat-btn-hidden {
-  position: absolute;
-  right: 0;
-  pointer-events: none;
-  opacity: 0;
-  transform: scale(0.8);
-}
-
-/* New chat button in rail mode */
 .sidebar-rail-new-chat {
   justify-content: flex-start !important;
   height: 0;
@@ -357,219 +200,12 @@ function renameChat(chatId: string, newTitle: string) {
   opacity: 1;
 }
 
-/* Smooth hiding of chat list */
-.sidebar-list {
-  width: 100%;
-  transition: opacity 0.15s ease;
-}
-
-.sidebar-list-hidden {
-  visibility: hidden;
-  width: 0;
-  overflow: hidden;
-  pointer-events: none;
-  opacity: 0;
-}
-
-/* Smooth hiding of text in bottom menu */
-.sidebar-item-title {
-  overflow: hidden;
-  font-size: 0.9rem;
-  font-weight: 500;
-  white-space: nowrap;
-  transition:
-    opacity 0.15s ease,
-    width 0.15s ease;
-}
-
-.sidebar-item-title-hidden {
-  width: 0;
-  pointer-events: none;
-  opacity: 0;
-}
-
-.v-list-item--active {
-  font-weight: 500;
-  background-color: rgb(var(--v-theme-sidebar-active)) !important;
-}
-
-.v-list-item:hover:not(.v-list-item--active) {
-  background-color: rgb(var(--v-theme-sidebar-hover)) !important;
-}
-
-.v-list-item {
-  padding-top: 4px !important;
-  padding-bottom: 4px !important;
-  margin-bottom: 2px;
-  border-radius: var(--radius-sm) !important;
-  transition:
-    background-color var(--transition-fast),
-    margin 0.2s ease,
-    padding 0.2s ease,
-    min-width 0.2s ease,
-    width 0.2s ease;
-}
-
-/* Reduce spacing between icon and text */
-:deep(.v-list-item__prepend) {
-  margin-inline-end: 4px !important;
-  transition:
-    margin 0.2s ease,
-    padding 0.2s ease;
-}
-
-:deep(.v-list-item__spacer) {
-  width: 8px !important;
-  transition:
-    width 0.2s ease,
-    display 0.2s ease;
-}
-
-:deep(.v-list-item__content) {
-  overflow: hidden;
-  transition:
-    opacity 0.15s ease,
-    width 0.2s ease;
-}
-
-/* Reduce padding in sidebar lists */
-.sidebar-list :deep(.v-list-item),
-.sidebar-bottom :deep(.v-list-item) {
-  min-height: 40px !important;
-  padding-inline: 12px !important;
-}
-
-/* Reduce gap between icon and text in bottom actions */
-.sidebar-bottom :deep(.v-list-item__prepend) {
-  margin-inline-end: 12px;
-}
-
-/* Group header with collapse toggle */
-.sidebar-group-header {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-  min-height: 28px;
-  padding: 4px 12px;
-  margin-top: 8px;
-  cursor: pointer;
-  user-select: none;
-  border-radius: 6px;
-  transition: background-color 0.15s ease;
-}
-
-.sidebar-group-title {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: rgb(var(--v-theme-text-secondary));
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-}
-
-.sidebar-group-header:hover {
-  background-color: rgb(var(--v-theme-sidebar-hover));
-}
-
-.sidebar-group-icon {
-  opacity: 0;
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
-}
-
-.sidebar-group-header:hover .sidebar-group-icon,
-.sidebar-group-header.is-collapsed .sidebar-group-icon {
-  opacity: 0.6;
-}
-
-.sidebar-group-header:hover .sidebar-group-icon {
-  opacity: 0.8;
-}
-
-.v-list-subheader {
-  min-height: 28px !important;
-  padding-right: 12px !important;
-  padding-left: 12px !important;
-  margin-top: 8px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
 :deep(.v-btn) {
   transition: background-color var(--transition-fast);
 }
 
 :deep(.v-btn:hover) {
   background-color: rgb(var(--v-theme-sidebar-hover));
-}
-
-.pa-3 {
-  padding: 12px 16px !important;
-}
-
-/* Header styles */
-.sidebar-header {
-  position: relative;
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  min-height: 48px;
-  padding: 12px;
-  transition: padding 0.2s ease;
-}
-
-.sidebar-header-railed {
-  padding: 12px 8px;
-}
-
-/* Hidden elements should not take up space */
-.sidebar-header-railed .sidebar-title-hidden,
-.sidebar-header-railed .sidebar-new-chat-btn-hidden {
-  position: absolute;
-  width: 0;
-  overflow: hidden;
-}
-
-/* Styles for collapsed sidebar (rail mode) */
-.sidebar-railed {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 8px !important;
-}
-
-.sidebar-railed :deep(.v-list-item) {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
-  width: 40px !important;
-  min-width: 40px !important;
-  padding: 8px !important;
-  margin: 0 0 2px !important;
-}
-
-.sidebar-railed :deep(.v-list-item__prepend) {
-  padding: 0 !important;
-  margin: 0 !important;
-  margin-inline-end: 0 !important;
-}
-
-.sidebar-railed :deep(.v-list-item__spacer) {
-  width: 0 !important;
-  min-width: 0 !important;
-  opacity: 0;
-}
-
-.sidebar-railed :deep(.v-list-item__content) {
-  position: absolute;
-  width: 0 !important;
-  max-width: 0 !important;
-  overflow: hidden;
-  opacity: 0;
-}
-
-.sidebar-railed :deep(.v-list-item .v-icon) {
-  margin: 0 auto !important;
 }
 
 /* Mobile styles */
@@ -580,22 +216,5 @@ function renameChat(chatId: string, newTitle: string) {
 
 .sidebar-drawer--mobile :deep(.v-navigation-drawer__content) {
   transition: none !important;
-}
-
-@media (width <= 960px) {
-  .sidebar-header {
-    padding: 16px;
-  }
-
-  .sidebar-list :deep(.v-list-item),
-  .sidebar-bottom :deep(.v-list-item) {
-    min-height: 48px !important;
-    padding-inline: 16px !important;
-  }
-
-  .sidebar-group-header {
-    min-height: 36px;
-    padding: 8px 16px;
-  }
 }
 </style>

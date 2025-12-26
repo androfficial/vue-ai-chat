@@ -1,3 +1,11 @@
+/**
+ * Chat Store
+ * Manages chat sessions, messages, and chat-related state
+ * Handles persistence of non-temporary chats to localStorage
+ *
+ * @module stores/chat
+ */
+
 import type {
   Chat,
   ChatListItem,

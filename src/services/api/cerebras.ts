@@ -143,7 +143,17 @@ async function apiRequest(
 }
 
 /**
- * Send non-streaming chat completion request
+ * Send non-streaming chat completion request to Cerebras API
+ *
+ * @param messages - Array of messages to send to the API
+ * @returns Promise resolving to API response with completion data or error
+ * @example
+ * ```typescript
+ * const result = await sendChatCompletion([{ role: 'user', content: 'Hello' }])
+ * if (result.success) {
+ *   console.log(result.data.choices[0].message.content)
+ * }
+ * ```
  */
 export async function sendChatCompletion(
   messages: ApiMessage[],
@@ -229,7 +239,25 @@ async function processStream(
 }
 
 /**
- * Send streaming chat completion request
+ * Send streaming chat completion request to Cerebras API
+ * Streams response content in real-time via callbacks
+ *
+ * @param messages - Array of messages to send to the API
+ * @param onChunk - Callback invoked for each content chunk received
+ * @param onComplete - Callback invoked when streaming completes
+ * @param onError - Callback invoked when an error occurs
+ * @param signal - Optional AbortSignal for cancellation
+ * @example
+ * ```typescript
+ * const controller = new AbortController()
+ * await sendStreamingChatCompletion(
+ *   messages,
+ *   chunk => console.log(chunk),
+ *   () => console.log('Done'),
+ *   error => console.error(error),
+ *   controller.signal
+ * )
+ * ```
  */
 export async function sendStreamingChatCompletion(
   messages: ApiMessage[],
@@ -264,6 +292,11 @@ export async function sendStreamingChatCompletion(
   }
 }
 
+/**
+ * Test API connection by sending a minimal request
+ *
+ * @returns Promise resolving to success status or error
+ */
 export async function testApiConnection(): Promise<ApiResponse<boolean>> {
   try {
     const result = await sendChatCompletion([{ content: 'Hello', role: 'user' }])

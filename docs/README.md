@@ -96,4 +96,4 @@ For more details on rules, see [Development Patterns](./explanation/patterns.md)
 
 ---
 
-_Last updated: 2025_
+_Last updated: December 2025_

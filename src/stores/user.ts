@@ -1,3 +1,11 @@
+/**
+ * User Preferences Store
+ * Manages user settings including theme, locale, and display preferences
+ * Persists preferences to localStorage
+ *
+ * @module stores/user
+ */
+
 import type { SupportedLocale, ThemeMode, UserPreferences } from '@/types'
 
 import { defineStore } from 'pinia'

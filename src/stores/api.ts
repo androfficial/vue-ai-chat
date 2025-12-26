@@ -1,3 +1,11 @@
+/**
+ * API Configuration Store
+ * Manages API settings including API key, model selection, and request parameters
+ * Persists configuration to localStorage
+ *
+ * @module stores/api
+ */
+
 import type { ApiConfig } from '@/types'
 
 import { defineStore } from 'pinia'
