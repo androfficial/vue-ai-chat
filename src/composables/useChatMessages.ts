@@ -1,4 +1,4 @@
-import type { ApiMessage } from '@/types';
+import type { ApiMessage, Message } from '@/types';
 import type { Ref } from 'vue';
 
 import { ref } from 'vue';
@@ -92,6 +92,7 @@ export function useChatMessages(): UseChatMessagesReturn {
     let streamingComplete = false;
 
     await sendStreamingChatCompletion(
+      apiStore.config,
       apiMessages,
       chunk => streamBuffer.push(chunk),
       () => {
@@ -144,8 +145,8 @@ export function useChatMessages(): UseChatMessagesReturn {
     const chat = chatStore.getChatById(chatId);
     const apiMessages: ApiMessage[] =
       chat?.messages
-        .filter(msg => msg.id !== assistantMessage.id)
-        .map(msg => ({
+        .filter((msg: Message) => msg.id !== assistantMessage.id)
+        .map((msg: Message) => ({
           content: msg.content,
           role: msg.role,
         })) ?? [];
@@ -170,7 +171,7 @@ export function useChatMessages(): UseChatMessagesReturn {
     if (!chat) return;
 
     // Find the assistant message to regenerate
-    const messageIndex = chat.messages.findIndex(m => m.id === assistantMessageId);
+    const messageIndex = chat.messages.findIndex((m: Message) => m.id === assistantMessageId);
     if (messageIndex <= 0) return;
 
     // Clear the assistant message content and set to streaming
@@ -179,7 +180,7 @@ export function useChatMessages(): UseChatMessagesReturn {
     isLoading.value = true;
 
     // Prepare messages for API (exclude the assistant message being regenerated)
-    const apiMessages: ApiMessage[] = chat.messages.slice(0, messageIndex).map(msg => ({
+    const apiMessages: ApiMessage[] = chat.messages.slice(0, messageIndex).map((msg: Message) => ({
       content: msg.content,
       role: msg.role,
     }));

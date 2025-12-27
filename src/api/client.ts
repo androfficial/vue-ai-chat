@@ -1,5 +1,3 @@
-import { useApiStore } from '@/stores/api';
-
 import { getErrorCodeFromStatus } from './errors';
 
 /**
@@ -11,18 +9,10 @@ export interface ApiClientConfig {
 }
 
 /**
- * Get current API configuration from store
- */
-export function getApiConfig(): ApiClientConfig {
-  const apiStore = useApiStore();
-  return {
-    apiKey: apiStore.apiKey,
-    baseUrl: apiStore.config.baseUrl,
-  };
-}
-
-/**
  * Build request headers for API calls
+ *
+ * @param apiKey - API key for authorization
+ * @returns Headers configuration
  */
 export function buildHeaders(apiKey: string): HeadersInit {
   return {
@@ -33,13 +23,20 @@ export function buildHeaders(apiKey: string): HeadersInit {
 
 /**
  * Unified fetch wrapper for API requests
+ *
+ * @param config - API connection configuration
+ * @param endpoint - API endpoint (e.g., '/chat/completions')
+ * @param body - Request payload
+ * @param signal - Optional AbortSignal for request cancellation
+ * @returns Promise with fetch Response
  */
 export async function apiRequest(
+  config: ApiClientConfig,
   endpoint: string,
   body: unknown,
   signal?: AbortSignal,
 ): Promise<Response> {
-  const { apiKey, baseUrl } = getApiConfig();
+  const { apiKey, baseUrl } = config;
 
   const response = await fetch(`${baseUrl}${endpoint}`, {
     body: JSON.stringify(body),

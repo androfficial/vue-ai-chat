@@ -1,11 +1,10 @@
 import type {
+  ApiConfig,
   ApiMessage,
   ApiResponse,
   ChatCompletionRequest,
   ChatCompletionResponse,
 } from '@/types';
-
-import { useApiStore } from '@/stores/api';
 
 import { apiRequest } from './client';
 import { getErrorCode, isApiErrorCode } from './errors';
@@ -14,15 +13,18 @@ import { processStream } from './stream';
 /**
  * Build chat completion request body for Cerebras
  */
-function buildRequestBody(messages: ApiMessage[], stream: boolean): ChatCompletionRequest {
-  const apiStore = useApiStore();
+function buildRequestBody(
+  config: ApiConfig,
+  messages: ApiMessage[],
+  stream: boolean,
+): ChatCompletionRequest {
   return {
-    max_tokens: apiStore.config.maxTokens,
+    max_tokens: config.maxTokens,
     messages,
-    model: apiStore.config.model,
+    model: config.model,
     stream,
-    temperature: apiStore.config.temperature,
-    top_p: apiStore.config.topP,
+    temperature: config.temperature,
+    top_p: config.topP,
   };
 }
 
@@ -30,11 +32,16 @@ function buildRequestBody(messages: ApiMessage[], stream: boolean): ChatCompleti
  * Send non-streaming chat completion request to Cerebras API
  */
 export async function sendChatCompletion(
+  config: ApiConfig,
   messages: ApiMessage[],
 ): Promise<ApiResponse<ChatCompletionResponse>> {
   try {
-    const requestBody = buildRequestBody(messages, false);
-    const response = await apiRequest('/chat/completions', requestBody);
+    const requestBody = buildRequestBody(config, messages, false);
+    const response = await apiRequest(
+      { apiKey: config.apiKey, baseUrl: config.baseUrl },
+      '/chat/completions',
+      requestBody,
+    );
     const data = (await response.json()) as ChatCompletionResponse;
 
     return {
@@ -55,6 +62,7 @@ export async function sendChatCompletion(
  * Send streaming chat completion request to Cerebras API
  */
 export async function sendStreamingChatCompletion(
+  config: ApiConfig,
   messages: ApiMessage[],
   onChunk: (content: string) => void,
   onComplete: () => void,
@@ -62,8 +70,13 @@ export async function sendStreamingChatCompletion(
   signal?: AbortSignal,
 ): Promise<void> {
   try {
-    const requestBody = buildRequestBody(messages, true);
-    const response = await apiRequest('/chat/completions', requestBody, signal);
+    const requestBody = buildRequestBody(config, messages, true);
+    const response = await apiRequest(
+      { apiKey: config.apiKey, baseUrl: config.baseUrl },
+      '/chat/completions',
+      requestBody,
+      signal,
+    );
 
     const reader = response.body?.getReader();
     if (!reader) {
@@ -90,9 +103,9 @@ export async function sendStreamingChatCompletion(
 /**
  * Test API connection by sending a minimal request
  */
-export async function testApiConnection(): Promise<ApiResponse<boolean>> {
+export async function testApiConnection(config: ApiConfig): Promise<ApiResponse<boolean>> {
   try {
-    const result = await sendChatCompletion([{ content: 'Hello', role: 'user' }]);
+    const result = await sendChatCompletion(config, [{ content: 'Hello', role: 'user' }]);
 
     if (result.success) {
       return { data: true, success: true };

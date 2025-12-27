@@ -42,7 +42,7 @@ async function handleTestConnection() {
 
   testingConnection.value = true;
 
-  const result = await testApiConnection();
+  const result = await testApiConnection(apiStore.config);
 
   testingConnection.value = false;
 
