@@ -2,7 +2,7 @@
 
 Chat client for large language models on the Cerebras API: stream answers, keep several conversations, edit and regenerate messages, and switch the interface between English and Ukrainian. Built in December 2025 as a take-home assignment.
 
-**Live demo:** [vue-ai-chat-test-task.vercel.app](https://vue-ai-chat-test-task.vercel.app)
+**Live demo:** [vue-ai-chat-androfficial.vercel.app](https://vue-ai-chat-androfficial.vercel.app)
 
 ## Features
 
