@@ -1,270 +1,81 @@
-# AI Chat 🤖
+# AI Chat
 
-A modern chat application powered by Cerebras AI, built with Vue 3, TypeScript, and Vuetify 3.
+Chat client for large language models on the Cerebras API: stream answers, keep several conversations, edit and regenerate messages, and switch the interface between English and Ukrainian. Built in December 2025 as a take-home assignment.
 
-![CI](https://github.com/androfficial/vue-ai-chat-test-task/actions/workflows/ci.yml/badge.svg)
-![Vue.js](https://img.shields.io/badge/Vue.js-3.5-4FC08D?logo=vue.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript)
-![Vuetify](https://img.shields.io/badge/Vuetify-3.11-1867C0?logo=vuetify)
-![Vite](https://img.shields.io/badge/Vite-7.x-646CFF?logo=vite)
-![License](https://img.shields.io/badge/License-MIT-green)
+**Live demo:** [vue-ai-chat-test-task.vercel.app](https://vue-ai-chat-test-task.vercel.app)
 
-## ✨ Features
+## Features
 
-- 🤖 **AI Chat** - Chat with Cerebras AI models (Llama 3.3 70B, Llama 3.1 8B, Qwen 3 32B, GPT OSS 120B)
-- 💬 **Multiple Chats** - Create and manage multiple chat conversations
-- 🔄 **Streaming Responses** - Real-time AI response streaming with smooth word-by-word animation
-- 📝 **Message Actions** - Copy, edit, delete, and regenerate messages
-- 🕐 **Temporary Chats** - Incognito mode for chats that won't be saved
-- 🌙 **Dark/Light Theme** - Switch between themes with system preference support
-- 🌍 **Multilingual** - English and Ukrainian interface support
-- 💾 **Persistent Storage** - Chats and preferences saved in localStorage
-- 📱 **Responsive Design** - Collapsible sidebar, works on desktop and mobile
-- ⌨️ **Keyboard Shortcuts** - Send on Enter, new line with Shift+Enter
+- Streams answers word by word from the Cerebras chat completions API, with a stop button. Four models to choose from: Llama 3.3 70B, Llama 3.1 8B, Qwen 3 32B and GPT OSS 120B.
+- Several chats in a sidebar grouped by date, with rename and delete. The first message becomes the chat title, and a new chat offers four prompt suggestions.
+- Copy any message, edit a sent message (later messages are removed and a new answer is generated) or regenerate an answer.
+- Markdown answers with syntax-highlighted code blocks and a copy button.
+- Temporary chats: the incognito toggle on a new chat keeps it out of the sidebar and localStorage until it is saved.
+- Light, dark and system themes, and an English or Ukrainian interface that follows the browser language until the user picks one.
+- A settings page for the API key with a connection test, the model, the theme, the language and deleting all chats.
+- Enter sends a message and Shift+Enter adds a line. The sidebar collapses to icons on desktop and becomes a drawer on mobile.
 
-## 🛠️ Tech Stack
+## Tech stack
 
-| Category             | Technology                                      |
-| -------------------- | ----------------------------------------------- |
-| Framework            | Vue 3.5 (Composition API with `<script setup>`) |
-| Language             | TypeScript 5.x                                  |
-| Build Tool           | Vite 7.x                                        |
-| State Management     | Pinia 3.x                                       |
-| Routing              | Vue Router 4.x                                  |
-| UI Framework         | Vuetify 3.11                                    |
-| Internationalization | Vue I18n 9.x                                    |
-| Markdown             | Marked                                          |
-| Syntax Highlighting  | Highlight.js                                    |
-| Testing              | Vitest + Vue Test Utils                         |
-| Linting              | ESLint 9.x with Perfectionist plugin            |
-| Formatting           | Prettier                                        |
-| Git Hooks            | Husky                                           |
-| CI/CD                | GitHub Actions + Vercel                         |
+- **Framework:** Vue 3 (Composition API with `<script setup>`), TypeScript 5
+- **State:** Pinia 3, persisted to localStorage
+- **Data:** Fetch API with server-sent events from the Cerebras chat completions endpoint
+- **Routing:** Vue Router 4
+- **UI:** Vuetify 3, Material Design Icons, Vue I18n 9, marked 17, highlight.js 11
+- **Testing:** Vitest 4, happy-dom, V8 coverage
+- **Tooling:** Vite 7, vue-tsc, ESLint 9 with typescript-eslint and perfectionist, Stylelint 16, Prettier 3, Husky 9 with lint-staged, GitHub Actions
+- **Hosting:** Vercel
 
-## 🚀 Getting Started
+## Getting started
 
-### Prerequisites
-
-- Node.js 18+
-- npm 9+
-- Cerebras API key (get one at [cloud.cerebras.ai](https://cloud.cerebras.ai))
-
-### Installation
-
-1. Clone the repository:
+You need Node.js 20.19 or later and a Cerebras API key from [cloud.cerebras.ai](https://cloud.cerebras.ai), which the app asks for on first launch.
 
 ```bash
-git clone git@github.com:androfficial/vue-ai-chat-test-task.git
-cd vue-ai-chat-test-task
-```
-
-2. Install dependencies:
-
-```bash
+git clone https://github.com/androfficial/vue-ai-chat.git
+cd vue-ai-chat
 npm install
-```
-
-3. Start the development server:
-
-```bash
 npm run dev
 ```
 
-4. Open [http://localhost:5173](http://localhost:5173) in your browser
+The dev server runs at http://localhost:5173. There are no environment variables: the key is entered in the app, stored in localStorage and sent from the browser straight to the Cerebras API.
 
-5. Enter your Cerebras API key when prompted
+## Scripts
 
-## 📜 Available Scripts
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Starts the Vite dev server |
+| `npm run build` | Type-checks with `vue-tsc -b` and builds to `dist/` |
+| `npm run preview` | Serves the production build locally |
+| `npm run type-check` | Runs `vue-tsc` without emitting files |
+| `npm run lint` | Runs ESLint and fixes what it can |
+| `npm run lint:css` | Runs Stylelint on CSS and Vue files and fixes what it can |
+| `npm run format` | Formats the project with Prettier |
+| `npm test` | Runs the unit tests once |
+| `npm run test:watch` | Runs the unit tests in watch mode |
+| `npm run test:coverage` | Runs the unit tests with a V8 coverage report |
 
-| Command                 | Description                         |
-| ----------------------- | ----------------------------------- |
-| `npm run dev`           | Start development server            |
-| `npm run build`         | Type-check and build for production |
-| `npm run preview`       | Preview production build            |
-| `npm run type-check`    | TypeScript type checking only       |
-| `npm run lint`          | Run ESLint with auto-fix            |
-| `npm run format`        | Format code with Prettier           |
-| `npm run test`          | Run unit tests                      |
-| `npm run test:watch`    | Run tests in watch mode             |
-| `npm run test:coverage` | Run tests with coverage report      |
+## Project structure
 
-## 📁 Project Structure
-
-```
+```text
 src/
-├── assets/styles/      # Global CSS variables and styles
-├── components/
-│   ├── chat/           # Chat components
-│   │   ├── ChatInput.vue       # Message input with auto-resize
-│   │   ├── CodeBlock.vue       # Code syntax highlighting
-│   │   ├── MessageList.vue     # Messages container with auto-scroll
-│   │   ├── MessageBubble.vue   # Individual message display
-│   │   ├── MessageContent.vue  # Markdown rendering
-│   │   └── MessageActions.vue  # Copy, edit, regenerate actions
-│   ├── layout/
-│   │   ├── AppSidebar.vue      # Navigation sidebar
-│   │   └── ChatListItem.vue    # Chat list entry
-│   └── settings/       # Settings page components
-│       ├── ApiSettings.vue
-│       ├── AppearanceSettings.vue
-│       ├── BehaviorSettings.vue
-│       ├── LanguageSettings.vue
-│       └── DangerZoneSettings.vue
-├── composables/        # Reusable composition functions
-│   ├── __tests__/              # Composable unit tests
-│   ├── useChatMessages.ts      # Chat messaging logic
-│   ├── useAutoScroll.ts        # Auto-scroll functionality
-│   ├── useStreamBuffer.ts      # Streaming animation buffer
-│   ├── useToast.ts             # Toast notifications
-│   └── ...
-├── locales/            # i18n translations (en.ts, uk.ts)
-├── pages/
-│   ├── ChatPage.vue    # Main chat view
-│   └── SettingsPage.vue
-├── plugins/            # Vue plugins (router, vuetify, i18n)
-├── services/api/
-│   └── cerebras.ts     # Cerebras API integration
-├── stores/             # Pinia stores
-│   ├── chat.ts         # Chat state management
-│   ├── api.ts          # API configuration
-│   └── user.ts         # User preferences
-├── test/               # Test setup and utilities
-│   └── setup.ts        # Global test configuration
-├── types/              # TypeScript interfaces
-└── utils/              # Utility functions
-    ├── __tests__/      # Utility unit tests
-    ├── storage.ts      # localStorage helpers
-    ├── validation.ts   # Input validation
-    └── date.ts         # Date formatting
+  api/          fetch client, server-sent events parser, error codes, Cerebras chat completions
+  assets/       global styles and the highlight.js theme
+  components/   chat (input, message list, bubbles, code blocks), layout (sidebar, toasts), settings cards
+  composables/  chat messaging, stream buffer, auto-scroll, markdown, theme, clipboard, toasts
+  locales/      English and Ukrainian messages
+  pages/        chat page and settings page
+  plugins/      Vue I18n, Vue Router and Vuetify setup
+  stores/       Pinia stores for chats, API settings and user preferences
+  test/         Vitest setup with localStorage, clipboard and crypto mocks
+  types/        shared types and injection keys
+  utils/        storage, dates, ids, validation and global error handlers
 ```
 
-## ⚙️ Configuration
+Unit tests sit next to the code in `__tests__` folders.
 
-### API Settings
+## Notes
 
-Configure in Settings page or provide on first launch:
-
-- **API Key** - Your Cerebras API key
-- **Model** - Choose from available models:
-  - Llama 3.3 70B (best for complex tasks)
-  - Llama 3.1 8B (fast and efficient)
-  - Qwen 3 32B (great multilingual support)
-  - GPT OSS 120B (reasoning model)
-
-### User Preferences
-
-- **Theme** - Light / Dark / System
-- **Language** - English / Ukrainian
-
-### Storage Keys
-
-All data is stored in localStorage with prefixed keys:
-
-- `ai-chat:chats` - Chat history
-- `ai-chat:api-config` - API settings
-- `ai-chat:preferences` - User preferences
-
-## 🏗️ Architecture
-
-### Data Flow
-
-```
-User Input → useChatMessages composable → cerebras.ts service (streaming)
-     ↓
-Pinia Stores ← useStreamBuffer (smooth animation)
-     ↓
-localStorage persistence
-```
-
-### Key Patterns
-
-- **Composition API** - All components use `<script setup lang="ts">`
-- **Type imports** - `import type { Chat } from '@/types'`
-- **Barrel exports** - Types, composables, stores via index files
-- **ESLint Perfectionist** - Enforced import/property sorting
-
-## 🧪 Testing
-
-The project uses **Vitest** for unit testing with **Vue Test Utils** for component testing.
-
-### Test Stack
-
-| Tool             | Purpose                           |
-| ---------------- | --------------------------------- |
-| Vitest           | Test runner and assertion library |
-| @vue/test-utils  | Vue component testing utilities   |
-| happy-dom        | DOM environment for tests         |
-| @vitest/coverage | Code coverage reporting           |
-
-### Running Tests
-
-```bash
-# Run all tests once
-npm run test
-
-# Run tests in watch mode (development)
-npm run test:watch
-
-# Run tests with coverage report
-npm run test:coverage
-```
-
-### Test Structure
-
-Tests are co-located with source files in `__tests__` directories:
-
-```
-src/
-├── utils/__tests__/
-│   ├── validation.test.ts
-│   ├── date.test.ts
-│   ├── id.test.ts
-│   └── storage.test.ts
-└── composables/__tests__/
-    ├── useClipboard.test.ts
-    └── useToast.test.ts
-```
-
-### Pre-commit Hook
-
-Tests run automatically before each commit via Husky to ensure code quality.
-
-## 🚀 CI/CD Pipeline
-
-The project uses GitHub Actions for continuous integration and deployment to Vercel.
-
-### Workflow
-
-1. **On Push/PR** → Runs lint, type-check, tests, and build
-2. **On Success** → Deploys to Vercel (preview for PRs, production for main)
-
-### Pipeline Steps
-
-| Step           | Description                          |
-| -------------- | ------------------------------------ |
-| ESLint         | JavaScript/TypeScript/Vue linting    |
-| Stylelint      | CSS linting                          |
-| Type Check     | TypeScript validation                |
-| Unit Tests     | Vitest unit test suite               |
-| Build          | Production build verification        |
-| Deploy Preview | PR preview deployment to Vercel      |
-| Deploy Prod    | Production deployment on main branch |
-
-### Required Secrets
-
-Configure in GitHub repository settings (Settings → Secrets → Actions):
-
-- `VERCEL_TOKEN` - Vercel API token
-- `VERCEL_ORG_ID` - Vercel organization ID
-- `VERCEL_PROJECT_ID` - Vercel project ID
-
-## �📄 License
-
-MIT
-
-## 👤 Author
-
-**Andrii Nakonechnyi**
-
-- Email: andriinkn@gmail.com
-- GitHub: [@androfficial](https://github.com/androfficial)
+- Data flow: `useChatMessages` passes the chat history to `sendStreamingChatCompletion` (`src/api/cerebras.ts`), which posts it to `/chat/completions` with `stream: true`. `processStream` parses the server-sent events, and `useStreamBuffer` releases the text into the Pinia chat store word by word, pausing longer after punctuation and speeding up when the buffer grows. Store watchers save chats, API settings and preferences to localStorage under `ai-chat:` keys.
+- Testing: Vitest runs nine unit test files in happy-dom, covering the utilities, `useClipboard`, `useToast` and the three Pinia stores, with 60% coverage thresholds. The Husky pre-commit hook runs lint-staged and then the whole test suite.
+- CI: `.github/workflows/ci.yml` runs ESLint, Stylelint, the type check, the tests and the build on Node.js 20 for pushes and pull requests to `main`. It then deploys with the Vercel CLI: a preview for pull requests, with the URL posted as a comment, and production for pushes to `main`. It needs the repository secrets `VERCEL_TOKEN`, `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID`.
+- `docs/` holds longer guides split into tutorials, how-to guides, reference and explanations. Start with [docs/README.md](docs/README.md); [architecture](docs/reference/architecture.md), [streaming](docs/explanation/streaming.md) and [state management](docs/explanation/state-management.md) cover the parts above in depth.
